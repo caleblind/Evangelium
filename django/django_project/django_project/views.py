@@ -30,8 +30,10 @@ helloWorld = """
 </head>
 <body>
   <div>
-    <h3>Hi</h3>
     <h1>Sammy welcomes you to your Droplet!</h1>
+    <h1>Jez also welcomes you to your Droplet!</h1>
+    <p>Below is some basic information I found about docker and a short tutorial about how it works:)</p>
+    <a href="https://docker-curriculum.com/">Docker Information</a>
     <img src="/static/sammytheshark.gif" />
     <h2>Things to do with this script</h2>
     <p>This message is coming to you via a simple Django application that's live on your Droplet! This droplet is all set up with Python, Django, and Postgres. It's also using Gunicorn to run the application on system boot and using nginx to proxy traffic to the application over port 80.</p>
