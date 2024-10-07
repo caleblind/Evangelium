@@ -30,6 +30,7 @@ helloWorld = """
 </head>
 <body>
   <div>
+    <h3>Hi</h3>
     <h1>Sammy welcomes you to your Droplet!</h1>
     <img src="/static/sammytheshark.gif" />
     <h2>Things to do with this script</h2>
