@@ -16,13 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-#Have to import the views file from home app to use it here
-from home import views
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    #Path from views.py to urls.py
-    path('home', views.home ),
-
 ]
