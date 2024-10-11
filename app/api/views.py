@@ -19,7 +19,6 @@ class Missionary_RUD_view(generics.RetrieveUpdateDestroyAPIView):
    queryset         = Missionary.objects.all()
    serializer_class = MissionarySerializer
    
-
 #Generic Church List, Create View
 class Church_LC_view(generics.ListCreateAPIView):
    queryset         = Church.objects.all()
