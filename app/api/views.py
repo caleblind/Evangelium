@@ -14,17 +14,29 @@ class Missionary_LC_view(generics.ListCreateAPIView):
    queryset         = Missionary.objects.all()
    serializer_class = MissionarySerializer
 
+   #Overrides generic API views
+   def delete(self, request, *args, **kwargs):
+      Missionary.objects.all().delete()
+      return Response(status = status.HTTP_204_NO_CONTENT)
+
 #Generic Missionary Retrieve, Update, Destroy View
 class Missionary_RUD_view(generics.RetrieveUpdateDestroyAPIView):
    queryset         = Missionary.objects.all()
    serializer_class = MissionarySerializer
+   lookup_field     = "pk"
    
 #Generic Church List, Create View
 class Church_LC_view(generics.ListCreateAPIView):
    queryset         = Church.objects.all()
    serializer_class = ChurchSerializer
 
+   #Overrides generic API views
+   def delete(self, request, *args, **kwargs):
+      Church.objects.all().delete()
+      return Response(status = status.HTTP_204_NO_CONTENT)
+
 #Generic Church Retrieve, Update, Destroy View
 class Church_RUD_view(generics.RetrieveUpdateDestroyAPIView):
    queryset         = Church.objects.all()
    serializer_class = ChurchSerializer
+   lookup_field     = "pk"
