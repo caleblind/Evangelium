@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Missionary, Church
+from .models        import Missionary, Church
 
 #Serializer class for missionaries
 class MissionarySerializer(serializers.ModelSerializer):
