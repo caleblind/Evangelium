@@ -8,7 +8,6 @@ class Missionary(models.Model):
 
    def __str__(self):
       return self.missionary_name
-   
 
 class Church(models.Model):
    church_name   = models.CharField(max_length = 100)
