@@ -5,13 +5,13 @@ from .           import views
 
 urlpatterns = [
    #Missionary List, Create URL
-   path('Missionary/',          views.Missionary_LC_view.as_view(),  name = "Missionary-list-create"),
+   path('missionary/',          views.Missionary_LC_view.as_view(),  name = "Missionary-List-Create"),
    #Missionary Retrieve, Update, Delete URL
-   path('Missionary/<int:pk>/', views.Missionary_RUD_view.as_view(), name = "Missionary-retrieve-update-delete"),
+   path('missionary/<int:pk>/', views.Missionary_RUD_view.as_view(), name = "Missionary-Retrieve-Update-Delete"),
 
    #Church List, Create URL
-   path('Church/',          views.Church_LC_view.as_view(),  name = "Church-list-create"),
+   path('church/',          views.Church_LC_view.as_view(),  name = "Church-List-Create"),
    #Church Retrieve, Update, Delete URL
-   path('Church/<int:pk>/', views.Church_RUD_view.as_view(), name = "Church-retrieve-update-delete")
+   path('church/<int:pk>/', views.Church_RUD_view.as_view(), name = "Church-Retrieve-Update-Delete")
 ]
 
