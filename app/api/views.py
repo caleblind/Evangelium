@@ -39,7 +39,12 @@ class Church_RUD_view(generics.RetrieveUpdateDestroyAPIView):
    serializer_class = ChurchSerializer
    lookup_field     = "pk"
 
-def home(request):
+def missionaries(request):
    response = requests.get('http://127.0.0.1:8000/missionary/') 
    data = response.json()
-   return render(request, 'home.html', {'data': data})
+   return render(request, 'missionaries.html', {'data': data})
+
+def churches(request):
+   response = requests.get('http://127.0.0.1:8000/church/')
+   data = response.json()
+   return render(request, 'churches.html', {'data': data})

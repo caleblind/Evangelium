@@ -12,7 +12,8 @@ urlpatterns = [
    #Router URLs
    path('', include(router.urls)),
    #path ('api-auth/', include('rest_framework.urls', namespace = 'rest_framework')),
-   path('home/', views.home, name = 'home'),
+   path('missionaries/', views.missionaries, name = 'missionaries'),
+   path('churches/', views.churches, name = 'churches'),
 
    #Missionary List, Create URL
    path('missionary/',          views.Missionary_LC_view.as_view(),  name = "Missionary-List-Create"),
