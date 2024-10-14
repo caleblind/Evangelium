@@ -1,5 +1,16 @@
-{% for missionaries in data %}
-<h1>{{ missionaries.missionary_name }}</h1>
-<p>{{ missionaries.email_address }}</p>
-<p>{{ missionaries.phone_number }}</p>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>These are the missionaries</h1>
+    {% for missionaries in data %}
+    <h2>{{ missionaries.missionary_name }}</h2>
+    <p>{{ missionaries.email_address }}</p>
+    <p>{{ missionaries.phone_number }}</p>
+    {% endfor %}
+  </body>
+</html>
