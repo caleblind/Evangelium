@@ -6,6 +6,9 @@ class Missionary(models.Model):
    email_address   = models.CharField(max_length = 100)
    phone_number    = models.IntegerField()
 
+   class Meta:
+      verbose_name_plural = "Missionaries"
+
    def __str__(self):
       return self.missionary_name
 
@@ -14,6 +17,9 @@ class Church(models.Model):
    location      = models.CharField(max_length = 100)
    phone_number  = models.IntegerField()
    email_address = models.CharField(max_length = 100)
+
+   class Meta: 
+      verbose_name_plural = "Churches"
 
    def __str__(self):
       return self.church_name
