@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>These are the churches</h1>
+    {% for churches in user_data %}
+    <h2>{{ churches.church_name }}</h2>
+    <p>{{ churches.location }}</p>
+    <p>{{ churches.email_address }}</p>
+    <p>{{ churches.phone_number }}</p>
+    {% endfor %}
+    <h1>These are the missionaries</h1>
+    {% for missionaries in user_data %}
+    <h2>{{ missionaries.missionary_name }}</h2>
+    <p>{{ missionaries.email_address }}</p>
+    <p>{{ missionaries.phone_number }}</p>
+    {% endfor %}
+  </body>
+</html>

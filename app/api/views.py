@@ -9,6 +9,7 @@ from rest_framework.parsers  import JSONParser
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 import requests 
+from rest_framework.decorators import api_view, renderer_classes
 
 #Missionary List/Create Class
 class Missionary_LC_view(generics.ListCreateAPIView):
@@ -48,3 +49,15 @@ def churches(request):
    response = requests.get('http://127.0.0.1:8000/church/')
    data = response.json()
    return render(request, 'churches.html', {'data': data})
+
+@api_view(('GET',))
+def users(request):
+   church_response = requests.get('http://127.0.0.1:8000/church/')
+   church_data = church_response.json()
+   missionary_response = requests.get('http://127.0.0.1:8000/missionary/') 
+   missionary_data = missionary_response.json()
+   user_data={
+      'churches': church_data,
+      'missionaries': missionary_data,
+   }
+   return render(request, 'users.html', user_data)
