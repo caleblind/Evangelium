@@ -7,10 +7,10 @@
   </head>
   <body>
     <h1>These are the missionaries</h1>
-    {% for missionaries in data %}
-    <h2>{{ missionaries.missionary_name }}</h2>
-    <p>{{ missionaries.email_address }}</p>
-    <p>{{ missionaries.phone_number }}</p>
+    {% for missionary in missionaries %}
+    <h2>{{ missionary.missionary_name }}</h2>
+    <p>{{ missionary.email_address }}</p>
+    <p>{{ missionary.phone_number }}</p>
     {% endfor %}
   </body>
 </html>
