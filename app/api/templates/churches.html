@@ -7,11 +7,11 @@
   </head>
   <body>
     <h1>These are the churches</h1>
-    {% for churches in data %}
-    <h2>{{ churches.church_name }}</h2>
-    <p>{{ churches.location }}</p>
-    <p>{{ churches.email_address }}</p>
-    <p>{{ churches.phone_number }}</p>
+    {% for church in churches %}
+    <h2>{{ church.church_name }}</h2>
+    <p>{{ church.location }}</p>
+    <p>{{ church.email_address }}</p>
+    <p>{{ church.phone_number }}</p>
     {% endfor %}
   </body>
 </html>
