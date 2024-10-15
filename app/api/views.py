@@ -50,14 +50,12 @@ def churches(request):
    data = response.json()
    return render(request, 'churches.html', {'data': data})
 
-@api_view(('GET',))
 def users(request):
-   church_response = requests.get('http://127.0.0.1:8000/church/')
-   church_data = church_response.json()
-   missionary_response = requests.get('http://127.0.0.1:8000/missionary/') 
-   missionary_data = missionary_response.json()
+   church_data = Church.objects.all()
+   missionary_data = Missionary.objects.all()
+
    user_data={
       'churches': church_data,
       'missionaries': missionary_data,
    }
-   return render(request, 'users.html', {'user_data': user_data})
+   return render(request, 'users.html', user_data)
