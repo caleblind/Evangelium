@@ -60,4 +60,4 @@ def users(request):
       'churches': church_data,
       'missionaries': missionary_data,
    }
-   return render(request, 'users.html', user_data)
+   return render(request, 'users.html', {'user_data': user_data})
