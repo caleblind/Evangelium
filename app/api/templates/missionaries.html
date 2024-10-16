@@ -6,9 +6,10 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>These are the missionaries</h1>
+    <h1>Missionaries:</h1>
     {% for missionary in missionaries %}
-    <h2>{{ missionary.missionary_name }}</h2>
+    <h3>{{ missionary.missionary_name }}</h3>
+    <p>{{ missionary.field_of_service }}</p>
     <p>{{ missionary.email_address }}</p>
     <p>{{ missionary.phone_number }}</p>
     {% endfor %}
