@@ -15,7 +15,7 @@ class Missionary(models.Model):
 class Church(models.Model):
    church_name    = models.CharField(max_length = 100)
    church_address = models.CharField(max_length = 100)
-   pastor_name    = models.CharField(max_length = 100, default = 'John Doe')
+   pastor_name    = models.CharField(max_length = 100)
    church_number  = models.IntegerField()
    email_address  = models.CharField(max_length = 100)
 
