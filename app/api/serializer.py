@@ -11,7 +11,7 @@ class MissionarySerializer(serializers.ModelSerializer):
 class ChurchSerializer(serializers.ModelSerializer):
    class Meta:
       model  = Church
-      fields = ('id', 'church_name', 'location', 'phone_number', 'email_address')
+      fields = ('id', 'church_name', 'pastor_name', 'church_address', 'church_number', 'email_address')
 
 
 

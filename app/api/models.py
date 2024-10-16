@@ -13,10 +13,11 @@ class Missionary(models.Model):
       return self.missionary_name
 
 class Church(models.Model):
-   church_name   = models.CharField(max_length = 100)
-   location      = models.CharField(max_length = 100)
-   phone_number  = models.IntegerField()
-   email_address = models.CharField(max_length = 100)
+   church_name    = models.CharField(max_length = 100)
+   church_address = models.CharField(max_length = 100)
+   pastor_name    = models.CharField(max_length = 100, default = 'John Doe')
+   church_number  = models.IntegerField()
+   email_address  = models.CharField(max_length = 100)
 
    class Meta: 
       verbose_name_plural = "Churches"
