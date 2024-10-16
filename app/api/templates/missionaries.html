@@ -8,10 +8,16 @@
   <body>
     <h1>Missionaries:</h1>
     {% for missionary in missionaries %}
-    <h3>{{ missionary.missionary_name }}</h3>
-    <p>{{ missionary.field_of_service }}</p>
-    <p>{{ missionary.email_address }}</p>
-    <p>{{ missionary.phone_number }}</p>
+    <h2>{{ missionary.missionary_name }}</h2>
+    <p>
+      <b><i>Field of Service: </i></b>{{ missionary.field_of_service }}
+    </p>
+    <p>
+      <b><i>Email Address: </i></b>{{ missionary.email_address }}
+    </p>
+    <p>
+      <b><i>Phone Number: </i></b>{{ missionary.phone_number }}
+    </p>
     {% endfor %}
   </body>
 </html>
