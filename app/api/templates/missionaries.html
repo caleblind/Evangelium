@@ -9,15 +9,23 @@
     <h1>Missionaries:</h1>
     {% for missionary in missionaries %}
     <h2>{{ missionary.missionary_name }}</h2>
-    <p>
-      <b><i>Field of Service: </i></b>{{ missionary.field_of_service }}
-    </p>
-    <p>
-      <b><i>Email Address: </i></b>{{ missionary.email_address }}
-    </p>
-    <p>
-      <b><i>Phone Number: </i></b>{{ missionary.phone_number }}
-    </p>
+    <ul>
+      <li>
+        <p>
+          <b><i>Field of Service: </i></b>{{ missionary.field_of_service }}
+        </p>
+      </li>
+      <li>
+        <p>
+          <b><i>Email Address: </i></b>{{ missionary.email_address }}
+        </p>
+      </li>
+      <li>
+        <p>
+          <b><i>Phone Number: </i></b>{{ missionary.phone_number }}
+        </p>
+      </li>
+    </ul>
     {% endfor %}
   </body>
 </html>
