@@ -7,6 +7,7 @@ urlpatterns = [
    path('missionaries/', views.missionaries, name = 'missionaries'),
    path('churches/', views.churches, name = 'churches'),
    path('users/', views.users, name = 'users'),
+   path('christian/', views.christian, name = 'christian'),
 
 ]
 
