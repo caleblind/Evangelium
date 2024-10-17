@@ -28,7 +28,7 @@ def users(request):
    }
    return render(request, 'users.html', user_data)
 
-def christian(request):
+def matching(request):
    church_data = Church.objects.all()
    missionary_data = Missionary.objects.all()
 
@@ -36,4 +36,7 @@ def christian(request):
       'churches': church_data,
       'missionaries': missionary_data,
    }
-   return render(request, 'christian.html', context = data)
+   return render(request, 'matching.html', context = data)
+
+def login(request):
+   return render(request, 'login.html')
