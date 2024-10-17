@@ -27,6 +27,7 @@ def users(request):
       'missionaries': missionary_data,
    }
    return render(request, 'users.html', user_data)
+
 def christian(request):
    church_data = Church.objects.all()
    missionary_data = Missionary.objects.all()
