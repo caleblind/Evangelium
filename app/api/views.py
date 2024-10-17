@@ -1,42 +1,38 @@
 from django.shortcuts import render
 
-#My imports (don't exactly know what all these do)
+#My imports 
 from .models                 import Missionary, Church
 from .serializer             import MissionarySerializer, ChurchSerializer
-from rest_framework          import generics, status, mixins
 from django.http             import JsonResponse, HttpResponse
 from rest_framework.parsers  import JSONParser
 from rest_framework.response import Response
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
+import requests 
 
-#Generic Missionary List, Create View
-class Missionary_LC_view(generics.ListCreateAPIView):
-   queryset         = Missionary.objects.all()
-   serializer_class = MissionarySerializer
+def missionaries(request):
+   missionary_data = Missionary.objects.all()
+   context = {'missionaries': missionary_data}
+   return render(request, 'missionaries.html', context)
 
-   #Overrides generic API views
-   def delete(self, request, *args, **kwargs):
-      Missionary.objects.all().delete()
-      return Response(status = status.HTTP_204_NO_CONTENT)
+def churches(request):
+   church_data = Church.objects.all()
+   context = {'churches': church_data}
+   return render(request, 'churches.html', context)
 
-#Generic Missionary Retrieve, Update, Destroy View
-class Missionary_RUD_view(generics.RetrieveUpdateDestroyAPIView):
-   queryset         = Missionary.objects.all()
-   serializer_class = MissionarySerializer
-   lookup_field     = "pk"
-   
-#Generic Church List, Create View
-class Church_LC_view(generics.ListCreateAPIView):
-   queryset         = Church.objects.all()
-   serializer_class = ChurchSerializer
+def users(request):
+   church_data = Church.objects.all()
+   missionary_data = Missionary.objects.all()
 
-   #Overrides generic API views
-   def delete(self, request, *args, **kwargs):
-      Church.objects.all().delete()
-      return Response(status = status.HTTP_204_NO_CONTENT)
+   user_data={
+      'churches': church_data,
+      'missionaries': missionary_data,
+   }
+   return render(request, 'users.html', user_data)
+def christian(request):
+   church_data = Church.objects.all()
+   missionary_data = Missionary.objects.all()
 
-#Generic Church Retrieve, Update, Destroy View
-class Church_RUD_view(generics.RetrieveUpdateDestroyAPIView):
-   queryset         = Church.objects.all()
-   serializer_class = ChurchSerializer
-   lookup_field     = "pk"
+   data={
+      'churches': church_data,
+      'missionaries': missionary_data,
+   }
+   return render(request, 'christian.html', context = data)
