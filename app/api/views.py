@@ -6,7 +6,6 @@ from .serializer             import MissionarySerializer, ChurchSerializer
 from django.http             import JsonResponse, HttpResponse
 from rest_framework.parsers  import JSONParser
 from rest_framework.response import Response
-import requests 
 
 def missionaries(request):
    missionary_data = Missionary.objects.all()
