@@ -17,16 +17,22 @@
         {% for church in churches %}
         <div class="col-md-4 mb-4">
           <div class="card">
-            <img
-              src="{{ church.image.url }}"
+            <!--<img
+              src="https://lab.oliveiraweb.com.br/images-for-samples/owl.jpg"
               class="card-img-top"
               alt="Church Image"
-            />
+            />-->
             <div class="card-body">
               <h5 class="card-title">{{ church.church_name }}</h5>
-              <p class="card-text">{{ church.description }}</p>
+              <p class="card-text">{{ church.pastor_name }}</p>
               <p class="card-text">
-                <small class="text-muted">{{ church.location }}</small>
+                <small class="text-muted">{{ church.church_address }}</small>
+              </p>
+              <p class="card-text">
+                <small class="text-muted">{{ church.email_address }}</small>
+              </p>
+              <p class="card-text">
+                <small class="text-muted">{{ church.phone_number }}</small>
               </p>
               <a href="#" class="btn btn-primary">View More</a>
             </div>
@@ -40,16 +46,19 @@
         {% for missionary in missionaries %}
         <div class="col-md-4 mb-4">
           <div class="card">
-            <img
+            <!--<img
               src="{{ missionary.image.url }}"
               class="card-img-top"
               alt="Missionary Image"
-            />
+            />-->
             <div class="card-body">
               <h5 class="card-title">{{ missionary.missionary_name }}</h5>
-              <p class="card-text">{{ missionary.description }}</p>
+              <p class="card-text">{{ missionary.field_of_service }}</p>
               <p class="card-text">
-                <small class="text-muted">{{ missionary.location }}</small>
+                <small class="text-muted">{{ missionary.email_address }}</small>
+              </p>
+              <p class="card-text">
+                <small class="text-muted">{{ missionary.phone_number }}</small>
               </p>
               <a href="#" class="btn btn-primary">View Profile</a>
             </div>
