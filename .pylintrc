@@ -19,4 +19,3 @@ max-module-lines=1000
 [django]
 # Enable Django-specific checks
 enable=missing-final-newline, not-callable, no-else-return
-
