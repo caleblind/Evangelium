@@ -12,11 +12,21 @@
   </head>
   <body>
     <div class="container-fluid p-4">
-      <h2>Recommended for You</h2>
+      <h2>Recommended Churches for You</h2>
       <div class="row">
         {% for church in churches %}
         <div class="col-md-4 mb-4">
           <div class="card">
+            <div class="card-header">
+              <ul class="nav nav-pills card-header-pills">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">View Profile</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Leave Feedback</a>
+                </li>
+              </ul>
+            </div>
             <!--<img
               src="https://lab.oliveiraweb.com.br/images-for-samples/owl.jpg"
               class="card-img-top"
@@ -34,7 +44,7 @@
               <p class="card-text">
                 <small class="text-muted">{{ church.phone_number }}</small>
               </p>
-              <a href="#" class="btn btn-primary">View More</a>
+              <a href="#" class="btn btn-outline-dark">Connect</a>
             </div>
           </div>
         </div>
@@ -46,6 +56,16 @@
         {% for missionary in missionaries %}
         <div class="col-md-4 mb-4">
           <div class="card">
+            <div class="card-header">
+              <ul class="nav nav-pills card-header-pills">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">View Profile</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Leave Feedback</a>
+                </li>
+              </ul>
+            </div>
             <!--<img
               src="{{ missionary.image.url }}"
               class="card-img-top"
@@ -60,7 +80,7 @@
               <p class="card-text">
                 <small class="text-muted">{{ missionary.phone_number }}</small>
               </p>
-              <a href="#" class="btn btn-primary">View Profile</a>
+              <a href="#" class="btn btn-outline-dark">Connect</a>
             </div>
           </div>
         </div>
