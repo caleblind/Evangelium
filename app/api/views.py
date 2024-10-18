@@ -7,19 +7,12 @@ from django.http             import JsonResponse, HttpResponse
 from rest_framework.parsers  import JSONParser
 from rest_framework.response import Response
 import requests 
-
 #sign up
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from django.contrib import messages
-
 #user_sign_in imports
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
-#logout
-from django.contrib.auth import logout
 
 def missionaries(request):
    missionary_data = Missionary.objects.all()
@@ -40,7 +33,8 @@ def users(request):
       'missionaries': missionary_data,
    }
    return render(request, 'users.html', user_data)
-def christian(request):
+
+def connections_list(request):
    church_data = Church.objects.all()
    missionary_data = Missionary.objects.all()
 
@@ -48,9 +42,9 @@ def christian(request):
       'churches': church_data,
       'missionaries': missionary_data,
    }
-   return render(request, 'christian.html', context = data)
+   return render(request, 'connections_list.html', context = data)
 
-def login_page(request):
+def login(request):
     if request.user.is_authenticated:
         return redirect('connections_list')
     
@@ -69,15 +63,15 @@ def login_page(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login_page')
+    return redirect('login')
 
-def signup_page(request):
+def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Your account has been created. Please log in.')
-            return redirect('login_page')
+            return redirect('login')
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
