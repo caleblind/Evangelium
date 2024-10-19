@@ -24,5 +24,5 @@ in the VSCode git config menu if needed. (Update this if I'm wrong. ;))
 
 Current hooks that exist:
 
-1. a pre-push hook, mainly checks for basic formatting mistakes things like that
-2. a pre-commit hook to keep things formatted pretty
+1. a pre-push hook to prevent accidental push to main and lint your code before sending
+   off to github
