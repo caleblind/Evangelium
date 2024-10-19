@@ -34,6 +34,16 @@ def users(request):
    }
    return render(request, 'users.html', user_data)
 
+def matching(request):
+   church_data = Church.objects.all()
+   missionary_data = Missionary.objects.all()
+
+   data={
+      'churches': church_data,
+      'missionaries': missionary_data,
+   }
+   return render(request, 'matching.html', context = data)
+
 def connections_list(request):
    church_data = Church.objects.all()
    missionary_data = Missionary.objects.all()
@@ -43,7 +53,7 @@ def connections_list(request):
       'missionaries': missionary_data,
    }
    return render(request, 'connections_list.html', context = data)
-
+  
 def login(request):
     if request.user.is_authenticated:
         return redirect('connections_list')

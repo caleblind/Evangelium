@@ -1,4 +1,4 @@
 django
 djangorestframework
-requests
+django-bootstrap-v5
 pylint[spelling]
