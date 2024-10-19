@@ -4,7 +4,7 @@ init-hook='import sys; sys.path.append("./app")'
 
 [MESSAGES CONTROL]
 # Disable warnings that might not be relevant for beginners
-disable=missing-docstring, invalid-name, too-few-public-methods, no-self-use
+disable=missing-docstring, invalid-name, too-few-public-methods
 
 [FORMAT]
 # Control line length for better readability
