@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-- [ ] HTML/CSS/JS passes Prettifier
+- [ ] HTML/CSS/JS passes Prettier
 - [ ] Python passes Pylint
 - [ ] Code is commented
 - [ ] Code fulfills the requirements of the issue it is related to
