@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     #My Apps
     'rest_framework',
     'api',
+    'bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'saltnlight.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
