@@ -8,7 +8,6 @@ urlpatterns = [
    path('missionaries/', views.missionaries, name = 'missionaries'),
    path('churches/', views.churches, name = 'churches'),
    path('users/', views.users, name = 'users'),
-   path('christian/', views.christian, name = 'christian'),
    path('connections_list/', views.connections_list, name = 'connections_list'),
 
    path('matching/', views.matching, name = 'matching'),
