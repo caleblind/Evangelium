@@ -9,7 +9,7 @@ assignees: ''
 
 - [ ] HTML/CSS/JS passes Prettier
 - [ ] Python passes Pylint
-- [ ] Code is commented
+- [ ] Functions are commented
 - [ ] Code fulfills the requirements of the issue it is related to
 - [ ] Code appears to functions properly
 - [ ] Code integrates with existing code
