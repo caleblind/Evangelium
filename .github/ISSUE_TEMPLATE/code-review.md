@@ -7,6 +7,9 @@ assignees: ''
 
 ---
 
-- [ ] Verifying coding standards
-- [ ] Evaluating efficiency
-- [ ] Ensuring correctness
+- [ ] HTML/CSS/JS passes Prettifier
+- [ ] Python passes Pylint
+- [ ] Code is commented
+- [ ] Code fulfills the requirements of the issue it is related to
+- [ ] Code appears to functions properly
+- [ ] Code integrates with existing code
