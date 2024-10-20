@@ -2,6 +2,8 @@
 from django.contrib.auth import authenticate, login as django_login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from .models import Missionary, Church
 
 # Gets all missionary objects and renders the data on missionaries.html
@@ -70,3 +72,16 @@ def login(request):
 def logout_view(request):
    logout(request)
    return redirect('login')
+
+@login_required
+def home(request):
+   return render(request,"home.html")
+
+def authView(request):
+   if request.method =="POST":
+      form = UserCreationForm(request.POST or None)
+      if form.is_valid():
+         form.save()
+   else:
+      form = UserCreationForm()
+   return render(request, "registration/signup.html",{"form": form})
