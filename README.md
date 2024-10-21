@@ -1,6 +1,6 @@
-#Welcome to Salt & Light
+# Welcome to Salt & Light
 
-###How to run a local server
+### How to run a local server
 
 Steps 3-5 should only be necessary the first time you do it.
 1. Access the repository on VS Code
@@ -10,7 +10,7 @@ Steps 3-5 should only be necessary the first time you do it.
 5. Run the command `pip install -r ./requirements.txt`
 6. Run the command `python3 manage.py runserver`
 
-###:sparkles: Githooks setup :sparkles:
+### :sparkles: Githooks setup :sparkles:
 
 Githooks are awesome! They keep the code nice and clean and your QA process short
 and sweet. Hooks run before things like commit and push to keep you from forgetting
