@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0004_church_pastor_name'),
+        ('BaseApp', '0004_church_pastor_name'),
     ]
 
     operations = [
