@@ -15,8 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls    import path, include
+from rest_framework.routers import DefaultRouter
+from BaseApp.views import UserProfileViewSet
+
+router = DefaultRouter()
+router.register(r'profiles', UserProfileViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('api.urls'))
+    path('', include(router.urls)),
+
+    path('profile/<str:username>/', profile_view, name='profile'),
+    path('profile/edit/', edit_profile_view, name='edit_profile'),
+    path('api/profile/<str:username>/', profile_api_view, name='profile_api'),
+    path('api/profile/edit/', edit_profile_api_view, name='edit_profile_api'),
 ]

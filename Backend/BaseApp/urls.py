@@ -8,4 +8,6 @@ urlpatterns = [
    path("matching/", views.matching, name='matching'),
    path('', views.authView, name ="authView"),
    path("accounts/", include("django.contrib.auth.urls")),
+   path('saltnlight/', include('saltnlight.urls')),  # Add this line to include the saltnlight URLs
+
 ]

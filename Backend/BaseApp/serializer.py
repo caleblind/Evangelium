@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models        import Missionary, Church
+from .models        import Missionary, Church, UserProfile
 
 #Serializer class for missionaries
 class MissionarySerializer(serializers.ModelSerializer):
@@ -14,3 +14,8 @@ class ChurchSerializer(serializers.ModelSerializer):
       model  = Church
       fields = ('id', 'church_name', 'pastor_name', 'church_address',
                 'church_number', 'email_address')
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ["profile_picture", "description", "tags"]
