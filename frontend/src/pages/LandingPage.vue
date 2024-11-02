@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div class="landingpage">
     <HeroSection />
     <AboutUsSection />
     <BenefitsSection />
