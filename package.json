@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.5.12",
+    "axios": "^1.7.7",
+    "vue": "^3.5.12"
+  },
+  "scripts": {
+    "serve": "vue-cli-service serve"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8"
+  }
+}
