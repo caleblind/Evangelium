@@ -2,7 +2,7 @@
 
 import { createApp } from 'vue';
 import App from './App.vue'; // Root Vue component
-import router from './router'; // Vue Router configuration
+import router from './src/router.js'; // Vue Router configuration
 import store from './store'; // Vuex store (optional, for state management)
 import api from './api'; // Axios instance for API requests
 
