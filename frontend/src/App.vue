@@ -22,3 +22,8 @@ export default {
   components: {},
 };
 </script>
+
+<style scoped>
+.app {
+}
+</style>
