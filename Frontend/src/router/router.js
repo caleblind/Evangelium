@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
-import AppHome from "./components/AppHome.vue";
-import AppLogin from "./components/AppLogin.vue";
-import UserProfile from './components/UserProfile.vue';
-
+import AppLogin from "@/pages/AppLogin.vue";
+import UserProfile from "@/pages/UserProfile.vue";
+import LandingPage from "@/pages/LandingPage.vue";
 
 const routes = [
-  { path: "/", component: AppHome },
+  { path: "/", component: LandingPage },
   { path: "/AppLogin", component: AppLogin },
   { path: "/UserProfile", component: UserProfile },
+  { path: "/LandingPage", component: LandingPage },
 ];
 
 const router = createRouter({

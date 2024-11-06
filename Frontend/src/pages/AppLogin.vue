@@ -33,7 +33,7 @@ export default {
 
 <style scoped>
 .background-image {
-  background-image: url("@/assets/world.jpg");
+  background-image: url("@/assets/pictures/world.jpg");
   background-size: cover;
   background-position: center;
   height: 100vh;

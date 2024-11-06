@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
+import router from "./router/router";
+import "./assets/styles.css"; //IMport global style
 
 const app = createApp(App);
 

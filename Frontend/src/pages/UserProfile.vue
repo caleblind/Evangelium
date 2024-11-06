@@ -91,6 +91,7 @@
  import axios from "axios";
  
  export default {
+  name: "UserProfile",
    data() {
      return {
        profile: {
@@ -107,7 +108,7 @@
        connections: [],
        isFollowing: false,
        isEditing: false,
-       defaultImage: require("@/assets/defaultProfilePicture.png")
+       defaultImage: require("@/assets/pictures/defaultProfilePicture.png")
      };
    },
    methods: {
@@ -187,7 +188,7 @@
  
  <style scoped>
  .background-image {
-   background-image: url("@/assets/defaultBackground.jpg");
+  background-image: url("@/assets/pictures/defaultBackground.jpg");
    background-size: cover;
    background-position: center;
    min-height: 100vh;
