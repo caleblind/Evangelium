@@ -6,7 +6,7 @@ import os
 
 # Define paths
 pylint_config = ".pylintrc"
-project_path = "app/saltnlight"
+project_path = "Backend/"
 
 # Read from stdin to get the references being pushed
 for line in sys.stdin:
@@ -37,4 +37,3 @@ if result.returncode != 0:
     sys.exit(1)
 
 print("Pylint passed. Proceeding with push.")
-
