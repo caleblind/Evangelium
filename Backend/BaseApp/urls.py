@@ -9,10 +9,5 @@ router = routers.DefaultRouter()
 router.register('missionary', views.MissionaryViewSet)
 
 urlpatterns = [
-   path('', include(router.urls)),
-   path('auth/', views.authView, name ="authView"),
-   path('accounts/', include("django.contrib.auth.urls")),
-   path('createaccount/', views.account_creation, name = "account_creation" ),
-   path('userlogin/', views.user_login, name = "user_login"),
-   path('userprofile/', views.user_profile, name = "user_profile"),
+   path('', include(router.urls))
 ]

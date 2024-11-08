@@ -1,5 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
-#from rest_framework.decorators import api_view, permission_classes, authentication_classes
+#from rest_framework.decorators import api_view, permission_classes,\
+#                                      authentication_classes
 #from django.contrib.auth import login, logout
 #from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
