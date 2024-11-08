@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth import authenticate
 from .models import User, Supporter, Missionary,\
                     Tag, TagRecord, SearchHistory, ExternalMedia
 
@@ -44,3 +45,11 @@ class ExternalMediaSerializer(serializers.ModelSerializer):
    class Meta:
       model  = ExternalMedia
       fields = '__all__'
+
+# Serializer class for user login
+#class LoginSerializer(serializers.Serializer):
+#   email = serializers.EmailField(max_length=255)
+#   password = serializers.CharField(max_length=128)
+
+   # Authenticates user with proided email and password
+#   def validate(self, data):
