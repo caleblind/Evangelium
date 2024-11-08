@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Missionary, Church
+from .models import Missionary, Supporter
 
 #Registering tables into admin/
 admin.site.register(Missionary)
-admin.site.register(Church)
+admin.site.register(Supporter)
