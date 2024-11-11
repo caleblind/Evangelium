@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "primeicons": "^7.0.0",
+    "primevue": "^4.2.1"
+  }
 }

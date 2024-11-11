@@ -6,7 +6,7 @@
         <a href="#">About Us</a>
         <a href="#">The Team</a>
         <a href="#">FAQ</a>
-        <button class="login-btn">Log In</button>
+        <button class="login-btn" @click="goToLogin">Log In</button>
       </nav>
     </header>
 
@@ -37,11 +37,17 @@ export default {
   methods: {
     getStarted() {
       // Handle Get Started logic
+      this.$router.push("/AccountCreation");
       console.log("Get Started clicked");
     },
     learnMore() {
       // Handle Learn More logic
       console.log("Learn More clicked");
+    },
+    goToLogin() {
+      // Programmatically navigate to the login page
+      this.$router.push("/AppLogin");
+      console.log("Get Started clicked");
     },
   },
   name: "HeroSection",
