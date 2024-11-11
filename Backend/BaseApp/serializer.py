@@ -1,5 +1,5 @@
 from rest_framework import serializers
-#from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate
 from .models import User, Supporter, Missionary,\
                     Tag, TagRecord, SearchHistory, ExternalMedia
 
@@ -47,9 +47,28 @@ class ExternalMediaSerializer(serializers.ModelSerializer):
       fields = '__all__'
 
 # Serializer class for user login
-#class LoginSerializer(serializers.Serializer):
-#   email = serializers.EmailField(max_length=255)
-#   password = serializers.CharField(max_length=128)
+class LoginSerializer(serializers.Serializer):
+   email = serializers.EmailField(max_length=255)
+   password = serializers.CharField(max_length=128)
 
-   # Authenticates user with proided email and password
-#   def validate(self, data):
+   # Validates user login
+   def validate(self, attrs):
+      email = attrs.get("email", None)
+      password = attrs.get("password", None)
+      if email is None:
+         raise serializers.ValidationError("An email is required to log in.")
+      if password is None:
+         raise serializers.ValidationError("A password is required to log in.")
+
+      user = authenticate(username=email, password=password)
+
+      if user is None:
+         raise serializers.ValidationError("A user with this email\
+                                           and password was not found.")
+      return user
+
+   # Placeholders to satisfy pylint warnings about abstract requirements
+   def create(self, validated_data):
+      pass
+   def update(self, instance, validated_data):
+      pass
