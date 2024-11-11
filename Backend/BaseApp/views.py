@@ -1,32 +1,55 @@
-# Imports
-from django.contrib.auth import logout
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
-from .models import Missionary, Church
+from rest_framework.viewsets import ModelViewSet
+#from rest_framework.decorators import api_view, permission_classes,\
+#                                      authentication_classes
+#from django.contrib.auth import login, logout
+#from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+from .models import User, Supporter, Missionary,\
+                    Tag, TagRecord, SearchHistory,\
+                    ExternalMedia
+from .serializer import UserSerializer, SupporterSerializer,\
+                        MissionarySerializer, TagSerializer,\
+                        TagRecordSerializer, SeachHistorySerializer,\
+                        ExternalMediaSerializer
 
-# Gets all church and missionary objects and renders the data on matching.html
-@login_required
-def matching(request):
-   church_data = Church.objects.all()
-   missionary_data = Missionary.objects.all()
+# API viewset for Users that performs CRUD operations
+class UserViewSet(ModelViewSet):
+   queryset = User.objects.all()
+   serializer_class = UserSerializer
+   permission_classes = [IsAuthenticated]
 
-   data = {
-       'churches': church_data,
-       'missionaries': missionary_data,
-   }
-   return render(request, 'matching.html', context=data)
+# API viewset for Supporters that performs CRUD operations
+class SupporterViewSet(ModelViewSet):
+   queryset = Supporter.objects.all()
+   serializer_class = SupporterSerializer
+   permission_classes = [IsAuthenticated]
 
-@login_required
-def home(request):
-   return render(request,"matching.html")
+# API viewset for Missionaries that performs CRUD operations
+class MissionaryViewSet(ModelViewSet):
+   queryset = Missionary.objects.all()
+   serializer_class = MissionarySerializer
+   permission_classes = [IsAuthenticated]
 
-def authView(request):
-   if request.method =="POST":
-      form = UserCreationForm(request.POST or None)
-      if form.is_valid():
-         form.save()
-         return redirect("/accounts/login/")
-   else:
-      form = UserCreationForm()
-   return render(request, "registration/signup.html",{"form": form})
+# API viewset for Tags that performs CRUD operations
+class TagViewSet(ModelViewSet):
+   queryset = Tag.objects.all()
+   serializer_class = TagSerializer
+   permission_classes = [IsAuthenticated]
+
+# API viewset for Tag Records that performs CRUD operations
+class TagRecordViewSet(ModelViewSet):
+   queryset = TagRecord.objects.all()
+   serializer_class = TagRecordSerializer
+   permission_classes = [IsAuthenticated]
+
+# API viewset for Search History that performs CRUD operations
+class SearchHistoryViewSet(ModelViewSet):
+   queryset = SearchHistory.objects.all()
+   serializer_class = SeachHistorySerializer
+   permission_classes = [IsAuthenticated]
+
+# API viewset for External Media that performs CRUD operations
+class ExternalMediaViewSet(ModelViewSet):
+   queryset = ExternalMedia.objects.all()
+   serializer_class = ExternalMediaSerializer
+   permission_classes = [IsAuthenticated]
