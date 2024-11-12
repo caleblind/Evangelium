@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 #                                      authentication_classes
 from django.contrib.auth import login  #logout
 #from rest_framework.authentication import SessionAuthentication
-#from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import User, Supporter, Missionary,\
                     Tag, TagRecord, SearchHistory,\
                     ExternalMedia
@@ -60,6 +60,7 @@ class ExternalMediaViewSet(ModelViewSet):
 
 
 # API view for validating user login
+@ensure_csrf_cookie
 class LoginAPIView(APIView):
    serializer_class = LoginSerializer
    permission_classes = [AllowAny]

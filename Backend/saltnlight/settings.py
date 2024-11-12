@@ -57,10 +57,24 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-#List of specified origins that are allowed to perform cross-domain communicatino
-CORS_ORIGIN_WHITELIST = [
+# Session Authentication Configurations
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+# CORS configurations
+CORS_ALLOWED_ORIGINS = [
    'http://localhost:8080',
 ]
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF configurations
+CSRF_TRUSTED_ORIGIN = ['http://localhost:8080',]
 
 ROOT_URLCONF = 'saltnlight.urls'
 
