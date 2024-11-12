@@ -31,7 +31,7 @@ class User(AbstractBaseUser):
    email = models.EmailField(max_length=254, unique=True, null=False)
    password = models.CharField(max_length=128)
    user_type = models.CharField(max_length=15)
-   profile_picture = models.URLField(max_length=225, null=True, blank=True)
+   #profile_picture = models.URLField(max_length=225, null=True, blank=True)
    description = models.TextField(null=True, blank=True)
    phone_number = models.CharField(max_length=100, null=False)
 

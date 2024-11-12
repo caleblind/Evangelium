@@ -74,7 +74,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF configurations
-CSRF_TRUSTED_ORIGIN = ['http://localhost:8080',]
+CSRF_TRUSTED_ORIGIN = ['http://localhost:8080']
 
 ROOT_URLCONF = 'saltnlight.urls'
 

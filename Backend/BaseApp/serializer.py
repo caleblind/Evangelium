@@ -7,7 +7,7 @@ from .models import User, Supporter, Missionary,\
 class UserSerializer(serializers.ModelSerializer):
    class Meta:
       model = User
-      fields = ('id', 'email', 'user_type', 'profile_picture',
+      fields = ('id', 'email', 'password', 'user_type', #'profile_picture',#
                 'description', 'phone_number')
 
 # Serializer class for Supporters

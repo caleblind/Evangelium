@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 #                                      authentication_classes
 from django.contrib.auth import login  #logout
 #from rest_framework.authentication import SessionAuthentication
-from django.views.decorators.csrf import ensure_csrf_cookie
+#from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import User, Supporter, Missionary,\
                     Tag, TagRecord, SearchHistory,\
                     ExternalMedia
@@ -67,7 +67,6 @@ class LoginAPIView(APIView):
    # Logs user in and creates a session
    def post(self, request):
       serializer = LoginSerializer(data=request.data)
-      ensure_csrf_cookie(request)
       if serializer.is_valid():
          user = serializer.validated_data
          login(request, user)
