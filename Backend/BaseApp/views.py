@@ -60,7 +60,6 @@ class ExternalMediaViewSet(ModelViewSet):
 
 
 # API view for validating user login
-@ensure_csrf_cookie
 class LoginAPIView(APIView):
    serializer_class = LoginSerializer
    permission_classes = [AllowAny]
@@ -68,6 +67,7 @@ class LoginAPIView(APIView):
    # Logs user in and creates a session
    def post(self, request):
       serializer = LoginSerializer(data=request.data)
+      ensure_csrf_cookie(request)
       if serializer.is_valid():
          user = serializer.validated_data
          login(request, user)
