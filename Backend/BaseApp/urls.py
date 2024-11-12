@@ -1,17 +1,20 @@
 from django.urls import path, include
 from rest_framework import routers
-from . import views
+from .views import LoginAPIView, UserViewSet, SupporterViewSet,\
+                   MissionaryViewSet, TagViewSet, TagRecordViewSet,\
+                   SearchHistoryViewSet, ExternalMediaViewSet
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
-router.register('user', views.UserViewSet)
-router.register('supporter', views.SupporterViewSet)
-router.register('missionary', views.MissionaryViewSet)
-router.register('tag', views.TagViewSet)
-router.register('tagrecord', views.TagRecordViewSet)
-router.register('searchhistory', views.SearchHistoryViewSet)
-router.register('externalmedia', views.ExternalMediaViewSet)
+router.register('user', UserViewSet)
+router.register('supporter', SupporterViewSet)
+router.register('missionary', MissionaryViewSet)
+router.register('tag', TagViewSet)
+router.register('tagrecord', TagRecordViewSet)
+router.register('searchhistory', SearchHistoryViewSet)
+router.register('externalmedia', ExternalMediaViewSet)
 
 urlpatterns = [
-   path('', include(router.urls))
+   path('', include(router.urls)),
+   path('login/', LoginAPIView.as_view(), name="login"),
 ]
