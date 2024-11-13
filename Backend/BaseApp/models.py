@@ -115,4 +115,3 @@ class ExternalMedia(models.Model):
    # Overwrites the automatic plural form of words in admin
    class Meta:
       verbose_name_plural = "External Media"
-   
