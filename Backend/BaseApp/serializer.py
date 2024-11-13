@@ -60,7 +60,6 @@ class LoginSerializer(serializers.Serializer):
       if password is None:
          raise serializers.ValidationError("A password is required to log in.")
       user = authenticate(email=email, password=password)
-      print(email, password)
       if user is None:
          raise serializers.ValidationError(
             "A user with this email and password was not found."
@@ -72,3 +71,26 @@ class LoginSerializer(serializers.Serializer):
       pass
    def update(self, instance, validated_data):
       pass
+
+# Serializer class for user registration
+class RegistrationSerializer(serializers.ModelSerializer):
+   password = serializers.CharField(
+      max_length=128, min_length=8, write_only=True, required=True
+   )
+
+   class Meta:
+      model = User
+      fields = ('email', 'password', 'user_type',
+                'description', 'phone_number')
+
+   # Handles user creation with validated data
+   def create(self, validated_data):
+      validated_data.pop('password_confirm', None)
+      user = User.objects.create_user(
+         email=validated_data['email'],
+         password=validated_data['password'],
+         user_type=validated_data.get('user_type', ''),
+         description=validated_data.get('description', ''),
+         phone_number=validated_data.get('phone_number', '')
+      )
+      return user
