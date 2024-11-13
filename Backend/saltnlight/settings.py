@@ -57,10 +57,48 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-#List of specified origins that are allowed to perform cross-domain communicatino
-CORS_ORIGIN_WHITELIST = [
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+        'django.contrib.auth.backends.ModelBackend',
+    ]
+
+# Custom user model auth configuration
+AUTH_USER_MODEL = 'BaseApp.User'
+
+# Session authentication configurations
+SESSION_ENGINE = 'django.contrib.sessions.backends.db' 
+SESSION_COOKIE_NAME = 'sessionid'  
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  
+SESSION_COOKIE_SECURE = False  
+SESSION_COOKIE_HTTPONLY = False
+SESSION_SAVE_EVERY_REQUEST = True
+
+# CSRF configurations
+CSRF_COOKIE_NAME = 'csrftoken'  
+CSRF_COOKIE_SECURE = False  
+CSRF_COOKIE_HTTPONLY = False  
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8080',  
+]
+
+# Session Authentication Configurations
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+# CORS configurations
+CORS_ALLOWED_ORIGINS = [
    'http://localhost:8080',
 ]
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF configurations
+CSRF_TRUSTED_ORIGIN = ['http://localhost:8080']
 
 ROOT_URLCONF = 'saltnlight.urls'
 
@@ -149,5 +187,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LOGIN_REDIRECT_URL = '/matching/'

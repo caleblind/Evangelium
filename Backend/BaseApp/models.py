@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,\
+                                       PermissionsMixin
 
 # Custom djnago user manager for custom django user model
 class UserManager(BaseUserManager):
@@ -10,7 +11,7 @@ class UserManager(BaseUserManager):
       if not email:
          raise ValueError("The Email field must be set")
       email = self.normalize_email(email)
-      user  = self.model(email=email, **extra_fields)
+      user = self.model(email=email, **extra_fields)
       user.set_password(password)
       user.save(using=self._db)
       return user
@@ -18,7 +19,7 @@ class UserManager(BaseUserManager):
    # Handles superuser creation for admins (django admin page users)
    def create_superuser(self, email, password=None, **extra_fields):
       extra_fields.setdefault('is_staff', True)
-      extra_fields.setdefault('is_super', True)
+      extra_fields.setdefault('is_superuser', True)
       if extra_fields.get("is_staff") is not True:
          raise ValueError("Superuser must have is_staff=True.")
       if extra_fields.get("is_superuser") is not True:
@@ -27,17 +28,21 @@ class UserManager(BaseUserManager):
       return self.create_user(email, password, **extra_fields)
 
 # Custom django user model
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
    email = models.EmailField(max_length=254, unique=True, null=False)
    password = models.CharField(max_length=128)
    user_type = models.CharField(max_length=15)
-   profile_picture = models.URLField(max_length=225, null=True, blank=True)
+   #profile_picture = models.URLField(max_length=225, null=True, blank=True)
    description = models.TextField(null=True, blank=True)
    phone_number = models.CharField(max_length=100, null=False)
+   is_staff = models.BooleanField(default=True)
+   is_superuser = models.BooleanField(default=False)
+   is_active = models.BooleanField(default=True)
 
    # Links the custom django user manager to this custom user
-   objects = UserManager()
    USERNAME_FIELD = 'email'
+   REQUIRED_FIELDS = []
+   objects = UserManager()
 
    # Returns user email
    def __str__(self):
@@ -69,6 +74,10 @@ class Missionary(models.Model):
    def __str__(self):
       return f"Missionary: {self.full_name}"
 
+   # Overwrites the automatic plural form of words in admin
+   class Meta:
+      verbose_name_plural = "Missionaries"
+
 # Defines the Tag table
 class Tag(models.Model):
    name = models.CharField(max_length=100, null=False)
@@ -81,6 +90,10 @@ class TagRecord(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    added_date = models.DateTimeField(auto_now_add=True)
 
+   # Overwrites the automatic plural form of words in admin
+   class Meta:
+      verbose_name_plural = "Tag Records"
+
 # Defines Search History table
 class SearchHistory(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -88,9 +101,17 @@ class SearchHistory(models.Model):
    search_text = models.TextField(null=False)
    search_parameters = models.JSONField()
 
+   # Overwrites the automatic plural form of words in admin
+   class Meta:
+      verbose_name_plural = "Search History"
+
 # Defines External Media table
 class ExternalMedia(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    media_url = models.URLField(max_length=255)
    description = models.TextField()
    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+   # Overwrites the automatic plural form of words in admin
+   class Meta:
+      verbose_name_plural = "External Media"
