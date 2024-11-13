@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 #authentication_classes
-from django.contrib.auth import login, authenticate  #logout
+from django.contrib.auth import login, authenticate, logout
 #from rest_framework.authentication import SessionAuthentication
 #from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import User, Supporter, Missionary,\
@@ -72,6 +72,14 @@ class LoginView(APIView):
          print('login successful')
          return Response(serializer.data, status=status.HTTP_200_OK)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# API view for user logout
+class LogoutView(APIView):
+   permission_classes = [IsAuthenticated]
+   def post(self, request):
+      logout(request)
+      return Response({'message':'logout successful'},
+                      status=status.HTTP_200_OK)
 
 @api_view(('GET',))
 @permission_classes((AllowAny,))
