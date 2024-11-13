@@ -3,9 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.decorators import api_view, permission_classes
-#authentication_classes
-from django.contrib.auth import login, authenticate, logout
+#from rest_framework.decorators import api_view, permission_classes,
+# authentication_classes
+from django.contrib.auth import login, logout #authenticate
 #from rest_framework.authentication import SessionAuthentication
 #from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import User, Supporter, Missionary,\
@@ -81,9 +81,9 @@ class LogoutView(APIView):
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
 
-@api_view(('GET',))
-@permission_classes((AllowAny,))
-def broke_login(request):
-   user = authenticate(username='jabot1@gmail.com', password='jabot')
-   print (user)
-   return Response(data='okay')
+#@api_view(('GET',))
+#@permission_classes((AllowAny,))
+#def broke_login(request):
+#   user = authenticate(username='jabot1@gmail.com', password='jabot')
+#   print (user)
+#   return Response(data='okay')
