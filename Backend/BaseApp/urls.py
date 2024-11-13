@@ -1,8 +1,8 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import LoginAPIView, UserViewSet, SupporterViewSet,\
+from .views import LoginView, UserViewSet, SupporterViewSet,\
                    MissionaryViewSet, TagViewSet, TagRecordViewSet,\
-                   SearchHistoryViewSet, ExternalMediaViewSet
+                   SearchHistoryViewSet, ExternalMediaViewSet, broke_login
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
@@ -16,5 +16,6 @@ router.register('externalmedia', ExternalMediaViewSet)
 
 urlpatterns = [
    path('', include(router.urls)),
-   path('login/', LoginAPIView.as_view(), name="login"),
+   path('login/', LoginView.as_view(), name="login"),
+   path('broke/', broke_login, name="broke")
 ]

@@ -7,7 +7,7 @@ from .models import User, Supporter, Missionary,\
 class UserSerializer(serializers.ModelSerializer):
    class Meta:
       model = User
-      fields = ('id', 'email', 'password', 'user_type', #'profile_picture',#
+      fields = ('id', 'email', 'password', 'user_type', #'profile_picture',
                 'description', 'phone_number')
 
 # Serializer class for Supporters
@@ -59,12 +59,12 @@ class LoginSerializer(serializers.Serializer):
          raise serializers.ValidationError("An email is required to log in.")
       if password is None:
          raise serializers.ValidationError("A password is required to log in.")
-
-      user = authenticate(username=email, password=password)
-
+      user = authenticate(email=email, password=password)
+      print(email, password)
       if user is None:
-         raise serializers.ValidationError("A user with this email\
-                                           and password was not found.")
+         raise serializers.ValidationError(
+            "A user with this email and password was not found."
+         )
       return user
 
    # Placeholders to satisfy pylint warnings about abstract requirements
