@@ -74,6 +74,10 @@ class Missionary(models.Model):
    def __str__(self):
       return f"Missionary: {self.full_name}"
 
+   # Overwrites the automatic plural form of words in admin
+   class Meta:
+      verbose_name_plural = "Missionaries"
+
 # Defines the Tag table
 class Tag(models.Model):
    name = models.CharField(max_length=100, null=False)
@@ -86,6 +90,10 @@ class TagRecord(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    added_date = models.DateTimeField(auto_now_add=True)
 
+   # Overwrites the automatic plural form of words in admin
+   class Meta:
+      verbose_name_plural = "Tag Records"
+
 # Defines Search History table
 class SearchHistory(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -93,9 +101,18 @@ class SearchHistory(models.Model):
    search_text = models.TextField(null=False)
    search_parameters = models.JSONField()
 
+   # Overwrites the automatic plural form of words in admin
+   class Meta:
+      verbose_name_plural = "Search History"
+
 # Defines External Media table
 class ExternalMedia(models.Model):
    user = models.ForeignKey(User, on_delete=models.CASCADE)
    media_url = models.URLField(max_length=255)
    description = models.TextField()
    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+   # Overwrites the automatic plural form of words in admin
+   class Meta:
+      verbose_name_plural = "External Media"
+   
