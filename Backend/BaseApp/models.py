@@ -81,7 +81,7 @@ class Missionary(models.Model):
 # Defines the Tag table
 class Tag(models.Model):
    name = models.CharField(max_length=100, null=False)
-   description = models.TextField()
+   description = models.TextField(blank=True)
    is_predefined = models.BooleanField(default=True)
 
 # Defines the Tag Record table
