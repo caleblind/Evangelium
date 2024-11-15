@@ -18,8 +18,7 @@ from .serializer import UserSerializer, SupporterSerializer,\
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
-   search_fields = ['user_type','phone_number']
-   filter_backends = (filters.SearchFilter,)
+   filterset_fields = ['user_type','phone_number']
    queryset = User.objects.all()
    serializer_class = UserSerializer
    permission_classes = [IsAuthenticated]
