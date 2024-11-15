@@ -103,6 +103,7 @@ class RegistrationView(APIView):
 User = get_user_model()
 class UserDetailView(APIView):
    permission_classes = [IsAuthenticated]
+
    # Retrieves a specific user by thier user ID
    def get(self, _request, pk):
       try:
