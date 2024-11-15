@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+#import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,22 +38,70 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
 
     #My Apps
     'rest_framework',
     'BaseApp',
     'bootstrap5',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+        'django.contrib.auth.backends.ModelBackend',
+    ]
+
+# Custom user model auth configuration
+AUTH_USER_MODEL = 'BaseApp.User'
+
+# Session authentication configurations
+SESSION_ENGINE = 'django.contrib.sessions.backends.db' 
+SESSION_COOKIE_NAME = 'sessionid'  
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  
+SESSION_COOKIE_SECURE = False  
+SESSION_COOKIE_HTTPONLY = False
+SESSION_SAVE_EVERY_REQUEST = True
+
+# CSRF configurations
+CSRF_COOKIE_NAME = 'csrftoken'  
+CSRF_COOKIE_SECURE = False  
+CSRF_COOKIE_HTTPONLY = False  
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8080',  
+]
+
+# Session Authentication Configurations
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'
+    ],
+}
+
+# CORS configurations
+CORS_ALLOWED_ORIGINS = [
+   'http://localhost:8080',
+]
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF configurations
+CSRF_TRUSTED_ORIGIN = ['http://localhost:8080']
 
 ROOT_URLCONF = 'saltnlight.urls'
 
@@ -84,7 +133,22 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+#    'postgres': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'postgres',
+#        'USER': 'postgres',
+#        'PASSWORD': 'saltnlight',
+#        'HOST': 'localhost',
+#        'PORT': '5432',
+#    },
+#    'sqlite': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3'
+#    }
+#},
 
+#if os.getenv('USE_POSTGRES'):
+#    DATABASES['default'] = DATABASES['postgres']
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -126,5 +190,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LOGIN_REDIRECT_URL = '/matching/'
