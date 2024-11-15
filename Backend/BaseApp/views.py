@@ -25,14 +25,16 @@ class UserViewSet(ModelViewSet):
 
 # Supporter viewset that performs CRUD operations
 class SupporterViewSet(ModelViewSet):
-   filterset_fields = ['name','denomination','street_address','city','state','country']
+   filterset_fields = ['name','denomination','street_address','city',
+                       'state','country']
    queryset = Supporter.objects.all()
    serializer_class = SupporterSerializer
    permission_classes = [IsAuthenticated]
 
 # Missionary viewset performs CRUD operations
 class MissionaryViewSet(ModelViewSet):
-   filterset_fields = ['full_name','denomination','country','years_of_experience']
+   filterset_fields = ['full_name','denomination','country',
+                       'years_of_experience']
    queryset = Missionary.objects.all()
    serializer_class = MissionarySerializer
    permission_classes = [IsAuthenticated]
