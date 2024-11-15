@@ -18,30 +18,35 @@ from .serializer import UserSerializer, SupporterSerializer,\
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
+   filterset_fields = ['user_type','description','phone_number']
    queryset = User.objects.all()
    serializer_class = UserSerializer
    permission_classes = [IsAuthenticated]
 
 # Supporter viewset that performs CRUD operations
 class SupporterViewSet(ModelViewSet):
+   filterset_fields = ['name','denomination','street_address','city','state','country']
    queryset = Supporter.objects.all()
    serializer_class = SupporterSerializer
    permission_classes = [IsAuthenticated]
 
 # Missionary viewset performs CRUD operations
 class MissionaryViewSet(ModelViewSet):
+   filterset_fields = ['full_name','denomination','country','years_of_experience']
    queryset = Missionary.objects.all()
    serializer_class = MissionarySerializer
    permission_classes = [IsAuthenticated]
 
 # Tag viewset that performs CRUD operations
 class TagViewSet(ModelViewSet):
+   filterset_fields = ['name','description','is_predefined']
    queryset = Tag.objects.all()
    serializer_class = TagSerializer
    permission_classes = [IsAuthenticated]
 
 # Tag record viewset that performs CRUD operations
 class TagRecordViewSet(ModelViewSet):
+   filterset_fields = ['tag','user','added_date']
    queryset = TagRecord.objects.all()
    serializer_class = TagRecordSerializer
    permission_classes = [IsAuthenticated]
