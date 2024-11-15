@@ -9,12 +9,12 @@
       placeholder="Your Name"
     />
 
-    <label for="country">Country of Mission:</label>
+    <label for="region">Region:</label>
     <input
       type="text"
-      v-model="missionary.country"
-      id="country"
-      placeholder="Country"
+      v-model="missionary.region"
+      id="Region"
+      placeholder="Region"
     />
 
     <label for="calling">Missionary Calling:</label>
