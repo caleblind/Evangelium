@@ -39,7 +39,7 @@ class MissionaryViewSet(ModelViewSet):
 
 # Tag viewset that performs CRUD operations
 class TagViewSet(ModelViewSet):
-   filterset_fields = ['name','description','is_predefined']
+   filterset_fields = ['tag_name','tag_description','tag_is_predefined']
    queryset = Tag.objects.all()
    serializer_class = TagSerializer
    permission_classes = [IsAuthenticated]
