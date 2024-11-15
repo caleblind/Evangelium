@@ -3,7 +3,7 @@ from rest_framework import routers
 from .views import LoginView, UserViewSet, SupporterViewSet,\
                    MissionaryViewSet, TagViewSet, TagRecordViewSet,\
                    SearchHistoryViewSet, ExternalMediaViewSet,\
-                   LogoutView, RegistrationView
+                   LogoutView, RegistrationView, UserDetailView
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
@@ -19,5 +19,6 @@ urlpatterns = [
    path('', include(router.urls)),
    path('login/', LoginView.as_view(), name="login"),
    path('logout/', LogoutView.as_view(), name="logout"),
-   path('register/', RegistrationView.as_view(), name="register")
+   path('register/', RegistrationView.as_view(), name="register"),
+   path('userdetail/<int:pk>/', UserDetailView.as_view(), name="userdetail"),
 ]

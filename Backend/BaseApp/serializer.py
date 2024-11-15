@@ -94,3 +94,19 @@ class RegistrationSerializer(serializers.ModelSerializer):
          phone_number=validated_data.get('phone_number', '')
       )
       return user
+
+# Serializer for user details
+class UserDetailSerializer(serializers.ModelSerializer):
+   supporter = SupporterSerializer(read_only=True)
+   missionary = MissionarySerializer(read_only=True)
+   tags = serializers.SerializerMethodField()
+   class Meta:
+      model = User
+      fields = ('id', 'email', 'user_type', 'description',
+                'phone_number', 'supporter', 'missionary', 'tags')
+
+   # Method to retrieve tags related to the user through TagRecord
+   def get_tags(self, obj):
+      tag_records = TagRecord.objects.filter(user=obj)
+      return TagSerializer([tag_record.tag for tag_record in tag_records],
+                           many=True).data
