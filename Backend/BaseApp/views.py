@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import User, Supporter, Missionary,\
@@ -14,7 +14,7 @@ from .serializer import UserSerializer, SupporterSerializer,\
                         MissionarySerializer, TagSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
                         ExternalMediaSerializer, LoginSerializer,\
-                        RegistrationSerializer
+                        RegistrationSerializer, UserDetailSerializer
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
@@ -98,3 +98,18 @@ class RegistrationView(APIView):
          return Response({'message':'account created successfully'},
                          status=status.HTTP_200_OK)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# API View for retrieving user details (user type, associated tags)
+User = get_user_model()
+class UserDetailView(APIView):
+   permission_classes = [IsAuthenticated]
+
+   # Retrieves a specific user by thier user ID
+   def get(self, _request, pk):
+      try:
+         user = User.objects.get(pk=pk)
+         serializer = UserDetailSerializer(user)
+         return Response(serializer.data, status=status.HTTP_200_OK)
+      except User.DoesNotExist:
+         return Response({'message':'user not found'},
+                         status=status.HTTP_404_NOT_FOUND)
