@@ -48,8 +48,10 @@
       <ul v-if="searchResults.length > 0">
         <li v-for="result in searchResults" :key="result.id">
           <strong>{{ result.email }}</strong> - {{ result.user_type }}<br />
-          <span>{{ result.description || 'No description' }}</span><br />
-          <span>{{ result.phone_number || 'No phone number' }}</span><br />
+          <span>{{ result.description || "No description" }}</span
+          ><br />
+          <span>{{ result.phone_number || "No phone number" }}</span
+          ><br />
           <hr />
         </li>
       </ul>
@@ -59,7 +61,7 @@
 </template>
 
 <script>
-import { getCsrfToken } from './axiosConfig';
+import axios from "axios";
 
 export default {
   name: "SearchPage",
@@ -67,51 +69,52 @@ export default {
     return {
       filters: {
         user_type: "", // Role (Missionary or Supporter)
-        tags: "",      // Tags to filter by
-        location: "",  // Location to filter by
+        tags: "", // Tags to filter by
+        location: "", // Location to filter by
       },
       searchResults: [], // Holds API response data
-      isLoading: false,  // Loading state indicator
-      error: null,       // Error message if request fails
+      isLoading: false, // Loading state indicator
+      error: null, // Error message if request fails
     };
   },
+
   methods: {
     fetchSearchResults() {
       this.isLoading = true;
       this.error = null;
 
       // Base URL for user data
-      const baseURL = 'http://127.0.0.1:8000/user/';
+      const baseURL = "http://127.0.0.1:8000/user/";
 
       // Construct query parameters based on filters
       const queryParams = new URLSearchParams();
 
       if (this.filters.user_type) {
-        queryParams.append('user_type', this.filters.user_type);
+        queryParams.append("user_type", this.filters.user_type);
       }
       if (this.filters.tags) {
-        queryParams.append('tags', this.filters.tags);
+        queryParams.append("tags", this.filters.tags);
       }
       if (this.filters.location) {
-        queryParams.append('location', this.filters.location);
+        queryParams.append("location", this.filters.location);
       }
 
       // Full URL with query parameters
       const url = `${baseURL}?${queryParams.toString()}`;
 
-      apiClient
+      axios
         .get(url)
-        .then(response => {
+        .then((response) => {
           this.searchResults = response.data.results || response.data;
         })
-        .catch(error => {
+        .catch((error) => {
           this.error = "Failed to load search results.";
           console.error("API Error:", error);
         })
         .finally(() => {
           this.isLoading = false;
         });
-    }
+    },
   },
 };
 </script>

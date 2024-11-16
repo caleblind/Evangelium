@@ -21,7 +21,7 @@ class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
    queryset = User.objects.all()
    serializer_class = UserSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Supporter viewset that performs CRUD operations
 class SupporterViewSet(ModelViewSet):
