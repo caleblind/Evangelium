@@ -127,7 +127,7 @@
 
 <script>
 export default {
-  name: "DonorForm",
+  name: "MissionaryForm",
   data() {
     const currentYear = new Date().getFullYear();
     return {
