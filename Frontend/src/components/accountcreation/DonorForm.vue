@@ -1,33 +1,18 @@
 <template>
   <div class="donor-form">
-    <h2>Donor Form</h2>
+    <h2>Create A Profile That Tells Your Story!</h2>
+    <h2>This is my donor file</h2>
+    <h3>Don't worry, you can update this information later</h3>
     <label for="name">Full Name:</label>
     <input type="text" v-model="donor.name" id="name" placeholder="Your Name" />
 
-    <label for="donation">Amount you want to donate:</label>
-    <input
-      type="number"
-      v-model="donor.donationAmount"
-      id="donation"
-      placeholder="Donation Amount"
-    />
-
+    <!-- Get the Missionaries Birthday, month, day then year -->
     <label for="birthdayMonth">Month:</label>
     <select v-model="donor.birthdayMonth" id="birthdayMonth">
       <option value="" disabled selected>Select a month</option>
-      <!-- Placeholder -->
-      <option value="January">January</option>
-      <option value="February">February</option>
-      <option value="March">March</option>
-      <option value="April">April</option>
-      <option value="May">May</option>
-      <option value="June">June</option>
-      <option value="July">July</option>
-      <option value="August">August</option>
-      <option value="September">September</option>
-      <option value="October">October</option>
-      <option value="November">November</option>
-      <option value="December">December</option>
+      <option v-for="month in months" :key="month" :value="month">
+        {{ month }}
+      </option>
     </select>
 
     <label for="birthdayDay">Day:</label>
@@ -46,6 +31,7 @@
       </option>
     </select>
 
+    <!-- display the birth date -->
     <p>
       Selected Date: {{ donor.birthdayMonth }} {{ donor.birthdayDay }},
       {{ donor.birthdayYear }}
@@ -53,6 +39,8 @@
 
     <label for="region">Choose a region:</label>
     <select v-model="selectedRegion" id="region">
+      <option value="" disabled selected>Select a region</option>
+      <!-- Placeholder option -->
       <option v-for="region in regions" :key="region" :value="region">
         {{ region }}
       </option>
@@ -60,6 +48,7 @@
 
     <label for="country">Choose a country:</label>
     <select v-model="selectedCountry" id="country" :disabled="!selectedRegion">
+      <option value="" disabled selected>Select a region</option>
       <option
         v-for="country in filteredCountries"
         :key="country"
@@ -68,6 +57,64 @@
         {{ country }}
       </option>
     </select>
+
+    <!-- State Dropdown -->
+    <label for="state">State:</label>
+    <select id="state" v-model="selectedState" :disabled="!selectedCountry">
+      <option value="" disabled>Select a state</option>
+      <option v-for="state in filteredStates" :key="state" :value="state">
+        {{ state }}
+      </option>
+    </select>
+
+    <!-- Bio Field -->
+    <label for="bio">Bio:</label>
+    <textarea
+      id="bio"
+      v-model="bio"
+      :maxlength="bioMaxLength"
+      placeholder="Share your story, your journey, and the impact you hope to make"
+    ></textarea>
+    <p class="char-count">
+      {{ bioMaxLength - bio.length }} characters remaining
+    </p>
+
+    <!-- choose denomination dropdown -->
+    <label for="denomination">Choose a denomination:</label>
+    <select v-model="selectedDenomination" id="denomination">
+      <option
+        v-for="denomination in denomination"
+        :key="denomination"
+        :value="denomination"
+      >
+        {{ denomination }}
+      </option>
+    </select>
+
+    <!-- retrieving the mission field -->
+    <label for="missionField">Mission Field:</label>
+    <select v-model="missionary.missionField" id="missionField">
+      <option value="" disabled selected>Select a Mission Field</option>
+      <option
+        v-for="missionField in missionFields"
+        :key="missionField"
+        :value="missionField"
+      >
+        {{ missionField }}
+      </option>
+      <option value="Custom">Other (Specify Below)</option>
+    </select>
+
+    <!-- Input field appears if "Custom" is selected -->
+    <div v-if="missionary.missionField === 'Custom'">
+      <label for="customMissionField">Specify Mission Field:</label>
+      <input
+        type="text"
+        v-model="missionary.customMissionField"
+        id="customMissionField"
+        placeholder="Enter your mission field"
+      />
+    </div>
 
     <button @click="submitForm">Submit</button>
   </div>
@@ -81,15 +128,33 @@ export default {
     return {
       donor: {
         name: "",
-        donationAmount: "",
         birthdayMonth: "", // Initially empty or full with holding value
         birthdayDay: "", // Holds the selected day
         birthdayYear: "", // Holds the selected year
       },
 
+      missionary: {
+        missionField: "", // Predefined or Custom option
+        customMissionField: "", // For specifying a custom mission field
+      },
+
+      // bio format
+      bio: "", // Bio input
+      bioMaxLength: 300, // Character limit for bio
+
       // region options
       selectedRegion: "", // Holds the selected region
       regions: ["North America", "Europe", "Asia", "Africa", "Australia"],
+
+      // denomination options
+      selectedDenomination: "", // Holds the selected region
+      denomination: [
+        "Southern Baptist",
+        "Indipendant Baptist",
+        "National Baptist Convention",
+        "Missionary Baptist",
+        "Free Will Baptist",
+      ],
 
       // country options
       selectedCountry: "", // Holds the selected country
@@ -101,13 +166,44 @@ export default {
         Africa: ["Nigeria", "Egypt", "South Africa"],
         Australia: ["Australia", "New Zealand"],
       },
+
+      // State options
+      selectedState: "",
+      states: {
+        USA: ["California", "New York", "Texas", "Florida", "Other"],
+        Canada: ["Ontario", "Quebec", "British Columbia", "Other"],
+        Mexico: ["Jalisco", "Nuevo León", "Chiapas", "Other"],
+        Germany: ["Bavaria", "Berlin", "Saxony", "Other"],
+        // Add more countries with states as needed
+      },
+
       // days and years logical features
       days: Array.from({ length: 31 }, (_, i) => i + 1), // Days from 1 to 31
       years: Array.from(
         { length: currentYear - 1900 + 1 },
         (_, i) => currentYear - i
       ), // Years from 1900 to current year
+
+      // mission field options
+      missionFields: [
+        "North America",
+        "South America",
+        "Europe",
+        "Asia",
+        "Africa",
+        "Australia",
+      ],
     };
+  },
+
+  computed: {
+    // Computed properties go here
+    filteredCountries() {
+      return this.countries[this.selectedRegion] || [];
+    },
+    filteredStates() {
+      return this.states[this.selectedCountry] || [];
+    },
   },
 
   methods: {
