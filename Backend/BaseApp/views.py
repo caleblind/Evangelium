@@ -21,7 +21,7 @@ class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
    queryset = User.objects.all()
    serializer_class = UserSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Supporter viewset that performs CRUD operations
 class SupporterViewSet(ModelViewSet):
@@ -29,7 +29,7 @@ class SupporterViewSet(ModelViewSet):
                        'state','country']
    queryset = Supporter.objects.all()
    serializer_class = SupporterSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Missionary viewset performs CRUD operations
 class MissionaryViewSet(ModelViewSet):
@@ -37,33 +37,33 @@ class MissionaryViewSet(ModelViewSet):
                        'years_of_experience']
    queryset = Missionary.objects.all()
    serializer_class = MissionarySerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Tag viewset that performs CRUD operations
 class TagViewSet(ModelViewSet):
    filterset_fields = ['tag_name','tag_description','tag_is_predefined']
    queryset = Tag.objects.all()
    serializer_class = TagSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Tag record viewset that performs CRUD operations
 class TagRecordViewSet(ModelViewSet):
    filterset_fields = ['tag','user','added_date']
    queryset = TagRecord.objects.all()
    serializer_class = TagRecordSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Search history viewset that performs CRUD operations
 class SearchHistoryViewSet(ModelViewSet):
    queryset = SearchHistory.objects.all()
    serializer_class = SeachHistorySerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # External media viewset that performs CRUD operations
 class ExternalMediaViewSet(ModelViewSet):
    queryset = ExternalMedia.objects.all()
    serializer_class = ExternalMediaSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # API view for validating user login
 @method_decorator(ensure_csrf_cookie, name='dispatch')
