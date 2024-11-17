@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
 from django.contrib.auth import login, logout, get_user_model
@@ -15,6 +15,19 @@ from .serializer import UserSerializer, SupporterSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
                         ExternalMediaSerializer, LoginSerializer,\
                         RegistrationSerializer, UserDetailSerializer
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
+
+@require_GET
+def test_get(request):
+   return JsonResponse({"message": "GET request successful!", "data": []})
+
+@csrf_exempt  # Use @csrf_exempt only for testing purposes
+@require_POST
+def test_post(request):
+   return JsonResponse({"message": "POST request successful!", "received_data": request.body.decode("utf-8")})
+
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
@@ -29,7 +42,7 @@ class SupporterViewSet(ModelViewSet):
                        'state','country']
    queryset = Supporter.objects.all()
    serializer_class = SupporterSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Missionary viewset performs CRUD operations
 class MissionaryViewSet(ModelViewSet):
@@ -37,33 +50,33 @@ class MissionaryViewSet(ModelViewSet):
                        'years_of_experience']
    queryset = Missionary.objects.all()
    serializer_class = MissionarySerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Tag viewset that performs CRUD operations
 class TagViewSet(ModelViewSet):
    filterset_fields = ['tag_name','tag_description','tag_is_predefined']
    queryset = Tag.objects.all()
    serializer_class = TagSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Tag record viewset that performs CRUD operations
 class TagRecordViewSet(ModelViewSet):
    filterset_fields = ['tag','user','added_date']
    queryset = TagRecord.objects.all()
    serializer_class = TagRecordSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # Search history viewset that performs CRUD operations
 class SearchHistoryViewSet(ModelViewSet):
    queryset = SearchHistory.objects.all()
    serializer_class = SeachHistorySerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # External media viewset that performs CRUD operations
 class ExternalMediaViewSet(ModelViewSet):
    queryset = ExternalMedia.objects.all()
    serializer_class = ExternalMediaSerializer
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
 # API view for validating user login
 @method_decorator(ensure_csrf_cookie, name='dispatch')
@@ -84,7 +97,7 @@ class LoginView(APIView):
 
 # Logout API view
 class LogoutView(APIView):
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
    def post(self, request):
       logout(request)
       return Response({'message':'logout successful'},
@@ -109,7 +122,7 @@ class RegistrationView(APIView):
 # API View for retrieving user details (user type, associated tags)
 User = get_user_model()
 class UserDetailView(APIView):
-   permission_classes = [IsAuthenticated]
+   permission_classes = [AllowAny]
 
    # Retrieves a specific user by thier user ID
    def get(self, _request, pk):
