@@ -10,6 +10,14 @@
       placeholder="Your Name"
     />
 
+    <label for="email">Email:</label>
+    <input
+      type="email"
+      v-model="missionary.email"
+      id="email"
+      placeholder="Your Email"
+    />
+
     <!-- Get the Missionaries Birthday, month, day then year -->
     <label for="birthdayMonth">Month:</label>
     <select v-model="missionary.birthdayMonth" id="birthdayMonth">
@@ -126,6 +134,7 @@
 </template>
 
 <script>
+import axios from "axios"; // import API software
 export default {
   name: "MissionaryForm",
   data() {
@@ -213,6 +222,9 @@ export default {
         "Africa",
         "Australia",
       ],
+
+      // Email field
+      email: "", // New email field
     };
   },
 
@@ -226,11 +238,47 @@ export default {
     },
   },
 
-  methods: {
-    submitForm() {
-      console.log("missionary form submitted:", this.missionary);
-      // Here, you could also emit an event to notify the parent component about the form submission.
-    },
+  async submitForm() {
+    // Prepare the data to send to the backend
+    const formData = {
+      name: this.missionary.name,
+      denomination: this.selectedDenomination,
+      country: this.selectedCountry,
+    };
+
+    try {
+      // Send data to the backend via POST (No CSRF token handling)
+      const response = await axios.post("/api/missionary/", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Handle success (optional: redirect, success message, etc.)
+      console.log("Missionary form submitted successfully:", response.data);
+
+      // Reset the form if necessary
+      this.resetForm();
+    } catch (error) {
+      // Handle error
+      console.error("Error submitting form:", error);
+    }
+  },
+
+  // Method to reset the form after submission
+  resetForm() {
+    this.missionary.name = "";
+    this.missionary.birthdayMonth = "";
+    this.missionary.birthdayDay = "";
+    this.missionary.birthdayYear = "";
+    this.missionary.bio = "";
+    this.missionaryField.missionField = "";
+    this.missionaryField.customMissionField = "";
+    this.selectedRegion = "";
+    this.selectedDenomination = "";
+    this.selectedCountry = "";
+    this.selectedState = "";
+    this.email = "";
   },
 };
 </script>
