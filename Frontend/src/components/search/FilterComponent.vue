@@ -52,8 +52,8 @@ export default {
     return {
       filters: {
         user_type: "", // Corresponds to role in the backend
-        tags: "",      // Tags to be processed on backend
-        location: "",  // Placeholder for location filtering
+        tags: "", // Tags to be processed on backend
+        location: "", // Placeholder for location filtering
       },
     };
   },
