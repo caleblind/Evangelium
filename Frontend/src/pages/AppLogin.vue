@@ -2,6 +2,8 @@
 export default {
   name: "AppLogin",
 };
+
+import Tags from "@/components/search/Tags.vue";
 </script>
 
 <style scoped>
