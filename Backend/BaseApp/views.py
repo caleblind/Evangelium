@@ -7,6 +7,9 @@ from rest_framework import status
 from django.contrib.auth import login, logout, get_user_model
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 from .models import User, Supporter, Missionary,\
                     Tag, TagRecord, SearchHistory,\
                     ExternalMedia
@@ -15,18 +18,16 @@ from .serializer import UserSerializer, SupporterSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
                         ExternalMediaSerializer, LoginSerializer,\
                         RegistrationSerializer, UserDetailSerializer
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST
 
 @require_GET
-def test_get(request):
+def test_get():
    return JsonResponse({"message": "GET request successful!", "data": []})
 
 @csrf_exempt  # Use @csrf_exempt only for testing purposes
 @require_POST
 def test_post(request):
-   return JsonResponse({"message": "POST request successful!", "received_data": request.body.decode("utf-8")})
+   return JsonResponse({"message": "POST request successful!",
+                        "received_data": request.body.decode("utf-8")})
 
 
 # User viewset that performs CRUD operations

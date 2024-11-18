@@ -5,8 +5,6 @@ from .views import LoginView, UserViewSet, SupporterViewSet,\
                    SearchHistoryViewSet, ExternalMediaViewSet,\
                    LogoutView, RegistrationView, UserDetailView
 
-from . import views
-
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
 router.register('user', UserViewSet)
