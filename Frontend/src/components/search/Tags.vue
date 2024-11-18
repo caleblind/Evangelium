@@ -13,24 +13,24 @@
 </template>
 
 <script>
-import axios from axios;
+import axios from "axios";
 
 export default {
-   data() {
-      return {
-         tags: [],
-      };
-   },
-   created() {
-      this.fetchTags();
+  data() {
+    return {
+      tags: [],
+    };
+  },
+  created() {
+    this.fetchTags();
   },
   methods: {
     async fetchTags() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/tag/');
+        const response = await axios.get("http://127.0.0.1:8000/tag/");
         this.tags = response.data;
       } catch (error) {
-        console.error('There was an error fetching the tags:', error);
+        console.error("There was an error fetching the tags:", error);
       }
     },
   },
