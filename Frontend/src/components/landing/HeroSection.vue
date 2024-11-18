@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header>
-      <div class="logo">SaltnLife Logo</div>
+      <div class="logo">SaltnLight Logo</div>
       <nav>
         <a href="#">About Us</a>
         <a href="#">The Team</a>

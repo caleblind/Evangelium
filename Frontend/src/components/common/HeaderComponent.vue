@@ -3,7 +3,7 @@
     <!-- Site Icon -->
     <div class="site-icon">
       <a href="/" title="Home">
-        <img src="/path-to-site-icon.png" alt="SaltnLife Logo" class="icon" />
+        <img src="/path-to-site-icon.png" alt="SaltnLight Logo" class="icon" />
       </a>
     </div>
 

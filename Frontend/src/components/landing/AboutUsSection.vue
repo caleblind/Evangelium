@@ -5,7 +5,7 @@
         <h2>About Us</h2>
         <h1>Uniting Churches and Missionaries for a Greater Purpose</h1>
         <p>
-          At SaltnLife, we believe in the power of meaningful connections to
+          At SaltnLight, we believe in the power of meaningful connections to
           drive change and spread hope around the world.
         </p>
         <p>
