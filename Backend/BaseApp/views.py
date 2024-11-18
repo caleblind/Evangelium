@@ -19,17 +19,6 @@ from .serializer import UserSerializer, SupporterSerializer,\
                         ExternalMediaSerializer, LoginSerializer,\
                         RegistrationSerializer, UserDetailSerializer
 
-@require_GET
-def test_get():
-   return JsonResponse({"message": "GET request successful!", "data": []})
-
-@csrf_exempt  # Use @csrf_exempt only for testing purposes
-@require_POST
-def test_post(request):
-   return JsonResponse({"message": "POST request successful!",
-                        "received_data": request.body.decode("utf-8")})
-
-
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
