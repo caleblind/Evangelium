@@ -1,8 +1,83 @@
+<template>
+  <div class="background-image">
+    <div class="auth-wrapper">
+      <div class="auth-inner">
+        <h3>Login</h3>
+        <form>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control" placeholder="Email" />
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Password"
+            />
+          </div>
+
+          <button class="btn btn-primary btn-block">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
+import axios from "axios";
+
+export default {
+  name: "AppLogin",
+  data() {
+    return {
+      loginData: {
+        email: "",
+        password: "",
+      },
+      errorMessage: null,
+      successMessage: null,
+    };
+  },
+  methods: {
+    async handleLogin() {
+      try {
+        const csrfToken = this.getCookie("csrftoken");
+        const response = await axios.post(
+          "http://127.0.0.1:8000/login/",
+          this.loginData,
+          {
+            headers: {
+              "X-CSRFToken": csrfToken,
+            },
+          }
+        );
+        this.successMessage = response.data.message;
+        this.errorMessage = null;
+        console.log("Login successful:", response.data);
+        // Handle successful login (e.g., redirect or store user session)
+      } catch (error) {
+        this.errorMessage =
+          error.response?.data?.email ||
+          error.response?.data?.password ||
+          "Login failed. Please try again.";
+        this.successMessage = null;
+        console.error("Login failed:", error.response?.data);
+      }
+    },
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+      return null;
+    },
+  },
+};
+
 export default {
   name: "AppLogin",
 };
-
 </script>
 
 <style scoped>
