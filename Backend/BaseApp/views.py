@@ -91,7 +91,7 @@ class LogoutView(APIView):
                       status=status.HTTP_200_OK)
 
 # User registration/creation view
-@method_decorator(ensure_csrf_cookie, name='dispatch')
+#@method_decorator(ensure_csrf_cookie, name='dispatch')
 class RegistrationView(APIView):
    serializer_class = RegistrationSerializer
    permission_classes = [AllowAny]
