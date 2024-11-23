@@ -19,6 +19,9 @@
           </div>
 
           <button class="btn btn-primary btn-block">Login</button>
+          <button class="btn-account-creation" @click="createAccount">
+            Go To Account Creation
+          </button>
         </form>
       </div>
     </div>
@@ -28,6 +31,13 @@
 <script>
 export default {
   name: "AppLogin",
+  methods: {
+    createAccount() {
+      // Handle Get Started logic
+      this.$router.push("/AccountCreation");
+      console.log("Account Creation clicked");
+    },
+  },
 };
 </script>
 
