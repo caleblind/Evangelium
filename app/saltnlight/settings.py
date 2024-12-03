@@ -81,7 +81,11 @@ WSGI_APPLICATION = 'saltnlight.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': 'postgresdb1',
+        'USER': 'caleb',
+        'PASSWORD': 'caleb',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
