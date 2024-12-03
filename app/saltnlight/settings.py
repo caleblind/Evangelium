@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     #My Apps
     #'rest_framework',
     'api',
-    'bootstrap5',
+    #'bootstrap5',
 ]
 
 MIDDLEWARE = [
