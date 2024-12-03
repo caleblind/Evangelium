@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #My Apps
-    'rest_framework',
+    #'rest_framework',
     'api',
     'bootstrap5',
 ]
