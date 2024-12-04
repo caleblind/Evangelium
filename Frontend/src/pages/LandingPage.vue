@@ -3,6 +3,7 @@
     <HeroSection />
     <AboutUsSection />
     <BenefitsSection />
+    <FooterBar />
   </div>
 </template>
 
@@ -10,6 +11,7 @@
 import HeroSection from "@/components/landing/HeroSection.vue";
 import AboutUsSection from "@/components/landing/AboutUsSection.vue";
 import BenefitsSection from "@/components/landing/BenefitsSection.vue";
+import FooterBar from "@/components/layout/FooterNav.vue";
 
 export default {
   name: "LandingPage",
@@ -17,6 +19,7 @@ export default {
     HeroSection,
     AboutUsSection,
     BenefitsSection,
+    FooterBar,
   },
 };
 </script>

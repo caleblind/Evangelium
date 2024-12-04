@@ -32,6 +32,16 @@ export default {
 </script>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: transparent;
+}
 .about-us-section {
   display: flex;
   justify-content: center;
