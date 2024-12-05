@@ -24,7 +24,7 @@ SECRET_KEY = '''Z7!W3$X9*Q5^C1%V8&J2@L0#T4!Y6@P3$R9*F1^N5%K8&G7@M0#D2
 '''
 
 
-ALLOWED_HOSTS = ['saltnlight.online','138.197.95.159']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','138.197.95.159','saltnlight.online']
 
 
 # Application definition
