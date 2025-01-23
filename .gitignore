@@ -163,3 +163,5 @@ cython_debug/
 
 node_modules/
 %USERPROFILE%/
+package.json
+package-lock.json
