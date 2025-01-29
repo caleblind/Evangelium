@@ -1,26 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, Supporter, Missionary,\
-                    Tag, TagRecord, SearchHistory, ExternalMedia
-
-# Serializer class for Users
-class UserSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = User
-      fields = ('id', 'email', 'password', 'user_type', #'profile_picture',
-                'description', 'phone_number')
-
-# Serializer class for Supporters
-class SupporterSerializer(serializers.ModelSerializer):
-   class Meta:
-      model  = Supporter
-      fields = '__all__'
-
-# Serializer class for Missionaries
-class MissionarySerializer(serializers.ModelSerializer):
-   class Meta:
-      model  = Missionary
-      fields = '__all__'
+from .models import Profile, Tag, TagRecord, SearchHistory, ExternalMedia
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
@@ -71,42 +51,3 @@ class LoginSerializer(serializers.Serializer):
       pass
    def update(self, instance, validated_data):
       pass
-
-# Serializer class for user registration
-class RegistrationSerializer(serializers.ModelSerializer):
-   password = serializers.CharField(
-      max_length=128, min_length=8, write_only=True, required=True
-   )
-
-   class Meta:
-      model = User
-      fields = ('email', 'password', 'user_type',
-                'description', 'phone_number')
-
-   # Handles user creation with validated data
-   def create(self, validated_data):
-      validated_data.pop('password_confirm', None)
-      user = User.objects.create_user(
-         email=validated_data['email'],
-         password=validated_data['password'],
-         user_type=validated_data.get('user_type', ''),
-         description=validated_data.get('description', ''),
-         phone_number=validated_data.get('phone_number', '')
-      )
-      return user
-
-# Serializer for user details
-class UserDetailSerializer(serializers.ModelSerializer):
-   supporter = SupporterSerializer(read_only=True)
-   missionary = MissionarySerializer(read_only=True)
-   tags = serializers.SerializerMethodField()
-   class Meta:
-      model = User
-      fields = ('id', 'email', 'user_type', 'description',
-                'phone_number', 'supporter', 'missionary', 'tags')
-
-   # Method to retrieve tags related to the user through TagRecord
-   def get_tags(self, obj):
-      tag_records = TagRecord.objects.filter(user=obj)
-      return TagSerializer([tag_record.tag for tag_record in tag_records],
-                           many=True).data
