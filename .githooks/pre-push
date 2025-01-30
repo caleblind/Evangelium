@@ -28,6 +28,7 @@ if os.getenv('SKIP_LINT'):
 
 # Run Pylint
 print("Running Pylint...")
+
 result = subprocess.run(["pylint", "--rcfile=" + pylint_config, project_path],
                         capture_output=True, text=True)
 
