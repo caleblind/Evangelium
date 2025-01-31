@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import Profile, Tag, TagRecord, SearchHistory, ExternalMedia
+from .models import Tag, TagRecord, SearchHistory,\
+                    ExternalMedia#, Profile
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):

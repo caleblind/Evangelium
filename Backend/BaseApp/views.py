@@ -4,12 +4,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
-from django.contrib.auth import login, logout, get_user_model
+from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-#from django.http import JsonResponse
-#from django.views.decorators.csrf import csrf_exempt
-#from django.views.decorators.http import require_GET, require_POST
 from .models import Profile, Tag, TagRecord, SearchHistory,\
                     ExternalMedia
 from .serializer import TagSerializer,\
@@ -20,23 +18,7 @@ from .serializer import TagSerializer,\
 class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
    queryset = User.objects.all()
-   serializer_class = UserSerializer
-   permission_classes = [AllowAny]
-
-# Supporter viewset that performs CRUD operations
-class SupporterViewSet(ModelViewSet):
-   filterset_fields = ['name','denomination','street_address','city',
-                       'state','country']
-   queryset = Supporter.objects.all()
-   serializer_class = SupporterSerializer
-   permission_classes = [AllowAny]
-
-# Missionary viewset performs CRUD operations
-class MissionaryViewSet(ModelViewSet):
-   filterset_fields = ['full_name','denomination','country',
-                       'years_of_experience']
-   queryset = Missionary.objects.all()
-   serializer_class = MissionarySerializer
+   queryset += Profile.objects.all()
    permission_classes = [AllowAny]
 
 # Tag viewset that performs CRUD operations
@@ -89,34 +71,3 @@ class LogoutView(APIView):
       logout(request)
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
-
-# User registration/creation view
-@method_decorator(ensure_csrf_cookie, name='dispatch')
-class RegistrationView(APIView):
-   serializer_class = RegistrationSerializer
-   permission_classes = [AllowAny]
-   authentication_classes = [SessionAuthentication]
-
-   # Handles user registration
-   def post(self, request):
-      serializer = self.serializer_class(data=request.data)
-      if serializer.is_valid():
-         serializer.save()
-         return Response({'message':'account created successfully'},
-                         status=status.HTTP_200_OK)
-      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# API View for retrieving user details (user type, associated tags)
-User = get_user_model()
-class UserDetailView(APIView):
-   permission_classes = [AllowAny]
-
-   # Retrieves a specific user by thier user ID
-   def get(self, _request, pk):
-      try:
-         user = User.objects.get(pk=pk)
-         serializer = UserDetailSerializer(user)
-         return Response(serializer.data, status=status.HTTP_200_OK)
-      except User.DoesNotExist:
-         return Response({'message':'user not found'},
-                         status=status.HTTP_404_NOT_FOUND)

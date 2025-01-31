@@ -3,7 +3,8 @@ from django.conf import settings
 
 # Defines the Supporter table
 class Profile(models.Model):
-   user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
+   user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                               on_delete=models.CASCADE, primary_key=True)
    user_type = models.CharField(
         max_length=15,
         choices=[('missionary', 'Missionary'), ('supporter', 'Supporter'),
