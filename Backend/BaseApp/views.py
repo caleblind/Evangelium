@@ -18,7 +18,6 @@ from .serializer import TagSerializer,\
 class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
    queryset = User.objects.all()
-   queryset += Profile.objects.all()
    permission_classes = [AllowAny]
 
 # Tag viewset that performs CRUD operations
