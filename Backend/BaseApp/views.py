@@ -1,24 +1,22 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
-from django.contrib.auth import login, logout
+from django.contrib.auth import logout, authenticate
 from django.contrib.auth.models import User
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework_simplejwt import tokens
 from .models import Profile, Tag, TagRecord, SearchHistory,\
                     ExternalMedia
 from .serializer import TagSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
-                        ExternalMediaSerializer, LoginSerializer
+                        ExternalMediaSerializer
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
    queryset = User.objects.all()
-   queryset += Profile.objects.all()
    permission_classes = [AllowAny]
 
 # Tag viewset that performs CRUD operations
@@ -47,22 +45,13 @@ class ExternalMediaViewSet(ModelViewSet):
    serializer_class = ExternalMediaSerializer
    permission_classes = [AllowAny]
 
-# API view for validating user login
-@method_decorator(ensure_csrf_cookie, name='dispatch')
-class LoginView(APIView):
-   serializer_class = LoginSerializer
-   permission_classes = [AllowAny]
-   authentication_classes = [SessionAuthentication]
+@api_view(['POST'])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
 
-   # Logs user in and creates a session
-   def post(self, request):
-      serializer = self.serializer_class(data=request.data)
-      if serializer.is_valid():
-         user = serializer.validated_data
-         login(request, user)
-         return Response({'message':'login successful'},
-                         status=status.HTTP_200_OK)
-      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # Authenticate the user
+    user = authenticate(username=username, password=password)
 
 # Logout API view
 class LogoutView(APIView):

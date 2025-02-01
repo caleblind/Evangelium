@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import LoginView, UserViewSet, TagViewSet, TagRecordViewSet,\
+from .views import login_view, UserViewSet, TagViewSet, TagRecordViewSet,\
                    SearchHistoryViewSet, ExternalMediaViewSet,\
                    LogoutView
 
@@ -11,9 +11,10 @@ router.register('tag', TagViewSet)
 router.register('tagrecord', TagRecordViewSet)
 router.register('searchhistory', SearchHistoryViewSet)
 router.register('externalmedia', ExternalMediaViewSet)
+#router.register('login/', login_view)
 
 urlpatterns = [
    path('', include(router.urls)),
-   path('login/', LoginView.as_view(), name="login"),
+   path('login/', login_view, name="login"),
    path('logout/', LogoutView.as_view(), name="logout"),
 ]
