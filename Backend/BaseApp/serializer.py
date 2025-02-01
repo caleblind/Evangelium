@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import Tag, TagRecord, SearchHistory,\
-                    ExternalMedia#, Profile
+                    ExternalMedia, Profile
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
@@ -52,3 +52,8 @@ class LoginSerializer(serializers.Serializer):
       pass
    def update(self, instance, validated_data):
       pass
+
+class ProfileSerializer(serializers.ModelSerializer):
+   class Meta:
+      model  = Profile
+      fields = '__all__'

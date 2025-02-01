@@ -1,3 +1,4 @@
+from rest_framework.decorators import api_view
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,7 +9,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from .models import Profile, Tag, TagRecord, SearchHistory,\
+from .models import Tag, TagRecord, SearchHistory,\
                     ExternalMedia
 from .serializer import TagSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
@@ -18,7 +19,6 @@ from .serializer import TagSerializer,\
 class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
    queryset = User.objects.all()
-   queryset += Profile.objects.all()
    permission_classes = [AllowAny]
 
 # Tag viewset that performs CRUD operations
@@ -71,3 +71,7 @@ class LogoutView(APIView):
       logout(request)
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
+
+#@api_view(['POST'],['GET'])
+#def RegistrationView(request):
+#   if request.method == 'POST':
