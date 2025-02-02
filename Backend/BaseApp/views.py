@@ -1,11 +1,11 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout #get_user_model
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -13,7 +13,8 @@ from .models import Tag, TagRecord, SearchHistory,\
                     ExternalMedia
 from .serializer import TagSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
-                        ExternalMediaSerializer, LoginSerializer
+                        ExternalMediaSerializer, LoginSerializer,\
+                        RegistrationSerializer
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
@@ -72,6 +73,25 @@ class LogoutView(APIView):
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
 
-#@api_view(['POST'],['GET'])
-#def RegistrationView(request):
-#   if request.method == 'POST':
+
+@api_view(['POST', 'GET'])
+@permission_classes((AllowAny,))
+def RegistrationView(request):
+   if request.method == 'POST':
+      # Initialize serializer with data from the request
+      serializer = RegistrationSerializer(data = request.data)
+      # Validate and create the user
+      if serializer.is_valid():
+         # Call the create method in registration serializer
+         user = serializer.save()
+         return Response({
+            'message': 'User created successfully',
+            'user': {
+               'email': user.email,
+               'first_name': user.first_name,
+               'last_name': user.last_name
+            }
+         }, status=status.HTTP_201_CREATED)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   return Response({'detail': 'Method not allowed'},
+                   status=status.HTTP_405_METHOD_NOT_ALLOWED)
