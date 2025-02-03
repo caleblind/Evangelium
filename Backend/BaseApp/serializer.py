@@ -53,38 +53,53 @@ class LoginSerializer(serializers.Serializer):
    def update(self, instance, validated_data):
       pass
 
-# Serializer for profile model
-class ProfileSerializer(serializers.ModelSerializer):
-   class Meta:
-      model  = Profile
-      fields = ('user_type','first_name','last_name',
-                'denomination','street_address','city',
-                'state','country','phone_number', 
-                'years_of_experience','description','profile_picture')
 
 # Dynamically fetch Django's User model and store in global variable
 User = get_user_model()
 class RegistrationSerializer(serializers.ModelSerializer):
+   # User fields
+   username = serializers.CharField(max_length=150, required=True)
    password = serializers.CharField(max_length=128, min_length=8,
                                     write_only=True, required=True)
-   profile = ProfileSerializer(required=True)
+   first_name = serializers.CharField(max_length=100, required=True)
+   last_name = serializers.CharField(max_length=100, required=True)
+   email = serializers.EmailField(required=True)
+
+   # Profile fields (flattened)
+   user_type = serializers.ChoiceField(choices=[('missionary', 'Missionary'),
+                                                 ('supporter', 'Supporter'),
+                                                 ('other', 'Other')],
+                                                 default='other')
+   denomination = serializers.CharField(max_length=100, required=True)
+   street_address = serializers.CharField(max_length=100, required=True)
+   city = serializers.CharField(max_length=100, required=True)
+   state = serializers.CharField(max_length=100, required=True)
+   country = serializers.CharField(max_length=100, required=True)
+   phone_number = serializers.CharField(max_length=100, required=True)
+   years_of_experience = serializers.IntegerField(required=False,
+                                                  allow_null=True)
+   description = serializers.CharField(required=False, allow_blank=True,
+                                       allow_null=True)
+   profile_picture = serializers.URLField(required=False,
+                                          allow_blank=True, allow_null=True)
 
    class Meta:
       model = User
-      fields = ('email', 'password', 'first_name', 'last_name')
-
+      fields = ('username', 'email', 'password', 'first_name', 'last_name',
+                  'user_type', 'denomination', 'street_address', 'city',
+                  'state', 'country', 'phone_number', 'years_of_experience',
+                  'description', 'profile_picture')
    # Create a new user instance
    def create(self, validated_data):
-      # Extract the profile data separately
-      profile_data = validated_data.pop('profile')
-
-      user = User.objects.create_user(
-         email      = validated_data['email'],
-         password   = validated_data['password'],
-         first_name = validated_data.get('first_name', ''),
-         last_name  = validated_data.get('last_name', '')
-      )
+      user_data = {
+         'username':   validated_data.pop('username'),
+         'email':      validated_data.pop('email'),
+         'password':   validated_data.pop('password'),
+         'first_name': validated_data.pop('first_name'),
+         'last_name':  validated_data.pop('last_name')
+      }
+      # Create user instance
+      user = User.objects.create_user(**user_data)
       # Create profile instance separately
-      profile = Profile.objects.create(**profile_data)
-      return {'user': user,
-              'profile': profile}
+      Profile.objects.create(user=user, **validated_data)
+      return user
