@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -13,6 +14,7 @@ from .models import Profile, Tag, TagRecord, SearchHistory,\
 from .serializer import TagSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
                         ExternalMediaSerializer, LoginSerializer
+from django.http import HttpResponse 
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
@@ -70,3 +72,18 @@ class LogoutView(APIView):
       logout(request)
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
+
+# Tag endpoint
+@api_view(['POST', 'GET'])
+@permission_classes((AllowAny,))
+def tags_api(request):
+
+   if request.method == "GET":
+      tags = Tag.objects.order_by("id")
+      return HttpResponse(list(tags))
+
+   elif request.method =='POST':
+
+      tag = Tag.objects.create(tag_name=data["tag_name"], tag_description=data.get("tag_description"), tag_is_predefined="N")
+
+   return HttpResponse({"error": "Invalid HTTP method"}, status=405)
