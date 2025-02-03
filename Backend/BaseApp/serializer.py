@@ -53,25 +53,38 @@ class LoginSerializer(serializers.Serializer):
    def update(self, instance, validated_data):
       pass
 
+# Serializer for profile model
 class ProfileSerializer(serializers.ModelSerializer):
    class Meta:
       model  = Profile
-      fields = '__all__'
+      fields = ('user_type','first_name','last_name',
+                'denomination','street_address','city',
+                'state','country','phone_number', 
+                'years_of_experience','description','profile_picture')
 
 # Dynamically fetch Django's User model and store in global variable
 User = get_user_model()
 class RegistrationSerializer(serializers.ModelSerializer):
-   password = serializers.CharField(max_length=128, min_length=8, 
+   password = serializers.CharField(max_length=128, min_length=8,
                                     write_only=True, required=True)
+   profile = ProfileSerializer(required=True)
+
    class Meta:
       model = User
       fields = ('email', 'password', 'first_name', 'last_name')
+
    # Create a new user instance
    def create(self, validated_data):
+      # Extract the profile data separately
+      profile_data = validated_data.pop('profile')
+
       user = User.objects.create_user(
          email      = validated_data['email'],
          password   = validated_data['password'],
          first_name = validated_data.get('first_name', ''),
          last_name  = validated_data.get('last_name', '')
       )
-      return user
+      # Create profile instance separately
+      profile = Profile.objects.create(**profile_data)
+      return {'user': user,
+              'profile': profile}

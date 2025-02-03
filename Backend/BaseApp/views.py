@@ -74,7 +74,7 @@ class LogoutView(APIView):
                       status=status.HTTP_200_OK)
 
 
-@api_view(['POST', 'GET'])
+@api_view(['POST'])
 @permission_classes((AllowAny,))
 def RegistrationView(request):
    if request.method == 'POST':
@@ -82,7 +82,7 @@ def RegistrationView(request):
       serializer = RegistrationSerializer(data = request.data)
       # Validate and create the user
       if serializer.is_valid():
-         # Call the create method in registration serializer
+         # This will create both user and profile separately
          user = serializer.save()
          return Response({
             'message': 'User created successfully',
