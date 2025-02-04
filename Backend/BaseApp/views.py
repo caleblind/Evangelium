@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
-from django.contrib.auth import login, logout #get_user_model
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -87,12 +87,12 @@ def RegistrationView(request):
          return Response({
             'message': 'User created successfully',
             'user': {
-               'username': user.username,
-               'email': user.email,
+                 'username': user.username,
+                    'email': user.email,
                'first_name': user.first_name,
-               'last_name': user.last_name
+                'last_name': user.last_name
             }
          }, status=status.HTTP_201_CREATED)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-   return Response({'detail': 'Method not allowed'},
-                   status=status.HTTP_405_METHOD_NOT_ALLOWED)
+   return Response   ({'detail': 'Method not allowed'},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
