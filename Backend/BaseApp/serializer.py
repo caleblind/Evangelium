@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from .models import Tag, TagRecord, SearchHistory,\
                     ExternalMedia, Profile
 
@@ -54,8 +55,6 @@ class LoginSerializer(serializers.Serializer):
       pass
 
 
-# Dynamically fetch Django's User model and store in global variable
-User = get_user_model()
 class RegistrationSerializer(serializers.ModelSerializer):
    # User fields
    username = serializers.CharField  (max_length=150, required=True)

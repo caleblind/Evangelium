@@ -39,8 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
-
-    #My Apps
     'rest_framework',
     'BaseApp',
     'bootstrap5',
