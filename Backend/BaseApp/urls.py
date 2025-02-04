@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import login_view, UserViewSet, TagViewSet, TagRecordViewSet,\
+from .views import UserViewSet, TagViewSet, TagRecordViewSet,\
                    SearchHistoryViewSet, ExternalMediaViewSet,\
                    LogoutView
 
@@ -15,6 +15,5 @@ router.register('externalmedia', ExternalMediaViewSet)
 
 urlpatterns = [
    path('', include(router.urls)),
-   path('login/', login_view, name="login"),
    path('logout/', LogoutView.as_view(), name="logout"),
 ]

@@ -1,21 +1,20 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
-from django.contrib.auth import logout, authenticate
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from rest_framework_simplejwt import tokens
-from .models import Profile, Tag, TagRecord, SearchHistory,\
-                    ExternalMedia
-from .serializer import TagSerializer,\
-                        TagRecordSerializer, SeachHistorySerializer,\
-                        ExternalMediaSerializer
+from .models import Tag, TagRecord, SearchHistory, ExternalMedia
+from .serializer import TagSerializer, TagRecordSerializer,\
+                        SeachHistorySerializer, ExternalMediaSerializer,\
+                        UserSerializer, RegistrationSerializer
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
+   serializer_class = UserSerializer
    queryset = User.objects.all()
    permission_classes = [AllowAny]
 
@@ -45,14 +44,6 @@ class ExternalMediaViewSet(ModelViewSet):
    serializer_class = ExternalMediaSerializer
    permission_classes = [AllowAny]
 
-@api_view(['POST'])
-def login_view(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-
-    # Authenticate the user
-    user = authenticate(username=username, password=password)
-
 # Logout API view
 class LogoutView(APIView):
    permission_classes = [AllowAny]
@@ -60,3 +51,25 @@ class LogoutView(APIView):
       logout(request)
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def RegistrationView(request):
+   if request.method == 'POST':
+      # Initialize serializer with data from the request
+      serializer = RegistrationSerializer(data = request.data)
+      # Validate and create the user
+      if serializer.is_valid():
+         # This will create both user and profile separately
+         user = serializer.save()
+         return Response({
+            'message': 'User created successfully',
+            'user': {
+               'email': user.email,
+               'first_name': user.first_name,
+               'last_name': user.last_name
+            }
+         }, status=status.HTTP_201_CREATED)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   return Response({'detail': 'Method not allowed'},
+                   status=status.HTTP_405_METHOD_NOT_ALLOWED)

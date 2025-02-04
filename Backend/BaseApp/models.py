@@ -1,9 +1,9 @@
 from django.db import models
-from django.conf import settings
+from django.contrib.auth.models import User
 
 # Defines the Supporter table
 class Profile(models.Model):
-   user = models.OneToOneField(settings.AUTH_USER_MODEL,
+   user = models.OneToOneField(User,
                                on_delete=models.CASCADE, primary_key=True)
    user_type = models.CharField(
         max_length=15,
@@ -32,7 +32,7 @@ class Tag(models.Model):
 # Defines the Tag Record table
 class TagRecord(models.Model):
    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+   user = models.ForeignKey(User, on_delete=models.CASCADE)
    added_date = models.DateTimeField(auto_now_add=True)
 
    # Overwrites the automatic plural form of words in admin
@@ -41,7 +41,7 @@ class TagRecord(models.Model):
 
 # Defines Search History table
 class SearchHistory(models.Model):
-   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+   user = models.ForeignKey(User, on_delete=models.CASCADE)
    search_time = models.DateTimeField(auto_now_add=True)
    search_text = models.TextField(null=False)
    search_parameters = models.JSONField()
@@ -52,7 +52,7 @@ class SearchHistory(models.Model):
 
 # Defines External Media table
 class ExternalMedia(models.Model):
-   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+   user = models.ForeignKey(User, on_delete=models.CASCADE)
    media_url = models.URLField(max_length=255)
    description = models.TextField()
    uploaded_at = models.DateTimeField(auto_now_add=True)

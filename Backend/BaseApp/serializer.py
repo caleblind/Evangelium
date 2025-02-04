@@ -1,7 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from .models import Tag, TagRecord, SearchHistory,\
                     ExternalMedia#, Profile
+
+class UserSerializer(serializers.ModelSerializer):
+   class Meta:
+      model =  User
+      fields = '__all__'
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
