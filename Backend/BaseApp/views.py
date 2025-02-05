@@ -14,7 +14,6 @@ from .models import Profile, Tag, TagRecord, SearchHistory,\
 from .serializer import TagSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
                         ExternalMediaSerializer, LoginSerializer
-from django.http import HttpResponse 
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
@@ -80,10 +79,15 @@ def tags_api(request):
 
    if request.method == "GET":
       tags = Tag.objects.order_by("id")
-      return HttpResponse(list(tags))
+      serializer = TagSerializer(tags,many=True)
+      return Response(serializer.data)
 
    elif request.method =='POST':
-
+      serializer = TagSerializer (data=request.data)
+      if serializer.is_valid():
+        # user = serializer.save()
+        # serializer.save(user=request.user)
+          return Response({"message:" "Tag was added": serializer.data}, status =201)
       tag = Tag.objects.create(tag_name=data["tag_name"], tag_description=data.get("tag_description"), tag_is_predefined="N")
-
-   return HttpResponse({"error": "Invalid HTTP method"}, status=405)
+      return Response(serializer.error, status=400)
+   return Response({"error": "Invalid HTTP method"}, status=405)

@@ -7,7 +7,7 @@ from .models import Tag, TagRecord, SearchHistory,\
 class TagSerializer(serializers.ModelSerializer):
    class Meta:
       model  = Tag
-      fields = '__all__'
+      fields = ('id', 'tag_name', 'tag_description', 'tag_is_predefined')
 
 # Serializer class for Tag Records
 class TagRecordSerializer(serializers.ModelSerializer):
