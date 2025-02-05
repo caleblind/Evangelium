@@ -86,9 +86,8 @@ def tags_api(request):
    elif request.method =='POST':
       serializer = TagSerializer (data=request.data)
       if serializer.is_valid():
-        # user = serializer.save()
-        # serializer.save(user=request.user)
-          return Response({"message:" "Tag was added": serializer.data}, status =201)
+         user = serializer.save()
+         return Response({"message:" "Tag was added": serializer.data}, status =201)
       tag = Tag.objects.create(tag_name=data["tag_name"], tag_description=data.get("tag_description"), tag_is_predefined="N")
       return Response(serializer.error, status=400)
    return Response({"error": "Invalid HTTP method"}, status=405)
