@@ -39,8 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
-
-    #My Apps
     'rest_framework',
     'BaseApp',
     'bootstrap5',
@@ -62,9 +60,6 @@ MIDDLEWARE = [
 AUTHENTICATION_BACKENDS = [
         'django.contrib.auth.backends.ModelBackend',
     ]
-
-# Custom user model auth configuration
-AUTH_USER_MODEL = 'BaseApp.User'
 
 # Session authentication configurations
 SESSION_ENGINE = 'django.contrib.sessions.backends.db' 

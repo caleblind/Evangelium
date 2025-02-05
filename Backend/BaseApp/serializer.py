@@ -1,26 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, Supporter, Missionary,\
-                    Tag, TagRecord, SearchHistory, ExternalMedia
-
-# Serializer class for Users
-class UserSerializer(serializers.ModelSerializer):
-   class Meta:
-      model = User
-      fields = ('id', 'email', 'password', 'user_type', #'profile_picture',
-                'description', 'phone_number')
-
-# Serializer class for Supporters
-class SupporterSerializer(serializers.ModelSerializer):
-   class Meta:
-      model  = Supporter
-      fields = '__all__'
-
-# Serializer class for Missionaries
-class MissionarySerializer(serializers.ModelSerializer):
-   class Meta:
-      model  = Missionary
-      fields = '__all__'
+from django.contrib.auth.models import User
+from .models import Tag, TagRecord, SearchHistory,\
+                    ExternalMedia, Profile
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
@@ -72,41 +54,58 @@ class LoginSerializer(serializers.Serializer):
    def update(self, instance, validated_data):
       pass
 
-# Serializer class for user registration
+
 class RegistrationSerializer(serializers.ModelSerializer):
-   password = serializers.CharField(
-      max_length=128, min_length=8, write_only=True, required=True
-   )
-
+   # User fields
+   username = serializers.CharField  (max_length=150, required=True)
+   password = serializers.CharField  (max_length=128, min_length=8,
+                                      write_only=True, required=True)
+   first_name = serializers.CharField(max_length=100,
+                                      allow_blank=True, default='')
+   last_name = serializers.CharField (max_length=100,
+                                      allow_blank=True, default='')
+   email = serializers.EmailField    (required=True)
+   # Profile fields
+   user_type = serializers.ChoiceField   (choices=[('missionary', 'Missionary'),
+                                                   ('supporter', 'Supporter'),
+                                                   ('other', 'Other')],
+                                                   required=False,
+                                                   default='other')
+   denomination = serializers.CharField  (max_length=100, required=False,
+                                          allow_blank=True, default='')
+   street_address = serializers.CharField(max_length=100, required=False,
+                                          allow_blank=True, default='')
+   city = serializers.CharField          (max_length=100, required=False,
+                                          allow_blank=True, default='')
+   state = serializers.CharField         (max_length=100, required=False,
+                                          allow_blank=True, default='')
+   country = serializers.CharField       (max_length=100, required=False,
+                                          allow_blank=True, default='')
+   phone_number = serializers.CharField  (max_length=100, required=False,
+                                          allow_blank=True, default='')
+   years_of_experience = serializers.IntegerField(required=False,
+                                                  allow_null=True, default=None)
+   description = serializers.CharField   (required=False,
+                                          allow_blank=True, default=None)
+   profile_picture = serializers.URLField(required=False,
+                                          allow_blank=True, default=None)
    class Meta:
       model = User
-      fields = ('email', 'password', 'user_type',
-                'description', 'phone_number')
-
-   # Handles user creation with validated data
+      fields = ('username', 'email', 'password', 'first_name', 'last_name',
+                'user_type', 'denomination', 'street_address', 'city',
+                'state', 'country', 'phone_number', 'years_of_experience',
+                'description', 'profile_picture')
+   # Create a new user instance
    def create(self, validated_data):
-      validated_data.pop('password_confirm', None)
-      user = User.objects.create_user(
-         email=validated_data['email'],
-         password=validated_data['password'],
-         user_type=validated_data.get('user_type', ''),
-         description=validated_data.get('description', ''),
-         phone_number=validated_data.get('phone_number', '')
-      )
+      user_data = {
+           'username': validated_data.pop('username'),
+              'email': validated_data.pop('email'),
+           'password': validated_data.pop('password'),
+         'first_name': validated_data.pop('first_name', ''),
+          'last_name': validated_data.pop('last_name', '')
+      }
+      # Create user instance
+      user = User.objects.create_user(**user_data)
+      # Create profile instance separately
+      Profile.objects.create         (user=user, **validated_data)
       return user
-
-# Serializer for user details
-class UserDetailSerializer(serializers.ModelSerializer):
-   supporter = SupporterSerializer(read_only=True)
-   missionary = MissionarySerializer(read_only=True)
-   tags = serializers.SerializerMethodField()
-   class Meta:
-      model = User
-      fields = ('id', 'email', 'user_type', 'description',
-                'phone_number', 'supporter', 'missionary', 'tags')
-
-   # Method to retrieve tags related to the user through TagRecord
-   def get_tags(self, obj):
-      tag_records = TagRecord.objects.filter(user=obj)
-      return TagSerializer([tag_record.tag for tag_record in tag_records],
-                           many=True).data

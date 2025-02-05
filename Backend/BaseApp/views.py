@@ -1,45 +1,25 @@
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
-from django.contrib.auth import login, logout, get_user_model
+from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-#from django.http import JsonResponse
-#from django.views.decorators.csrf import csrf_exempt
-#from django.views.decorators.http import require_GET, require_POST
-from .models import User, Supporter, Missionary,\
-                    Tag, TagRecord, SearchHistory,\
+from .models import Tag, TagRecord, SearchHistory,\
                     ExternalMedia
-from .serializer import UserSerializer, SupporterSerializer,\
-                        MissionarySerializer, TagSerializer,\
+from .serializer import TagSerializer,\
                         TagRecordSerializer, SeachHistorySerializer,\
                         ExternalMediaSerializer, LoginSerializer,\
-                        RegistrationSerializer, UserDetailSerializer
+                        RegistrationSerializer
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
    filterset_fields = ['user_type','description','phone_number']
    queryset = User.objects.all()
-   serializer_class = UserSerializer
-   permission_classes = [AllowAny]
-
-# Supporter viewset that performs CRUD operations
-class SupporterViewSet(ModelViewSet):
-   filterset_fields = ['name','denomination','street_address','city',
-                       'state','country']
-   queryset = Supporter.objects.all()
-   serializer_class = SupporterSerializer
-   permission_classes = [AllowAny]
-
-# Missionary viewset performs CRUD operations
-class MissionaryViewSet(ModelViewSet):
-   filterset_fields = ['full_name','denomination','country',
-                       'years_of_experience']
-   queryset = Missionary.objects.all()
-   serializer_class = MissionarySerializer
    permission_classes = [AllowAny]
 
 # Tag viewset that performs CRUD operations
@@ -93,33 +73,26 @@ class LogoutView(APIView):
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
 
-# User registration/creation view
-@method_decorator(ensure_csrf_cookie, name='dispatch')
-class RegistrationView(APIView):
-   serializer_class = RegistrationSerializer
-   permission_classes = [AllowAny]
-   authentication_classes = [SessionAuthentication]
 
-   # Handles user registration
-   def post(self, request):
-      serializer = self.serializer_class(data=request.data)
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+def RegistrationView(request):
+   if request.method == 'POST':
+      # Initialize serializer with data from the request
+      serializer = RegistrationSerializer(data = request.data)
+      # Validate and create the user
       if serializer.is_valid():
-         serializer.save()
-         return Response({'message':'account created successfully'},
-                         status=status.HTTP_200_OK)
+         # This will create both user and profile separately
+         user = serializer.save()
+         return Response({
+            'message': 'User created successfully',
+            'user': {
+                 'username': user.username,
+                    'email': user.email,
+               'first_name': user.first_name,
+                'last_name': user.last_name
+            }
+         }, status=status.HTTP_201_CREATED)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# API View for retrieving user details (user type, associated tags)
-User = get_user_model()
-class UserDetailView(APIView):
-   permission_classes = [AllowAny]
-
-   # Retrieves a specific user by thier user ID
-   def get(self, _request, pk):
-      try:
-         user = User.objects.get(pk=pk)
-         serializer = UserDetailSerializer(user)
-         return Response(serializer.data, status=status.HTTP_200_OK)
-      except User.DoesNotExist:
-         return Response({'message':'user not found'},
-                         status=status.HTTP_404_NOT_FOUND)
+   return Response   ({'detail': 'Method not allowed'},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
