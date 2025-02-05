@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.parsers import JSONParser
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status
 from django.contrib.auth import login, logout
@@ -82,8 +83,12 @@ def tags_api(request):
       tags = Tag.objects.order_by("id")
       return HttpResponse(list(tags))
 
-   elif request.method =='POST':
+   elif request.method == 'POST': 
+      data = JSONParser().parse(request)
+      serializer = TagSerializer(data=data)
+      if serializer.is_valid(): 
+         serializer.save() 
+         return Response(serializer.data, status=status.HTTP_201_CREATED)
+      return Response({"error": "Invalid tag"}, status=status.HTTP_400_BAD_REQUEST)
 
-      tag = Tag.objects.create(tag_name=data["tag_name"], tag_description=data.get("tag_description"), tag_is_predefined="N")
-
-   return HttpResponse({"error": "Invalid HTTP method"}, status=405)
+   return HttpResponse({"error": "Invalid HTTP method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
