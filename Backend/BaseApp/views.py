@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status, generics, filters
 from django.contrib.auth import login, logout
@@ -10,26 +10,23 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Profile, Tag, TagRecord, SearchHistory,\
                     ExternalMedia
-from .serializer import TagSerializer,\
-                        TagRecordSerializer, SeachHistorySerializer,\
-                        ExternalMediaSerializer, LoginSerializer, ProfileSerializer
-
-
-
-
+from .serializer import TagSerializer, TagRecordSerializer,\
+                        SeachHistorySerializer, ExternalMediaSerializer,\
+                        LoginSerializer, ProfileSerializer
 
 class ProfileListCreateView(generics.ListCreateAPIView):
-    queryset = Profile.objects.select_related('user').all()
-    serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]  # Public access for testing
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
-    filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination', 'tags']
+   queryset = Profile.objects.select_related('user').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public access for testing
+   filter_backends = [filters.SearchFilter]
+   search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
+   filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination',
+                       'tags']
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Profile.objects.select_related('user').all()
-    serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]  # Public access for testing
+   queryset = Profile.objects.select_related('user').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public access for testing
 
 
 

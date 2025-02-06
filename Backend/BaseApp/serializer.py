@@ -6,37 +6,34 @@ from .models import Tag, TagRecord, SearchHistory,\
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email']
+   class Meta:
+      model = User
+      fields = ['id', 'username', 'email']
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()  # Nested User serializer
+   user = UserSerializer()  # Nested User serializer
 
-    class Meta:
-        model = Profile
-        fields = '__all__'  
+   class Meta:
+      model = Profile
+      fields = '__all__'
 
-    def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        user = User.objects.create(**user_data)
-        profile = Profile.objects.create(user=user, **validated_data)
-        return profile
+   def create(self, validated_data):
+      user_data = validated_data.pop('user')
+      user = User.objects.create(**user_data)
+      profile = Profile.objects.create(user=user, **validated_data)
+      return profile
 
-    def update(self, instance, validated_data):
-        user_data = validated_data.pop('user', None)
-        if user_data:
-            for key, value in user_data.items():
-                setattr(instance.user, key, value)
-            instance.user.save()
-        
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-        return instance
+   def update(self, instance, validated_data):
+      user_data = validated_data.pop('user', None)
+      if user_data:
+         for key, value in user_data.items():
+            setattr(instance.user, key, value)
+         instance.user.save()
 
-
-
+      for key, value in validated_data.items():
+         setattr(instance, key, value)
+      instance.save()
+      return instance
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
