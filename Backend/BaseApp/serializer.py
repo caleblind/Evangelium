@@ -8,7 +8,7 @@ from .models import Tag, TagRecord, SearchHistory,\
 class UserSerializer(serializers.ModelSerializer):
    class Meta:
       model = User
-      fields = ['id', 'username', 'email']
+      fields = ['id', 'username', 'email', 'password']
 
 class ProfileSerializer(serializers.ModelSerializer):
    user = UserSerializer()  # Nested User serializer

@@ -29,6 +29,8 @@ class Profile(models.Model):
    description = models.TextField(blank=True, null=True)
    profile_picture = models.URLField(max_length=225, null=True, blank=True)
 
+   #tags = models.ManyToManyField(Tag, blank=True)
+
 
 
 # Defines the Tag Record table

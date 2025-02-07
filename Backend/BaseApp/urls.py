@@ -2,7 +2,8 @@ from django.urls import path, include
 from rest_framework import routers
 from .views import LoginView, UserViewSet, TagViewSet, TagRecordViewSet,\
                    SearchHistoryViewSet, ExternalMediaViewSet,\
-                   LogoutView, ProfileListCreateView, ProfileDetailView
+                   LogoutView, ProfileListCreateView, ProfileDetailView,\
+                   SimilarUsersView
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
@@ -20,4 +21,5 @@ urlpatterns = [
         name='profile-list-create'),
    path('api/profiles/<int:pk>/', ProfileDetailView.as_view(),
         name='profile-detail'),
+   path('similar-users/', SimilarUsersView.as_view(), name='similar-users'),
 ]
