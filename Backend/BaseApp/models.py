@@ -28,7 +28,11 @@ class Profile(models.Model):
    years_of_experience = models.IntegerField(blank=True, null=True)
    description = models.TextField(blank=True, null=True)
    profile_picture = models.URLField(max_length=225, null=True, blank=True)
-
+   # Simple Many-to-Many for tags
+   tags = models.ManyToManyField(Tag, blank=True)
+   
+   def __str__(self):
+      return f"{self.first_name} {self.last_name}"
 
 
 # Defines the Tag Record table

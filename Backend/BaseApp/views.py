@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,21 +16,18 @@ from .serializer import TagSerializer,\
                         ExternalMediaSerializer, LoginSerializer, ProfileSerializer
 
 
-
-
-
 class ProfileListCreateView(generics.ListCreateAPIView):
-    queryset = Profile.objects.select_related('user').all()
-    serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]  # Public access for testing
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
-    filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination', 'tags']
+   queryset = Profile.objects.select_related('user').prefetch_related('tags').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public for testing
+   filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+   search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
+   filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination', 'tags']
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Profile.objects.select_related('user').all()
-    serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]  # Public access for testing
+   queryset = Profile.objects.select_related('user').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public access for testing
 
 
 
