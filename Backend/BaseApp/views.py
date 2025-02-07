@@ -2,7 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework import status, generics, filters
 from django.contrib.auth import login, logout
@@ -25,6 +25,9 @@ class ProfileListCreateView(generics.ListCreateAPIView):
    filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination', 'tags']
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
+   queryset = Profile.objects.select_related('user').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public access for testing
    queryset = Profile.objects.select_related('user').all()
    serializer_class = ProfileSerializer
    permission_classes = [AllowAny]  # Public access for testing

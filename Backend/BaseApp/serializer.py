@@ -5,9 +5,9 @@ from .models import Tag, TagRecord, SearchHistory,\
                     ExternalMedia, Profile
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email']
+   class Meta:
+      model = User
+      fields = ['id', 'username', 'email']
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    tags = TagSerializer(many=True)  # ✅ Nested serialization for full CRUD
+    tags = TagSerializer(many=True)  # Nested serialization for full CRUD
 
     class Meta:
         model = Profile
@@ -25,7 +25,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
-        tags_data = validated_data.pop('tags', [])  # ✅ Extract tags safely
+        tags_data = validated_data.pop('tags', [])  # Extract tags safely
 
         user = User.objects.create(**user_data)
         profile = Profile.objects.create(user=user, **validated_data)
@@ -36,7 +36,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             tag_instance, _ = Tag.objects.get_or_create(name=tag_data['name'])
             tag_instances.append(tag_instance)
 
-        profile.tags.set(tag_instances)  # ✅ Assign Many-to-Many tags properly
+        profile.tags.set(tag_instances)  # Assign Many-to-Many tags properly
         return profile
 
     def update(self, instance, validated_data):
@@ -58,7 +58,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                 tag_instance, _ = Tag.objects.get_or_create(name=tag_data['name'])
                 tag_instances.append(tag_instance)
 
-            instance.tags.set(tag_instances)  # ✅ Replace old tags with new ones
+            instance.tags.set(tag_instances)  # Replace old tags with new ones
 
         return instance
 
