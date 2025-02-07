@@ -10,10 +10,6 @@ class UserSerializer(serializers.ModelSerializer):
       model = User
       fields = ['id', 'username', 'email', 'password']
 
-   def get_tags(self, obj):
-      tag_records = TagRecord.objects.filter(user=obj.user)
-      return [tag_record.tag.tag_name for tag_record in tag_records]
-
 class ProfileSerializer(serializers.ModelSerializer):
    user = UserSerializer()  # Nested User serializer
 
