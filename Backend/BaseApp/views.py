@@ -95,10 +95,12 @@ class SimilarUsersView(generics.ListAPIView):
       user = self.request.user
 
       # Get the tags associated with the logged in user
-      user_tags = TagRecord.objects.filter(user=user).values_list('tag', flat=True)
+      user_tags = TagRecord.objects.filter(user=user).values_list(
+         'tag', flat=True)
 
       # Find users who share at least one tag with the logged-in user
-      similar_users = TagRecord.objects.filter(tag__in=user_tags).values_list('user', flat=True).distinct()
+      similar_users = TagRecord.objects.filter(tag__in=user_tags).values_list(
+         'user', flat=True).distinct()
 
       # Exclude the logged-in user from the result
       return Profile.objects.filter(user__in=similar_users).exclude(user=user)

@@ -1,5 +1,4 @@
 from django.db import models
-from django.conf import settings
 from django.contrib.auth.models import User
 
 # Defines the Tag table
@@ -10,7 +9,9 @@ class Tag(models.Model):
 
 # Defines the Supporter table
 class Profile(models.Model):
-   user = models.OneToOneField(User,                              on_delete=models.CASCADE, primary_key=True)
+   user = models.OneToOneField(
+      User,
+      on_delete=models.CASCADE, primary_key=True)
    user_type = models.CharField(
         max_length=15,
         choices=[('missionary', 'Missionary'), ('supporter', 'Supporter'),
