@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Tag, TagRecord, SearchHistory,\
-                    ExternalMedia
+                    ExternalMedia, Profile
 from .serializer import TagSerializer, TagRecordSerializer,\
                         SeachHistorySerializer, ExternalMediaSerializer,\
                         LoginSerializer, ProfileSerializer,\
