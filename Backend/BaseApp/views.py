@@ -80,23 +80,21 @@ class LogoutView(APIView):
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
 
-#class SimilarUsersView(generics.ListAPIView):
-#   serializer_class = ProfileSerializer
-#   permission_classes = [AllowAny]
+class SimilarUsersView(generics.ListAPIView):
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]
 
-#   def get_queryset(self):
-#      user = self.request.user
+   def get_queryset(self):
+      user = self.request.user
 
       # Get the tags associated with the logged in user
-#      user_tags = TagRecord.objects.filter(user=user).values_list(
-#         'tag', flat=True)
+      user_tags = user.profile.tags.all()
 
       # Find users who share at least one tag with the logged-in user
-#      similar_users = TagRecord.objects.filter(tag__in=user_tags).values_list(
-#         'user', flat=True).distinct()
+      similar_users = Profile.objects.filter(tags__in=user_tags).distinct()
 
       # Exclude the logged-in user from the result
-#      return Profile.objects.filter(user__in=similar_users).exclude(user=user)
+      return similar_users.exclude(user=user)
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
