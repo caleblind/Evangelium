@@ -4,17 +4,31 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
-from rest_framework import status
+from rest_framework import status, generics, filters
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Tag, TagRecord, SearchHistory,\
                     ExternalMedia
-from .serializer import TagSerializer,\
-                        TagRecordSerializer, SeachHistorySerializer,\
-                        ExternalMediaSerializer, LoginSerializer,\
+from .serializer import TagSerializer, TagRecordSerializer,\
+                        SeachHistorySerializer, ExternalMediaSerializer,\
+                        LoginSerializer, ProfileSerializer,\
                         RegistrationSerializer
+
+class ProfileListCreateView(generics.ListCreateAPIView):
+   queryset = Profile.objects.select_related('user').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public access for testing
+   filter_backends = [filters.SearchFilter]
+   search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
+   filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination',
+                       'tags']
+
+class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
+   queryset = Profile.objects.select_related('user').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public access for testing
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
@@ -73,6 +87,21 @@ class LogoutView(APIView):
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
 
+class SimilarUsersView(generics.ListAPIView):
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]
+
+   def get_queryset(self):
+      user = self.request.user
+
+      # Get the tags associated with the logged in user
+      user_tags = TagRecord.objects.filter(user=user).values_list('tag', flat=True)
+
+      # Find users who share at least one tag with the logged-in user
+      similar_users = TagRecord.objects.filter(tag__in=user_tags).values_list('user', flat=True).distinct()
+
+      # Exclude the logged-in user from the result
+      return Profile.objects.filter(user__in=similar_users).exclude(user=user)
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
