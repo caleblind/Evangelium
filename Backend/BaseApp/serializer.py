@@ -35,11 +35,6 @@ class ProfileSerializer(serializers.ModelSerializer):
       instance.save()
       return instance
 
-class UserSerializer(serializers.ModelSerializer):
-   class Meta:
-      model =  User
-      fields = '__all__'
-
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
    class Meta:

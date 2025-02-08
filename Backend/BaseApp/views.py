@@ -1,20 +1,16 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.authentication import SessionAuthentication
 from rest_framework import status, generics, filters
-from django.contrib.auth import login, logout
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Tag, TagRecord, SearchHistory,\
                     ExternalMedia, Profile
 from .serializer import TagSerializer, TagRecordSerializer,\
                         SeachHistorySerializer, ExternalMediaSerializer,\
-                        LoginSerializer, ProfileSerializer,\
+                        ProfileSerializer,\
                         RegistrationSerializer, UserSerializer
 
 class ProfileListCreateView(generics.ListCreateAPIView):

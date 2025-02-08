@@ -12,7 +12,6 @@ router.register('tag', TagViewSet)
 router.register('tagrecord', TagRecordViewSet)
 router.register('searchhistory', SearchHistoryViewSet)
 router.register('externalmedia', ExternalMediaViewSet)
-#router.register('login/', login_view)
 
 urlpatterns = [
    path('', include(router.urls)),
