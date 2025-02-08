@@ -1,15 +1,35 @@
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework import status
-from django.contrib.auth import logout
+from rest_framework.authentication import SessionAuthentication
+from rest_framework import status, generics, filters
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from .models import Tag, TagRecord, SearchHistory, ExternalMedia
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
+from .models import Tag, TagRecord, SearchHistory,\
+                    ExternalMedia, Profile
 from .serializer import TagSerializer, TagRecordSerializer,\
                         SeachHistorySerializer, ExternalMediaSerializer,\
-                        UserSerializer, RegistrationSerializer
+                        LoginSerializer, ProfileSerializer,\
+                        RegistrationSerializer, UserSerializer
+
+class ProfileListCreateView(generics.ListCreateAPIView):
+   queryset = Profile.objects.select_related('user').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public access for testing
+   filter_backends = [filters.SearchFilter]
+   search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
+   filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination',
+                       'tags']
+
+class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
+   queryset = Profile.objects.select_related('user').all()
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]  # Public access for testing
 
 # User viewset that performs CRUD operations
 class UserViewSet(ModelViewSet):
@@ -52,6 +72,24 @@ class LogoutView(APIView):
       return Response({'message':'logout successful'},
                       status=status.HTTP_200_OK)
 
+class SimilarUsersView(generics.ListAPIView):
+   serializer_class = ProfileSerializer
+   permission_classes = [AllowAny]
+
+   def get_queryset(self):
+      user = self.request.user
+
+      # Get the tags associated with the logged in user
+      user_tags = TagRecord.objects.filter(user=user).values_list(
+         'tag', flat=True)
+
+      # Find users who share at least one tag with the logged-in user
+      similar_users = TagRecord.objects.filter(tag__in=user_tags).values_list(
+         'user', flat=True).distinct()
+
+      # Exclude the logged-in user from the result
+      return Profile.objects.filter(user__in=similar_users).exclude(user=user)
+
 @api_view(['POST'])
 @permission_classes((AllowAny,))
 def RegistrationView(request):
@@ -65,11 +103,12 @@ def RegistrationView(request):
          return Response({
             'message': 'User created successfully',
             'user': {
-               'email': user.email,
+                 'username': user.username,
+                    'email': user.email,
                'first_name': user.first_name,
-               'last_name': user.last_name
+                'last_name': user.last_name
             }
          }, status=status.HTTP_201_CREATED)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-   return Response({'detail': 'Method not allowed'},
-                   status=status.HTTP_405_METHOD_NOT_ALLOWED)
+   return Response   ({'detail': 'Method not allowed'},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)

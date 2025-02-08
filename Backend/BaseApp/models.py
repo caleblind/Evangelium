@@ -1,10 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# Defines the Tag table
+class Tag(models.Model):
+   tag_name = models.CharField(max_length=100, null=False)
+   tag_description = models.TextField(blank=True)
+   tag_is_predefined = models.BooleanField(default=True)
+
 # Defines the Supporter table
 class Profile(models.Model):
-   user = models.OneToOneField(User,
-                               on_delete=models.CASCADE, primary_key=True)
+   user = models.OneToOneField(
+      User,
+      on_delete=models.CASCADE, primary_key=True)
    user_type = models.CharField(
         max_length=15,
         choices=[('missionary', 'Missionary'), ('supporter', 'Supporter'),
@@ -23,11 +30,9 @@ class Profile(models.Model):
    description = models.TextField(blank=True, null=True)
    profile_picture = models.URLField(max_length=225, null=True, blank=True)
 
-# Defines the Tag table
-class Tag(models.Model):
-   tag_name = models.CharField(max_length=100, null=False)
-   tag_description = models.TextField(blank=True)
-   tag_is_predefined = models.BooleanField(default=True)
+   #tags = models.ManyToManyField(Tag, blank=True)
+
+
 
 # Defines the Tag Record table
 class TagRecord(models.Model):
