@@ -1,15 +1,14 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import LoginView, UserViewSet, TagViewSet, TagRecordViewSet,\
+from .views import LoginView, UserViewSet, TagViewSet,\
                    SearchHistoryViewSet, ExternalMediaViewSet,\
                    LogoutView, ProfileListCreateView, ProfileDetailView,\
-                   SimilarUsersView, RegistrationView
+                   RegistrationView #SimilarUsersView
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
 router.register('user', UserViewSet)
 router.register('tag', TagViewSet)
-router.register('tagrecord', TagRecordViewSet)
 router.register('searchhistory', SearchHistoryViewSet)
 router.register('externalmedia', ExternalMediaViewSet)
 
@@ -21,6 +20,6 @@ urlpatterns = [
         name='profile-list-create'),
    path('api/profiles/<int:pk>/', ProfileDetailView.as_view(),
         name='profile-detail'),
-   path('similar-users/', SimilarUsersView.as_view(), name='similar-users'),
+   #path('similar-users/', SimilarUsersView.as_view(), name='similar-users'),
    path('registration/', RegistrationView, name="registration")
 ]

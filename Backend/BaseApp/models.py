@@ -30,19 +30,11 @@ class Profile(models.Model):
    description = models.TextField(blank=True, null=True)
    profile_picture = models.URLField(max_length=225, null=True, blank=True)
 
-   #tags = models.ManyToManyField(Tag, blank=True)
+   # Sample tag field
+   tags = models.ManyToManyField(Tag, related_name='profiles', blank=True)
 
-
-
-# Defines the Tag Record table
-class TagRecord(models.Model):
-   tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-   user = models.ForeignKey(User, on_delete=models.CASCADE)
-   added_date = models.DateTimeField(auto_now_add=True)
-
-   # Overwrites the automatic plural form of words in admin
-   class Meta:
-      verbose_name_plural = "Tag Records"
+   def __str__(self):
+      return f"{self.user.username} - {self.user_type}"
 
 # Defines Search History table
 class SearchHistory(models.Model):
