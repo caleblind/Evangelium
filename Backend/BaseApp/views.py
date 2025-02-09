@@ -18,12 +18,14 @@ from .serializer import TagSerializer, SeachHistorySerializer,\
                         RegistrationSerializer
 
 class ProfileListCreateView(generics.ListCreateAPIView):
-   queryset = Profile.objects.select_related('user').prefetch_related('tags').all()
+   queryset = Profile.objects.select_related(
+      'user').prefetch_related('tags').all()
    serializer_class = ProfileSerializer
    permission_classes = [AllowAny]  # Public access for testing
    filter_backends = [filters.SearchFilter]
    search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
-   filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination', 'tags']
+   filterset_fields = ['user_type', 'city', 'state', 'country',
+                       'denomination', 'tags']
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
    queryset = Profile.objects.select_related('user').all()

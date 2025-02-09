@@ -34,7 +34,7 @@ class Profile(models.Model):
    tags = models.ManyToManyField(Tag, related_name='profiles', blank=True)
 
    def __str__(self):
-      return f"{self.user.username} - {self.user_type}"
+      return f"{self.user.username} - {self.user_type}" # pylint: disable=no-member
 
 # Defines Search History table
 class SearchHistory(models.Model):

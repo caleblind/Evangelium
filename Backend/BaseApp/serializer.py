@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import Tag, SearchHistory,\
-                    ExternalMedia, Profile 
+                    ExternalMedia, Profile
 
 class UserSerializer(serializers.ModelSerializer):
    class Meta:
