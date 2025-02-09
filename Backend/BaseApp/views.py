@@ -6,21 +6,25 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status, generics, filters
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from .models import Tag, TagRecord, SearchHistory,\
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
+from .models import Tag, SearchHistory,\
                     ExternalMedia, Profile
-from .serializer import TagSerializer, TagRecordSerializer,\
-                        SeachHistorySerializer, ExternalMediaSerializer,\
-                        ProfileSerializer,\
+
+from .serializer import TagSerializer, SeachHistorySerializer,\
+                        ExternalMediaSerializer,\
+                        LoginSerializer, ProfileSerializer,\
                         RegistrationSerializer, UserSerializer
 
 class ProfileListCreateView(generics.ListCreateAPIView):
-   queryset = Profile.objects.select_related('user').all()
+   queryset = Profile.objects.select_related(
+      'user').prefetch_related('tags').all()
    serializer_class = ProfileSerializer
    permission_classes = [AllowAny]  # Public access for testing
    filter_backends = [filters.SearchFilter]
    search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
-   filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination',
-                       'tags']
+   filterset_fields = ['user_type', 'city', 'state', 'country',
+                       'denomination', 'tags']
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
    queryset = Profile.objects.select_related('user').all()
@@ -39,13 +43,6 @@ class TagViewSet(ModelViewSet):
    filterset_fields = ['tag_name','tag_description','tag_is_predefined']
    queryset = Tag.objects.all()
    serializer_class = TagSerializer
-   permission_classes = [AllowAny]
-
-# Tag record viewset that performs CRUD operations
-class TagRecordViewSet(ModelViewSet):
-   filterset_fields = ['tag','user','added_date']
-   queryset = TagRecord.objects.all()
-   serializer_class = TagRecordSerializer
    permission_classes = [AllowAny]
 
 # Search history viewset that performs CRUD operations
@@ -76,15 +73,13 @@ class SimilarUsersView(generics.ListAPIView):
       user = self.request.user
 
       # Get the tags associated with the logged in user
-      user_tags = TagRecord.objects.filter(user=user).values_list(
-         'tag', flat=True)
+      user_tags = user.profile.tags.all()
 
       # Find users who share at least one tag with the logged-in user
-      similar_users = TagRecord.objects.filter(tag__in=user_tags).values_list(
-         'user', flat=True).distinct()
+      similar_users = Profile.objects.filter(tags__in=user_tags).distinct()
 
       # Exclude the logged-in user from the result
-      return Profile.objects.filter(user__in=similar_users).exclude(user=user)
+      return similar_users.exclude(user=user)
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))

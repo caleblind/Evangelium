@@ -1,15 +1,14 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import UserViewSet, TagViewSet, TagRecordViewSet,\
+from .views import LoginView, UserViewSet, TagViewSet,\
                    SearchHistoryViewSet, ExternalMediaViewSet,\
                    LogoutView, ProfileListCreateView, ProfileDetailView,\
-                   SimilarUsersView, RegistrationView
+                   RegistrationView, SimilarUsersView
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
 router.register('user', UserViewSet)
 router.register('tag', TagViewSet)
-router.register('tagrecord', TagRecordViewSet)
 router.register('searchhistory', SearchHistoryViewSet)
 router.register('externalmedia', ExternalMediaViewSet)
 
