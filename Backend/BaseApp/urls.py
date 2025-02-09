@@ -14,7 +14,6 @@ router.register('externalmedia', ExternalMediaViewSet)
 
 urlpatterns = [
    path('', include(router.urls)),
-   path('login/', LoginView.as_view(), name="login"),
    path('logout/', LogoutView.as_view(), name="logout"),
    path('api/profiles/', ProfileListCreateView.as_view(),
         name='profile-list-create'),
