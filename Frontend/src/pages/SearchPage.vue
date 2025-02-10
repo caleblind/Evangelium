@@ -81,7 +81,11 @@
       <UserCard
         v-for="user in users"
         :key="user.id"
-        :name="user.name"
+        :first_name="user.first_name"
+        :last_name="user.last"
+        :city="user.city"
+        :state="user.state"
+        :country="user.country"
         :description="user.description"
       />
     </div>
