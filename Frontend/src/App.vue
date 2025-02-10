@@ -8,6 +8,11 @@
       </div>
     </div>
   </div>
+  <nav>
+    <router-link to="/login">Login</router-link> |
+    <router-link to="/register">Register</router-link>
+  </nav>
+  <router-view />
 </template>
 
 <script>
@@ -20,3 +25,10 @@ export default {
   },
 };
 </script>
+
+<style>
+nav {
+  text-align: center;
+  margin-bottom: 20px;
+}
+</style>

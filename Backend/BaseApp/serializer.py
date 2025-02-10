@@ -18,10 +18,27 @@ class ProfileSerializer(serializers.ModelSerializer):
       fields = '__all__'
 
    def create(self, validated_data):
-      user_data = validated_data.pop('user')
-      user = User.objects.create(**user_data)
-      profile = Profile.objects.create(user=user, **validated_data)
-      return profile
+    user_data = validated_data.pop('user')  
+    user = User.objects.create(**user_data)  
+
+    # ✅ Extract all other profile fields explicitly
+    profile = Profile.objects.create(
+        user=user,
+        user_type=validated_data.get('user_type', 'other'),
+        first_name=validated_data.get('first_name', ''),
+        last_name=validated_data.get('last_name', ''),
+        denomination=validated_data.get('denomination', ''),
+        street_address=validated_data.get('street_address', ''),
+        city=validated_data.get('city', ''),
+        state=validated_data.get('state', ''),
+        country=validated_data.get('country', ''),
+        phone_number=validated_data.get('phone_number', ''),
+        years_of_experience=validated_data.get('years_of_experience', None),
+        description=validated_data.get('description', ''),
+        profile_picture=validated_data.get('profile_picture', ''),
+    )
+    return profile
+
 
    def update(self, instance, validated_data):
       user_data = validated_data.pop('user', None)
