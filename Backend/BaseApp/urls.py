@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import LoginView, UserViewSet, TagViewSet,\
+from .views import UserViewSet, TagViewSet,\
                    SearchHistoryViewSet, ExternalMediaViewSet,\
                    LogoutView, ProfileListCreateView, ProfileDetailView,\
                    RegistrationView, SimilarUsersView
