@@ -11,6 +11,7 @@
     <nav class="nav-links">
       <a href="/" class="nav-link">Home</a>
       <a href="/SearchPage" class="nav-link">Explore</a>
+      <a href="/RegistrationPage" class="nav-link">Register</a>
       <!--<a href="/UserProfile" class="nav-link">Profile Page</a>-->
     </nav>
   </header>
