@@ -2,16 +2,18 @@
   <header class="header-banner">
     <!-- Site Icon -->
     <div class="site-icon">
-      <a href="/" title="Home">
+      <a href="/LandingPage" title="SaltnLife">
         <img src="/path-to-site-icon.png" alt="SaltnLight Logo" class="icon" />
       </a>
     </div>
 
     <!-- Navigation Links -->
     <nav class="nav-links">
-      <a href="/" class="nav-link">Home</a>
       <a href="/SearchPage" class="nav-link">Explore</a>
       <!--<a href="/UserProfile" class="nav-link">Profile Page</a>-->
+      <div>
+        <button @click="logout">Logout</button>
+      </div>
     </nav>
   </header>
 </template>
@@ -19,6 +21,16 @@
 <script>
 export default {
   name: "HeaderComponent",
+  methods: {
+    logout() {
+      // Clear tokens from localStorage
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+
+      // Redirect to login
+      this.$router.push("/");
+    },
+  },
 };
 </script>
 
