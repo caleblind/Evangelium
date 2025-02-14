@@ -1,11 +1,31 @@
 <template>
-  <div classes="card_container">
-    <h2>{{ first_name }}</h2>
-    <p>Contact: {{ description }}</p>
-  </div>
+  <v-row align="center" justify="center" dense>
+    <v-col cols="12" md="6">
+      <div class="card_container">
+        <v-card
+          append-avatar="userImage"
+          class="mx-auto"
+          prepend-avatar="userImage"
+          subtitle="prepend-avatar and append-avatar"
+          title="Avatars"
+        >
+          <v-card-text>
+            <h2>
+              <span>{{ first_name }}</span>
+              <span>{{ last_name }}</span>
+            </h2>
+            <p>{{ city }}, {{ state }}</p>
+            <p>{{ description }}</p>
+            <p>Tags:</p>
+          </v-card-text>
+        </v-card>
+      </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
+import userImage from "@/assets/pictures/world.jpg";
 export default {
   name: "UserCard",
   props: {
@@ -34,10 +54,25 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      userImage: userImage,
+    };
+  },
 };
 </script>
 
 <style scoped>
+h2 {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+h2 span {
+  display: inline-block;
+}
+
 .card_container {
   display: flex;
   width: 283px;
@@ -45,8 +80,8 @@ export default {
   padding: 12px;
   align-items: center;
   gap: 12px;
-  border-radius: 8px;
-  background: #ffff00;
+  border-radius: 0;
+  background: #ffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 

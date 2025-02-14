@@ -76,7 +76,7 @@
   </div>
 
   <div class="user-list">
-    <div class="cards-container">
+    <div class="card-container">
       <!-- Loop through the users array and pass data to the Card component -->
       <UserCard
         v-for="user in users"

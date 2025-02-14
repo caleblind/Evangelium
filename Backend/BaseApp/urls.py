@@ -14,6 +14,6 @@ urlpatterns = [
    path('', include(router.urls)),
    path('api/profiles/', ProfileListCreateView.as_view(),
         name='profile-list-create'),
-   path('api/profiles/<int:pk>/', ProSfileDetailView.as_view(),
+   path('api/profiles/<int:pk>/', ProfileDetailView.as_view(),
         name='profile-detail'),
 ]
