@@ -5,7 +5,7 @@ import LandingPage from "@/pages/LandingPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
 
 function isAuthenticated() {
-  return !!localStorage.getItem('access_token'); // Check if user is logged in
+  return !!localStorage.getItem("access_token"); // Check if user is logged in
 }
 
 const routes = [
@@ -13,9 +13,17 @@ const routes = [
   { path: "/AppLogin", component: AppLogin },
 
   // Protected routes (require authentication)
-  { path: "/LandingPage", component: LandingPage, meta: { requiresAuth: true } },
+  {
+    path: "/LandingPage",
+    component: LandingPage,
+    meta: { requiresAuth: true },
+  },
   { path: "/SearchPage", component: SearchPage, meta: { requiresAuth: true } },
-  { path: "/UserProfile", component: UserProfile, meta: { requiresAuth: true } },
+  {
+    path: "/UserProfile",
+    component: UserProfile,
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

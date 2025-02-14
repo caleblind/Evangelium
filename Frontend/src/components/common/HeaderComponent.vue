@@ -12,8 +12,8 @@
       <a href="/SearchPage" class="nav-link">Explore</a>
       <!--<a href="/UserProfile" class="nav-link">Profile Page</a>-->
       <div>
-    <button @click="logout">Logout</button>
-  </div>
+        <button @click="logout">Logout</button>
+      </div>
     </nav>
   </header>
 </template>
