@@ -5,10 +5,18 @@
         <v-card
           append-avatar="userImage"
           class="mx-auto"
+          elevation="16"
+          max-width="344"
           prepend-avatar="userImage"
           subtitle="prepend-avatar and append-avatar"
           title="Avatars"
         >
+          <v-card-item>
+            <v-card-title> Card title </v-card-title>
+
+            <v-card-subtitle> Card subtitle secondary text </v-card-subtitle>
+          </v-card-item>
+
           <v-card-text>
             <h2>
               <span>{{ first_name }}</span>
@@ -25,7 +33,7 @@
 </template>
 
 <script>
-import userImage from "@/assets/pictures/world.jpg";
+import userImage from "@/assets/pictures/missionaryprof.jpeg";
 export default {
   name: "UserCard",
   props: {
