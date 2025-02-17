@@ -1,13 +1,8 @@
 <template>
-  <div id="app">
+  <div class="hero-section">
     <header>
-      <div class="logo">SaltnLight Logo</div>
-      <nav>
-        <a href="#">About Us</a>
-        <a href="#">The Team</a>
-        <a href="#">FAQ</a>
-        <button class="login-btn">Log In</button>
-      </nav>
+      <div></div>
+      <nav></nav>
     </header>
 
     <main>
@@ -16,7 +11,7 @@
           <h1>Connecting Churches and Missionaries Worldwide.</h1>
           <p>
             Empowering partnerships for a greater impact. Discover, connect, and
-            support like-minded missionaries and churches.
+            support like-minded churches and missionaries.
           </p>
           <div class="cta-buttons">
             <button class="get-started-btn" @click="getStarted">
@@ -34,51 +29,45 @@
 
 <script>
 export default {
+  name: "HeroSection",
   methods: {
     getStarted() {
-      // Handle Get Started logic
-      console.log("Get Started clicked");
+      // Redirect to RegistrationPagePage
+      this.$router.push("/AppLogin");
     },
     learnMore() {
-      // Handle Learn More logic
-      console.log("Learn More clicked");
+      // Scroll to the About Us section
+      const aboutSection = document.getElementById("about-us");
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ behavior: "smooth" });
+      }
     },
   },
-  name: "HeroSection",
 };
 </script>
 
 <style scoped>
+/* Global resets */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: transparent;
-}
-
-#app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
+/* Header styling */
 header {
   display: flex;
   justify-content: space-between;
   padding: 20px 50px;
-  background-color: transparent;
   position: absolute;
   width: 100%;
   z-index: 10;
 }
 
-.logo {
+.logo-link {
   font-size: 18px;
   color: white;
+  text-decoration: none;
 }
 
 nav {
@@ -86,46 +75,28 @@ nav {
   align-items: center;
 }
 
-nav a {
+.nav-link {
   color: white;
   margin: 0 15px;
   text-decoration: none;
 }
 
-.login-btn {
-  background-color: white;
-  border: none;
-  color: black;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-main {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-}
-
+/* Hero section styling */
 .hero {
-  flex: 1;
-  background-image: url("/src/assets//pictures/missionary_background.jpg");
+  height: 100vh;
+  background-image: url("/src/assets/pictures/missionary_background.jpg");
   background-size: cover;
   background-position: center;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
   text-align: center;
+  color: white;
   padding: 0 20px;
 }
 
 .hero-content {
   max-width: 700px;
-}
-
-.hero-content textarea:focus {
-  caret-color: transparent;
 }
 
 .hero h1 {
