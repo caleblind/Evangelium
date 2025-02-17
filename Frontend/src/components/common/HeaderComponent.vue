@@ -3,7 +3,11 @@
     <!-- Site Icon -->
     <div class="site-icon">
       <a href="/LandingPage" title="SaltnLife">
-        <img src="/path-to-site-icon.png" alt="SaltnLight Logo" class="icon" />
+        <img
+          src="@\assets\pictures\saltnlightlogo1.webp"
+          alt="SaltnLight Logo"
+          class="icon"
+        />
       </a>
     </div>
 
@@ -49,7 +53,9 @@ export default {
 /* Site Icon */
 .site-icon .icon {
   height: 40px;
-  width: auto;
+  width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* Navigation Links */
@@ -66,5 +72,21 @@ export default {
 
 .nav-link:hover {
   color: #007bff;
+}
+
+/* Logout Button Styling */
+.header-banner button {
+  background-color: #333;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 40px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.header-banner button:hover {
+  background-color: #0056b3;
 }
 </style>
