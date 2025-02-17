@@ -16,7 +16,7 @@ class Profile(models.Model):
         max_length=15,
         choices=[('missionary', 'Missionary'), ('supporter', 'Supporter'),
                  ('other', 'Other')],
-        default='other'
+        default='other',  blank=True, null=True
     )
    first_name = models.CharField(max_length=100, blank=True, null=True)
    last_name = models.CharField(max_length=100, blank=True, null=True)

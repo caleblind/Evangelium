@@ -112,6 +112,11 @@ export default {
         );
         this.message = "Registration successful!";
         console.log("Registration response:", response.data);
+
+        // Redirect to login page after successful registration
+        setTimeout(() => {
+          this.$router.push("/AppLogin");
+        }, 1000); // Optional delay for user to read the success message
       } catch (error) {
         console.error("Registration failed:", error.response?.data);
         this.message = "Registration failed. Please try again.";
