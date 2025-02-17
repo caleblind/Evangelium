@@ -5,7 +5,11 @@
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else>
       <div class="profile-card">
-        <img :src="profile.avatar || defaultAvatar" alt="Profile Picture" class="avatar" />
+        <img
+          :src="profile.avatar || defaultAvatar"
+          alt="Profile Picture"
+          class="avatar"
+        />
         <h2>{{ profile.username }}</h2>
         <p><strong>Email:</strong> {{ profile.email }}</p>
         <p><strong>Full Name:</strong> {{ profile.full_name }}</p>
@@ -16,16 +20,20 @@
       <div v-if="editing" class="edit-form">
         <h2>Edit Profile</h2>
         <form @submit.prevent="updateProfile">
-          <label>Username:
+          <label
+            >Username:
             <input v-model="profile.username" type="text" required />
           </label>
-          <label>Email:
+          <label
+            >Email:
             <input v-model="profile.email" type="email" required />
           </label>
-          <label>Full Name:
+          <label
+            >Full Name:
             <input v-model="profile.full_name" type="text" />
           </label>
-          <label>Bio:
+          <label
+            >Bio:
             <textarea v-model="profile.bio"></textarea>
           </label>
           <button type="submit">Save Changes</button>
@@ -37,7 +45,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
@@ -46,32 +54,35 @@ export default {
       loading: true,
       error: null,
       editing: false,
-      defaultAvatar: 'https://via.placeholder.com/150'
+      defaultAvatar: "https://via.placeholder.com/150",
     };
   },
   methods: {
     async fetchProfile() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/profiles');
+        const response = await axios.get("http://127.0.0.1:8000/api/profiles");
         this.profile = response.data;
       } catch (err) {
-        this.error = 'Failed to load profile data.';
+        this.error = "Failed to load profile data.";
       } finally {
         this.loading = false;
       }
     },
     async updateProfile() {
       try {
-        await axios.put(`http://127.0.0.1:8000/api/profiles/${this.profile.id}/`, this.profile);
+        await axios.put(
+          `http://127.0.0.1:8000/api/profiles/${this.profile.id}/`,
+          this.profile
+        );
         this.editing = false;
       } catch (err) {
-        this.error = 'Failed to update profile data.';
+        this.error = "Failed to update profile data.";
       }
-    }
+    },
   },
   created() {
     this.fetchProfile();
-  }
+  },
 };
 </script>
 
@@ -102,7 +113,8 @@ form label {
   display: block;
   margin: 10px 0;
 }
-input, textarea {
+input,
+textarea {
   width: 100%;
   padding: 8px;
   margin-top: 5px;
