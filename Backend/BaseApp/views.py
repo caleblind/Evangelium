@@ -1,11 +1,24 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import generics, filters
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 from .models import Tag, SearchHistory,\
                     ExternalMedia, Profile
 from .serializer import TagSerializer, SeachHistorySerializer,\
                         ExternalMediaSerializer,\
                         ProfileSerializer
+
+
+class CurrentUserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Retrieve the profile of the currently authenticated user."""
+        profile = get_object_or_404(Profile, user=request.user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
 
 class ProfileListCreateView(generics.ListCreateAPIView):
    queryset = Profile.objects.select_related(
