@@ -53,11 +53,7 @@ const routes = [
   { path: "/LandingPage", component: LandingPage },
   { path: "/RegistrationPage", component: RegistrationPage },
   { path: "/SearchPage", component: SearchPage, meta: { requiresAuth: true } },
-  {
-    path: "/UserProfile",
-    component: UserProfile,
-    meta: { requiresAuth: true },
-  },
+  { path: "/UserProfile", component: UserProfile, meta: { requiresAuth: true }, },
 ];
 
 const router = createRouter({
