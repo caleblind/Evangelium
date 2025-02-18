@@ -4,6 +4,7 @@
       <h1>Create Your Account</h1>
       <form @submit.prevent="registerUser">
         <div class="form-group">
+          <!-- User fields for registration form  -->
           <label for="username">Username:</label>
           <input
             type="text"
@@ -23,6 +24,7 @@
             required
           />
 
+          <!-- Other fields for registration form -->
           <label for="tags">Select Tags:</label>
           <select id="tags" v-model="form.tags" multiple>
             <option v-for="tag in availableTags" :key="tag.id" :value="tag.id">
@@ -85,6 +87,7 @@
 import axios from "axios";
 
 export default {
+  // Format of data sent to the backend
   data() {
     return {
       form: {
