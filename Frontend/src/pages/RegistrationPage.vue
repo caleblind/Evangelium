@@ -1,7 +1,7 @@
 <template>
   <div class="registration-container">
     <div class="registration-card">
-      <h1>Register</h1>
+      <h1>Create Your Account</h1>
       <form @submit.prevent="registerUser">
         <div class="form-group">
           <label for="username">Username:</label>
@@ -22,6 +22,13 @@
             v-model="form.user.password"
             required
           />
+
+          <label for="tags">Select Tags:</label>
+          <select id="tags" v-model="form.tags" multiple>
+            <option v-for="tag in availableTags" :key="tag.id" :value="tag.id">
+              {{ tag.tag_name }}
+            </option>
+          </select>
 
           <label for="userType">User Type:</label>
           <input type="text" id="userType" v-model="form.user_type" />
@@ -67,7 +74,7 @@
             v-model="form.profile_picture"
           />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit">Sign Up</button>
       </form>
       <p v-if="message">{{ message }}</p>
     </div>
@@ -101,9 +108,22 @@ export default {
         profile_picture: "",
       },
       message: "",
+      availableTags: [],
     };
   },
   methods: {
+    // Fetches predefined tags from the backend
+    async fetchTags() {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/tag/");
+        this.availableTags = response.data.filter(
+          (tag) => tag.tag_is_predefined
+        );
+      } catch (error) {
+        console.error("Failed to fetch tags:", error.response?.data);
+      }
+    },
+    // Calls the profiles endpoint to register the user
     async registerUser() {
       try {
         const response = await axios.post(
@@ -113,7 +133,7 @@ export default {
         this.message = "Registration successful!";
         console.log("Registration response:", response.data);
 
-        // Redirect to login page after successful registration
+        // Redirects to login page after successful registration
         setTimeout(() => {
           this.$router.push("/AppLogin");
         }, 1000); // Optional delay for user to read the success message
@@ -123,62 +143,60 @@ export default {
       }
     },
   },
+  // Fetches all the predefined tags on page load
+  mounted() {
+    this.fetchTags();
+  },
 };
 </script>
 
 <style scoped>
-/* Full-Screen Container */
 .registration-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  background: white;
+  background: #f4f7fc;
   padding: 20px;
-  overflow-y: auto;
 }
 
-/* Registration Card */
 .registration-card {
   background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 90%;
-  max-width: 600px;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 500px;
   text-align: center;
-  max-height: 90vh;
-  overflow-y: auto;
 }
 
-/* Form Layout */
+.form-title {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
 form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-}
-
-/* Form Groups */
-.form-group {
-  display: flex;
-  flex-direction: column;
+  gap: 10px;
   text-align: left;
 }
 
 label {
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
-/* Inputs & Select */
 input,
 select,
 textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 14px;
+  border: 2.3px solid #ccc;
+  border-radius: 6px;
   font-size: 1rem;
   transition: border 0.3s ease-in-out;
 }
@@ -186,43 +204,34 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #6a11cb;
+  border-color: black;
   outline: none;
 }
 
-/* Multi-select dropdown */
-select[multiple] {
-  height: 120px;
-  padding: 8px;
-}
-
-/* Button */
-.register-btn {
-  background: #6a11cb;
+button {
+  background-color: black;
   color: white;
-  padding: 12px;
-  border: none;
+  padding: 15px 25px;
+  border: 2px solid black;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
+  margin-top: 30px;
 }
 
-.register-btn:hover {
-  background: #2c60b9;
+button:hover {
+  background-color: white;
+  color: black;
+  border-color: black;
 }
 
-/* Message */
+button:active {
+  transform: translateY(1px);
+}
+
 .message {
   margin-top: 15px;
   font-weight: bold;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .registration-card {
-    max-height: none;
-    overflow-y: visible;
-  }
+  color: #333;
 }
 </style>
