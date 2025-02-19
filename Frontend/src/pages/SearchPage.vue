@@ -87,7 +87,7 @@
         :state="user.state"
         :country="user.country"
         :description="user.description"
-        @click="$router.push(`/UserPyrofile/${user.id}`)"
+        @click="$router.push(`/UserProfile/${user.id}`)"
       />
     </div>
   </div>
