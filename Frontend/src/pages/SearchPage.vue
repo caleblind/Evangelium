@@ -95,12 +95,12 @@
 
 <script>
 import axios from "axios";
-import UserCard from "@/components/search/UserCard.vue";
+//import UserCard from "@/components/search/UserCard.vue";
 
 export default {
   name: "SearchPage" & "UserList",
   components: {
-    UserCard,
+    //UserCard,
   },
   data() {
     return {
