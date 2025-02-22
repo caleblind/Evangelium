@@ -5,14 +5,14 @@ from .models import Tag, SearchHistory,\
 
 class UserSerializer(serializers.ModelSerializer):
    class Meta:
-     model = User
-     fields = ['id', 'username', 'email', 'password']
+      model = User
+      fields = ['id', 'username', 'email', 'password']
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
    class Meta:
-     model  = Tag
-     fields = '__all__'
+      model  = Tag
+      fields = '__all__'
 
 class ProfileSerializer(serializers.ModelSerializer):
    user = UserSerializer(read_only=True)  # Prevent users from modifying `user`
@@ -26,7 +26,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
    def create(self, validated_data):
       """
-      Handles profile creation. The user field is automatically assigned to the request user.
+      Handles profile creation. The user field is automatically assigned to the
+      request user.
       """
       request = self.context.get('request')
       if request and hasattr(request, "user"):
@@ -45,10 +46,11 @@ class ProfileSerializer(serializers.ModelSerializer):
       - Admins can update any profile.
       """
       request = self.context.get('request')
-      
+
       if request and hasattr(request, "user"):
          if not request.user.is_staff and request.user != instance.user:
-            raise serializers.ValidationError("You can only edit your own profile.")
+            raise serializers.ValidationError(
+               "You can only edit your own profile.")
 
       validated_data.pop("user", None)  # Prevent modification of user field
 
