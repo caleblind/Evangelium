@@ -2,8 +2,7 @@ from django.urls import path, include
 from rest_framework import routers
 from .views import TagViewSet, SearchHistoryViewSet,\
                    ExternalMediaViewSet,\
-                   ProfileListCreateView, ProfileDetailView,\
-                   CurrentUserProfileView
+                   ProfileListCreateView, ProfileDetailView, CurrentUserProfileView
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
