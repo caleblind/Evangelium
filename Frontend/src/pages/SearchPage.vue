@@ -82,7 +82,7 @@
         v-for="user in users"
         :key="user.id"
         :first_name="user.first_name"
-        :last_name="user.last"
+        :last_name="user.last_name"
         :city="user.city"
         :state="user.state"
         :country="user.country"
