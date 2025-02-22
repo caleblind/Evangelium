@@ -22,7 +22,8 @@ class ProfileListCreateView(generics.ListCreateAPIView):
    permission_classes = [IsAuthenticated]  # Requires login to access
    filter_backends = [filters.SearchFilter]
    search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
-   filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination', 'tags']
+   filterset_fields = ['user_type', 'city', 'state', 'country',
+                       'denomination', 'tags']
 
    def get_queryset(self):
       """
@@ -31,8 +32,10 @@ class ProfileListCreateView(generics.ListCreateAPIView):
       """
       request = self.request
       if request.parser_context and 'me' in request.parser_context['kwargs']:
-         return Profile.objects.filter(user=request.user)  # Only return the logged-in user's profile
-      return Profile.objects.select_related('user').prefetch_related('tags').all()
+         return Profile.objects.filter(user=request.user)
+         # Only return the logged-in user's profile
+      return Profile.objects.select_related(
+         'user').prefetch_related('tags').all()
 
    def perform_create(self, serializer):
       """
@@ -43,7 +46,8 @@ class ProfileListCreateView(generics.ListCreateAPIView):
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
    queryset = Profile.objects.select_related('user').all()
    serializer_class = ProfileSerializer
-   permission_classes = [IsAuthenticated, IsOwnerOrAdmin]  # Authenticated users, but only owner or admin can edit
+   permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+   # Authenticated users, but only owner or admin can edit
 
 class CurrentUserProfileView(APIView):
    """
