@@ -74,15 +74,36 @@
       <p v-if="!isLoading && searchResults.length === 0">No results found.</p>
     </div>
   </div>
+
+  <div class="user-list">
+    <div class="card-container">
+      <!-- Loop through the users array and pass data to the Card component -->
+      <UserCard
+        v-for="user in users"
+        :key="user.id"
+        :first_name="user.first_name"
+        :last_name="user.last_name"
+        :city="user.city"
+        :state="user.state"
+        :country="user.country"
+        :description="user.description"
+      />
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from "axios";
+import UserCard from "@/components/search/UserCard.vue";
 
 export default {
-  name: "SearchPage",
+  name: "SearchPage" & "UserList",
+  components: {
+    UserCard,
+  },
   data() {
     return {
+      users: [],
       filters: {
         user_type: "", // Role filter (Missionary or Supporter)
         contains: "", // General search field for names, places, or interests
@@ -94,8 +115,19 @@ export default {
       error: null, // Error message if request fails
     };
   },
+  mounted() {
+    this.fetchUsers();
+  },
 
   methods: {
+    async fetchUsers() {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/profiles");
+        this.users = response.data;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    },
     async fetchSearchResults() {
       this.isLoading = true;
       this.error = null;
@@ -105,9 +137,9 @@ export default {
         // Fetch data from API endpoints
         const [usersResponse, supportersResponse, missionariesResponse] =
           await Promise.all([
-            axios.get("http://127.0.0.1:8000/user/"),
-            axios.get("http://127.0.0.1:8000/supporter/"),
-            axios.get("http://127.0.0.1:8000/missionary/"),
+            axios.get("http://127.0.0.1:8000/api/profiles"),
+            axios.get("http://127.0.0.1:8000/api/profiles"),
+            axios.get("http://127.0.0.1:8000/api/profiles/"),
           ]);
 
         const users = usersResponse.data;
@@ -253,5 +285,18 @@ li {
 hr {
   border: 0;
   border-top: 1px solid #ddd;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.user-card {
+  width: 300px;
+  height: auto;
+  width: 90%;
 }
 </style>
