@@ -1,18 +1,59 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { jwtDecode } from "jwt-decode"; // Correct import
 import AppLogin from "@/pages/AppLogin.vue";
 import UserProfile from "@/pages/UserProfile.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
 import MatchmakingPage from "@/pages/MatchmakingPage.vue";
+import RegistrationPage from "@/pages/RegistrationPage.vue";
+import axios from "axios"; // Needed for refreshing tokens
 
-function isAuthenticated() {
-  return !!localStorage.getItem("access_token"); // Check if user is logged in
+async function isAuthenticated() {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    return false; // No token means not authenticated
+  }
+
+  try {
+    const decodedToken = jwtDecode(token);
+    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+    // If the token is expired, try refreshing it
+    if (decodedToken.exp < currentTime) {
+      return await refreshAccessToken();
+    }
+
+    return true; // Token is valid
+  } catch (error) {
+    return false; // Invalid token format
+  }
+}
+
+async function refreshAccessToken() {
+  try {
+    const response = await axios.post(
+      "http://127.0.0.1:8000/api/token/refresh/",
+      {
+        refresh: localStorage.getItem("refresh_token"),
+      }
+    );
+
+    localStorage.setItem("access_token", response.data.access);
+    return true;
+  } catch (error) {
+    // If refresh fails, log out the user
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    return false;
+  }
 }
 
 const routes = [
-  { path: "/", component: AppLogin },
+  { path: "/", component: LandingPage },
   { path: "/AppLogin", component: AppLogin },
   { path: "/Matchmaking", component: MatchmakingPage },
+  { path: "/LandingPage", component: LandingPage },
+  { path: "/RegistrationPage", component: RegistrationPage },
 
   // Protected routes (require authentication)
   {
@@ -33,10 +74,10 @@ const router = createRouter({
   routes,
 });
 
-//   Global Navigation Guard (runs before every route change)
-router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !isAuthenticated()) {
-    next("/"); // Redirect to login if not authenticated
+// Global Navigation Guard
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth && !(await isAuthenticated())) {
+    next("/AppLogin"); // Redirect to login if not authenticated
   } else {
     next(); // Proceed as normal
   }

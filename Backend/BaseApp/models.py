@@ -16,16 +16,16 @@ class Profile(models.Model):
         max_length=15,
         choices=[('missionary', 'Missionary'), ('supporter', 'Supporter'),
                  ('other', 'Other')],
-        default='other'
+        default='other',  blank=True, null=True
     )
-   first_name = models.CharField(max_length=100)
-   last_name = models.CharField(max_length=100)
-   denomination = models.CharField(max_length=100)
-   street_address = models.CharField(max_length=100)
-   city = models.CharField(max_length=100)
-   state = models.CharField(max_length=100)
-   country = models.CharField(max_length=100)
-   phone_number = models.CharField(max_length=100)
+   first_name = models.CharField(max_length=100, blank=True, null=True)
+   last_name = models.CharField(max_length=100, blank=True, null=True)
+   denomination = models.CharField(max_length=100, blank=True, null=True)
+   street_address = models.CharField(max_length=100, blank=True, null=True)
+   city = models.CharField(max_length=100, blank=True, null=True)
+   state = models.CharField(max_length=100, blank=True, null=True)
+   country = models.CharField(max_length=100, blank=True, null=True)
+   phone_number = models.CharField(max_length=100, blank=True, null=True)
    years_of_experience = models.IntegerField(blank=True, null=True)
    description = models.TextField(blank=True, null=True)
    profile_picture = models.URLField(max_length=225, null=True, blank=True)
