@@ -4,6 +4,7 @@ import AppLogin from "@/pages/AppLogin.vue";
 import UserProfile from "@/pages/UserProfile.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
+import MatchmakingPage from "@/pages/MatchmakingPage.vue";
 import RegistrationPage from "@/pages/RegistrationPage.vue";
 import axios from "axios"; // Needed for refreshing tokens
 
@@ -50,10 +51,22 @@ async function refreshAccessToken() {
 const routes = [
   { path: "/", component: LandingPage },
   { path: "/AppLogin", component: AppLogin },
+  { path: "/Matchmaking", component: MatchmakingPage },
   { path: "/LandingPage", component: LandingPage },
   { path: "/RegistrationPage", component: RegistrationPage },
+
+  // Protected routes (require authentication)
+  {
+    path: "/LandingPage",
+    component: LandingPage,
+    meta: { requiresAuth: true },
+  },
   { path: "/SearchPage", component: SearchPage, meta: { requiresAuth: true } },
-  { path: "/UserProfile", component: UserProfile, meta: { requiresAuth: true }, },
+  {
+    path: "/UserProfile",
+    component: UserProfile,
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({
