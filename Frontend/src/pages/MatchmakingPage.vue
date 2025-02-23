@@ -15,6 +15,15 @@
         <p>Username: {{ user.user.username }}</p>
         <p>User Type: {{ user.user_type }}</p>
         <p>Denomination: {{ user.denomination }}</p>
+        <div v-if="user.tags.length">
+          <p><strong>Tags:</strong></p>
+          <ul class="tags-list">
+            <li v-for="tagId in user.tags" :key="tagId" class="tag-item">
+              {{ tags[tagId] || "Unknown Tag" }}
+            </li>
+          </ul>
+        </div>
+        <p v-else><strong>Tags:</strong> None</p>
       </div>
     </div>
   </div>
@@ -27,12 +36,14 @@ export default {
   data() {
     return {
       users: [],
+      tags: {},
       loading: true,
       error: null,
     };
   },
-  mounted() {
-    this.fetchUsers();
+  async mounted() {
+    await this.fetchTags();
+    await this.fetchUsers();
   },
   methods: {
     async fetchUsers(retry = true) {
@@ -56,6 +67,17 @@ export default {
         this.error = "Failed to fetch data";
       } finally {
         this.loading = false;
+      }
+    },
+    async fetchTags() {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/tag");
+        this.tags = response.data.reduce((acc, tag) => {
+          acc[tag.id] = tag.tag_name;
+          return acc;
+        }, {});
+      } catch (err) {
+        this.error = "Failed to fetch tags";
       }
     },
 
