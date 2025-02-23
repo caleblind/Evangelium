@@ -35,15 +35,58 @@ export default {
     this.fetchUsers();
   },
   methods: {
-    async fetchUsers() {
+    async fetchUsers(retry = true) {
+      const token = localStorage.getItem("access_token");
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/profiles");
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/profiles/match",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         this.users = response.data;
       } catch (err) {
+        if (err.response && err.response.status === 401 && retry) {
+          // If 401, try refreshing the token
+          await this.refreshToken();
+          return this.fetchUsers(false); // Retry once with a new token
+        }
         this.error = "Failed to fetch data";
       } finally {
         this.loading = false;
       }
+    },
+
+    async refreshToken() {
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (!refreshToken) {
+        this.logout();
+        return;
+      }
+
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:8000/api/token/refresh/",
+          {
+            refresh: refreshToken,
+          }
+        );
+
+        localStorage.setItem("access_token", response.data.access);
+      } catch (err) {
+        console.error("Token refresh failed", err);
+        this.logout();
+      }
+    },
+    logout() {
+      // Clear tokens from localStorage
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+
+      // Redirect to login
+      this.$router.push("/");
     },
   },
 };
