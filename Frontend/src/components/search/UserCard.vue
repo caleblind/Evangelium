@@ -1,28 +1,27 @@
 <template>
   <v-row align="center" justify="center" dense>
-    <v-col cols="12" md="6">
+    <v-col cols="auto" md="6">
       <div class="card_container">
-        <v-card
-          append-avatar="userImage"
-          class="mx-auto"
-          prepend-avatar="userImage"
-          subtitle="prepend-avatar and append-avatar"
-          title="Avatars"
-        >
+        <v-card class="mx-auto">
+          <v-card-title class="d-flex align-center">
+            <v-avatar size="5">
+              <img :src="userImage" alt="profile_image" class="profile_image" />
+            </v-avatar>
+          </v-card-title>
           <v-card-text>
             <h2>
               <span>{{ first_name }} {{ last_name }}</span>
             </h2>
             <p>{{ city }}, {{ state }}</p>
             <p>{{ description }}</p>
-            <p>Tags:</p>
           </v-card-text>
         </v-card>
+        <button class="button" @click="showModal = true">View Profile</button>
       </div>
     </v-col>
   </v-row>
+
   <div id="ProfileWindow">
-    <button class="button" @click="showModal = true">View Profile</button>
     <transition name="fade" appear>
       <div
         class="modal-overlay"
@@ -32,11 +31,17 @@
     </transition>
     <transition name="slide" appear>
       <div class="modal" v-if="showModal">
+        <v-avatar size="50">
+          <img :src="userImage" alt="profile_image" class="profile_image" />
+        </v-avatar>
         <h1>
           <span>{{ first_name }} {{ last_name }}</span>
         </h1>
         <p>
-          <span>{{ city }}, {{ state }}, {{ country }}, {{ description }}</span>
+          <span>{{ city }}, {{ state }}, {{ country }}</span>
+        </p>
+        <p>
+          {{ description }}
         </p>
         <button class="button" @click="showModal = false">Close Profile</button>
       </div>
@@ -78,7 +83,7 @@ export default {
   data() {
     return {
       userImage: userImage,
-      showModal: true,
+      showModal: false,
     };
   },
 };
@@ -207,6 +212,7 @@ h2 span {
   height: fit-content;
   padding: 12px;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
   border-radius: 0;
   background: #ffff;
@@ -224,7 +230,7 @@ h2 span {
   display: flex;
   width: 77px;
   height: 70px;
-  align-items: center;
+  align-items: left;
 }
 
 .card_tags-container {
@@ -251,5 +257,23 @@ h2 span {
   stroke-width: 1px;
   stroke: #fff;
   font-size: 18px;
+}
+
+.profile_image {
+  max-width: 15%;
+  max-height: 15%;
+  border-radius: 15%;
+  object-fit: cover;
+}
+
+.v-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.v-col {
+  width: 100%;
 }
 </style>

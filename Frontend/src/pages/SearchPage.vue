@@ -287,9 +287,16 @@ hr {
   border-top: 1px solid #ddd;
 }
 
-.cards-container {
+.card-container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
+}
+
+.user-card {
+  width: 300px;
+  height: auto;
+  width: 90%;
 }
 </style>
