@@ -1,24 +1,21 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import LoginView, UserViewSet, SupporterViewSet,\
-                   MissionaryViewSet, TagViewSet, TagRecordViewSet,\
-                   SearchHistoryViewSet, ExternalMediaViewSet,\
-                   LogoutView, RegistrationView, UserDetailView
+from .views import TagViewSet, SearchHistoryViewSet,\
+                   ExternalMediaViewSet,\
+                   ProfileListCreateView, ProfileDetailView,\
+                   MatchmakingResultsView
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
-router.register('user', UserViewSet)
-router.register('supporter', SupporterViewSet)
-router.register('missionary', MissionaryViewSet)
 router.register('tag', TagViewSet)
-router.register('tagrecord', TagRecordViewSet)
 router.register('searchhistory', SearchHistoryViewSet)
 router.register('externalmedia', ExternalMediaViewSet)
 
 urlpatterns = [
    path('', include(router.urls)),
-   path('login/', LoginView.as_view(), name="login"),
-   path('logout/', LogoutView.as_view(), name="logout"),
-   path('register/', RegistrationView.as_view(), name="register"),
-   path('userdetail/<int:pk>/', UserDetailView.as_view(), name="userdetail"),
+   path('api/profiles/', ProfileListCreateView.as_view(),
+        name='profile-list-create'),
+   path('api/profiles/<int:pk>/', ProfileDetailView.as_view(),
+        name='profile-detail'),
+   path('api/profiles/match', MatchmakingResultsView.as_view())
 ]

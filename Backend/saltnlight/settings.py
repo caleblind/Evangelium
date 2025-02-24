@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_filters',
+    'rest_framework_simplejwt',
 
     #My Apps
     'rest_framework',
@@ -63,9 +64,6 @@ AUTHENTICATION_BACKENDS = [
         'django.contrib.auth.backends.ModelBackend',
     ]
 
-# Custom user model auth configuration
-AUTH_USER_MODEL = 'BaseApp.User'
-
 # Session authentication configurations
 SESSION_ENGINE = 'django.contrib.sessions.backends.db' 
 SESSION_COOKIE_NAME = 'sessionid'  
@@ -84,14 +82,9 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Session Authentication Configurations
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
 }
 
 # CORS configurations

@@ -1,52 +1,70 @@
-<script>
-export default {
-  name: "AppLogin",
-};
+<template>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form @submit.prevent="login">
+      <div>
+        <label for="username">Username</label>
+        <input type="text" v-model="username" required />
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input type="password" v-model="password" required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
 
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
+    <!-- New Registration Link -->
+    <p>
+      Don't have an account?
+      <router-link to="/RegistrationPage">Sign up here</router-link>
+    </p>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      username: "",
+      password: "",
+      errorMessage: "",
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        const response = await axios.post("http://127.0.0.1:8000/api/token/", {
+          username: this.username,
+          password: this.password,
+        });
+
+        // Store tokens in local storage or Vuex
+        localStorage.setItem("access_token", response.data.access);
+        localStorage.setItem("refresh_token", response.data.refresh);
+
+        // Redirect to dashboard or another page
+        this.$router.push("/SearchPage");
+      } catch (error) {
+        this.errorMessage = "Invalid credentials. Please try again.";
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
-.background-image {
-  background-image: url("@/assets/pictures/world.jpg");
-  background-size: cover;
-  background-position: center;
-  height: 100vh;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-.auth-wrapper {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  text-align: left;
-}
-
-.auth-inner {
-  width: 450px;
+.login-container {
+  max-width: 300px;
   margin: auto;
-  background: #828282;
-  box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.3);
-  padding: 40px 55px 45px 55px;
-  border-radius: 15px;
-  transition: all 0.3s;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
-
-.auth-wrapper .form-control:focus {
-  border-color: #167bff;
-  box-shadow: none;
-}
-.auth-wrapper .form-control:focus {
-  border-color: #ffff;
-  box-shadow: none;
-}
-
-auth-wrapper h3 {
-  text-align: right;
-  margin: 0;
-  line-height: 1;
-  padding-bottom: 20px;
+.error {
+  color: red;
 }
 </style>

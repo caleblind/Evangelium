@@ -1,6 +1,6 @@
 [MASTER]
 # Specify a configuration file
-init-hook='import sys; sys.path.append("./app")'
+init-hook='import sys; sys.path.append("./Backend")'
 ignore=migrations, manage.py, settings.py
 
 [MESSAGES CONTROL]

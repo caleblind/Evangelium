@@ -1,11 +1,12 @@
 <template>
+  <!--
   <div class="advanced-search-page">
     <h1>Advanced Search</h1>
-
-    <!-- Search Form -->
-    <form class="search-form" @submit.prevent="fetchSearchResults">
-      <!-- Role Filter -->
-      <div class="form-group">
+-->
+  <!-- Search Form -->
+  <!--<form class="search-form" @submit.prevent="fetchSearchResults">
+      Role Filter -->
+  <!--<div class="form-group">
         <label for="user_type">Role</label>
         <select id="user_type" v-model="filters.user_type">
           <option value="">All</option>
@@ -14,8 +15,8 @@
         </select>
       </div>
 
-      <!-- Contains Field -->
-      <div class="form-group">
+       Contains Field -->
+  <!--<div class="form-group">
         <label for="contains">Contains</label>
         <input
           type="text"
@@ -24,10 +25,10 @@
           v-model="filters.contains"
         />
       </div>
-
-      <!--  Future placeholder = Search for names, places, or interests-->
-      <!-- Denomination Field (Commented Out) -->
-      <!--
+-->
+  <!--  Future placeholder = Search for names, places, or interests-->
+  <!-- Denomination Field (Commented Out) -->
+  <!--
       <div class="form-group">
         <label for="denomination">Denomination</label>
         <select id="denomination" v-model="filters.denomination">
@@ -39,8 +40,8 @@
       </div>
       -->
 
-      <!-- Mission Field (Commented Out) -->
-      <!--
+  <!-- Mission Field (Commented Out) -->
+  <!--
       <div class="form-group">
         <label for="missionField">Mission Field</label>
         <select id="missionField" v-model="filters.missionField">
@@ -52,12 +53,12 @@
       </div>
       -->
 
-      <!-- Search Button -->
-      <button type="submit" class="search-button">Search</button>
+  <!-- Search Button -->
+  <!--      <button type="submit" class="search-button">Search</button>
     </form>
-
-    <!-- Results Section -->
-    <div class="results">
+-->
+  <!-- Results Section -->
+  <!--<div class="results">
       <h2>Search Results</h2>
       <p v-if="isLoading">Loading...</p>
       <p v-if="error">{{ error }}</p>
@@ -72,17 +73,39 @@
         </li>
       </ul>
       <p v-if="!isLoading && searchResults.length === 0">No results found.</p>
+    </div>-->
+  <!--</div>-->
+
+  <div class="user-list">
+    <h2>Users</h2>
+    <div class="card-container">
+      <!-- Loop through the users array and pass data to the Card component -->
+      <UserCard
+        v-for="user in users"
+        :key="user.id"
+        :first_name="user.first_name"
+        :last_name="user.last_name"
+        :city="user.city"
+        :state="user.state"
+        :country="user.country"
+        :description="user.description"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import UserCard from "@/components/search/UserCard.vue";
 
 export default {
-  name: "SearchPage",
+  name: "SearchPage" & "UserList",
+  components: {
+    UserCard,
+  },
   data() {
     return {
+      users: [],
       filters: {
         user_type: "", // Role filter (Missionary or Supporter)
         contains: "", // General search field for names, places, or interests
@@ -94,8 +117,19 @@ export default {
       error: null, // Error message if request fails
     };
   },
+  mounted() {
+    this.fetchUsers();
+  },
 
   methods: {
+    async fetchUsers() {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/profiles");
+        this.users = response.data;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    },
     async fetchSearchResults() {
       this.isLoading = true;
       this.error = null;
@@ -105,9 +139,9 @@ export default {
         // Fetch data from API endpoints
         const [usersResponse, supportersResponse, missionariesResponse] =
           await Promise.all([
-            axios.get("http://127.0.0.1:8000/user/"),
-            axios.get("http://127.0.0.1:8000/supporter/"),
-            axios.get("http://127.0.0.1:8000/missionary/"),
+            axios.get("http://127.0.0.1:8000/api/profiles"),
+            axios.get("http://127.0.0.1:8000/api/profiles"),
+            axios.get("http://127.0.0.1:8000/api/profiles/"),
           ]);
 
         const users = usersResponse.data;
@@ -253,5 +287,18 @@ li {
 hr {
   border: 0;
   border-top: 1px solid #ddd;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.user-card {
+  width: 300px;
+  height: auto;
+  width: 90%;
 }
 </style>
