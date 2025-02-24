@@ -1,11 +1,12 @@
 <template>
+  <!--
   <div class="advanced-search-page">
     <h1>Advanced Search</h1>
-
-    <!-- Search Form -->
-    <form class="search-form" @submit.prevent="fetchSearchResults">
-      <!-- Role Filter -->
-      <div class="form-group">
+-->
+  <!-- Search Form -->
+  <!--<form class="search-form" @submit.prevent="fetchSearchResults">
+      Role Filter -->
+  <!--<div class="form-group">
         <label for="user_type">Role</label>
         <select id="user_type" v-model="filters.user_type">
           <option value="">All</option>
@@ -14,8 +15,8 @@
         </select>
       </div>
 
-      <!-- Contains Field -->
-      <div class="form-group">
+       Contains Field -->
+  <!--<div class="form-group">
         <label for="contains">Contains</label>
         <input
           type="text"
@@ -24,10 +25,10 @@
           v-model="filters.contains"
         />
       </div>
-
-      <!--  Future placeholder = Search for names, places, or interests-->
-      <!-- Denomination Field (Commented Out) -->
-      <!--
+-->
+  <!--  Future placeholder = Search for names, places, or interests-->
+  <!-- Denomination Field (Commented Out) -->
+  <!--
       <div class="form-group">
         <label for="denomination">Denomination</label>
         <select id="denomination" v-model="filters.denomination">
@@ -39,8 +40,8 @@
       </div>
       -->
 
-      <!-- Mission Field (Commented Out) -->
-      <!--
+  <!-- Mission Field (Commented Out) -->
+  <!--
       <div class="form-group">
         <label for="missionField">Mission Field</label>
         <select id="missionField" v-model="filters.missionField">
@@ -52,12 +53,12 @@
       </div>
       -->
 
-      <!-- Search Button -->
-      <button type="submit" class="search-button">Search</button>
+  <!-- Search Button -->
+  <!--      <button type="submit" class="search-button">Search</button>
     </form>
-
-    <!-- Results Section -->
-    <div class="results">
+-->
+  <!-- Results Section -->
+  <!--<div class="results">
       <h2>Search Results</h2>
       <p v-if="isLoading">Loading...</p>
       <p v-if="error">{{ error }}</p>
@@ -72,10 +73,11 @@
         </li>
       </ul>
       <p v-if="!isLoading && searchResults.length === 0">No results found.</p>
-    </div>
-  </div>
+    </div>-->
+  <!--</div>-->
 
   <div class="user-list">
+    <h2>Users</h2>
     <div class="card-container">
       <!-- Loop through the users array and pass data to the Card component -->
       <UserCard
