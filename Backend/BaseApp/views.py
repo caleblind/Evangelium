@@ -72,7 +72,7 @@ class CurrentUserView(views.APIView):
    authentication_classes = [JWTAuthentication]
    permission_classes = [IsAuthenticated]
 
-   def get_user(self, request):
+   def get(self, request):
       # Fetch the user's profile in the same way as MatchmakingResultsView
       user_profile = Profile.objects.filter(
          user=request.user

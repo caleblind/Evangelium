@@ -18,5 +18,6 @@ urlpatterns = [
    path('api/profiles/<int:pk>/', ProfileDetailView.as_view(),
         name='profile-detail'),
    path('api/profiles/match', MatchmakingResultsView.as_view()),
-   path('api/profiles/me', CurrentUserView.as_view()),
+   path('api/profiles/me/', CurrentUserView.as_view(),
+        name='current-user'),
 ]
