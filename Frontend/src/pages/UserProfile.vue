@@ -60,7 +60,7 @@ export default {
   methods: {
     async fetchProfile() {
       try {
-        const token = localStorage.getItem("token"); // Retrieve token from local storage (adjust if using sessions)
+        const token = localStorage.getItem("access_token"); // Retrieve token from local storage (adjust if using sessions)
         const response = await axios.get(
           "http://127.0.0.1:8000/api/profile/me/",
           {
