@@ -54,6 +54,7 @@ const routes = [
   { path: "/Matchmaking", component: MatchmakingPage },
   { path: "/LandingPage", component: LandingPage },
   { path: "/RegistrationPage", component: RegistrationPage },
+  { path: "/UserProfile", component: UserProfile },
 
   // Protected routes (require authentication)
   {
