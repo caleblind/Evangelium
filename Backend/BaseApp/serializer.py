@@ -7,6 +7,11 @@ class UserSerializer(serializers.ModelSerializer):
    class Meta:
       model = User
       fields = ['id', 'username', 'email', 'password']
+      extra_kwargs = {
+         'username': {'read_only': True},
+         'email': {'read_only': True},
+         'password': {'write_only': True}
+      }
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
@@ -36,16 +41,17 @@ class ProfileSerializer(serializers.ModelSerializer):
       user_data = validated_data.pop('user', None)
       tag_data = validated_data.pop('tags', None)
       if user_data:
+         user_instance = instance.user
          for key, value in user_data.items():
             setattr(instance.user, key, value)
-         instance.user.save()
+         user_instance.save()
 
       for key, value in validated_data.items():
          setattr(instance, key, value)
       instance.save()
 
       if tag_data is not None:
-         instance.tags.add(tag_data)  # Add the new tags to the profile
+         instance.tags.set(tag_data)  # Add the new tags to the profile
       return instance
 
 # Serializer class for Search History
