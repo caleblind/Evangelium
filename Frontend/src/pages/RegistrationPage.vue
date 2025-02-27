@@ -22,7 +22,22 @@
             id="password"
             v-model="form.user.password"
             required
+            @blur="ValidatePassword"
           />
+
+          <!-- Password Confirmation -->
+          <label for="confirmPassword">Confirm Password:</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            v-model="confirmPassword"
+            required
+            :class="{ 'error-border': passwordsDoNotMatch }"
+            @blur="validatePassword"
+          />
+          <p v-if="passwordsDoNotMatch" class="error-message">
+            Passwords do not match.
+          </p>
 
           <!-- Other fields for registration form -->
           <label for="tags">Select Tags:</label>
@@ -110,6 +125,8 @@ export default {
         description: "",
         profile_picture: "",
       },
+      confirmPassword: "",
+      passwordsDoNotMatch: false,
       message: "",
       availableTags: [],
     };
@@ -126,6 +143,13 @@ export default {
         console.error("Failed to fetch tags:", error.response?.data);
       }
     },
+
+    // Check Password Confirmation
+    validatePassword() {
+      this.passwordsDoNotMatch =
+        this.form.user.password !== this.confirmPassword;
+    },
+
     // Calls the profiles endpoint to register the user
     async registerUser() {
       try {
@@ -236,5 +260,14 @@ button:active {
   margin-top: 15px;
   font-weight: bold;
   color: #333;
+}
+
+.error-border {
+  border: 2px solid red;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
 }
 </style>
