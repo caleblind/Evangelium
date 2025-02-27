@@ -5,14 +5,9 @@
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else>
       <div class="profile-card">
-        <!---<img
-          :src="profile.avatar || defaultAvatar"
-          alt="Profile Picture"
-          class="avatar"
-        /> -->
         <h2>
-          {{ profile.user.first_name }}
-          {{ profile.user.last_name }}
+          {{ profile.first_name }}
+          {{ profile.last_name }}
         </h2>
         <p><strong>Username:</strong> {{ profile.user.username }}</p>
         <p><strong>Email:</strong> {{ profile.user.email }}</p>
@@ -30,32 +25,55 @@
         </p>
         <p><strong>Tags:</strong> {{ profile.tags.join(", ") }}</p>
         <p><strong>Description:</strong> {{ profile.description }}</p>
-        <!--<button @click="editing = !editing">Edit Profile</button>-->
+        <!-- Edit Button -->
+        <button @click="editing = !editing" class="edit-btn">
+          {{ editing ? "Cancel" : "Edit Profile" }}
+        </button>
       </div>
-
-      <!-- <div v-if="editing" class="edit-form">
+      <!-- Edit Profile Form -->
+      <div v-if="editing" class="edit-form">
         <h2>Edit Profile</h2>
         <form @submit.prevent="updateProfile">
-          <label
-            >Username:
-            <input v-model="profile.username" type="text" required />
+          <label>
+            First Name:
+            <input v-model="profile.first_name" type="text" required />
           </label>
-          <label
-            >Email:
-            <input v-model="profile.email" type="email" required />
+          <label>
+            Last Name:
+            <input v-model="profile.last_name" type="text" required />
           </label>
-          <label
-            >Full Name:
-            <input v-model="profile.full_name" type="text" />
+          <label>
+            Phone #:
+            <input v-model="profile.phone_number" type="text" />
           </label>
-          <label
-            >Bio:
-            <textarea v-model="profile.bio"></textarea>
+          <label>
+            Address:
+            <input v-model="profile.street_address" type="text" />
           </label>
-          <button type="submit">Save Changes</button>
-          <button type="button" @click="editing = false">Cancel</button>
+          <label>
+            City:
+            <input v-model="profile.city" type="text" />
+          </label>
+          <label>
+            State:
+            <input v-model="profile.state" type="text" />
+          </label>
+          <label>
+            Country:
+            <input v-model="profile.country" type="text" />
+          </label>
+          <label>
+            Years Of Experience:
+            <input v-model="profile.years_of_experience" type="number" />
+          </label>
+          <label>
+            Description:
+            <textarea v-model="profile.description"></textarea>
+          </label>
+
+          <button type="submit" class="save-btn">Save Changes</button>
         </form>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -70,20 +88,18 @@ export default {
       loading: true,
       error: null,
       editing: false,
-      defaultAvatar: "https://via.placeholder.com/150",
     };
   },
   methods: {
     async fetchProfile() {
       try {
-        const token = localStorage.getItem("access_token"); // Retrieve token from local storage (adjust if using sessions)
+        const token = localStorage.getItem("access_token");
         const response = await axios.get(
           "http://127.0.0.1:8000/api/profiles/me/",
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Include the authentication token
+              Authorization: `Bearer ${token}`,
             },
-            //withCredentials: true, // Include cookies if using session authentication
           }
         );
         this.profile = response.data;
@@ -103,6 +119,34 @@ export default {
         this.loading = false;
       }
     },
+    async updateProfile() {
+      try {
+        const token = localStorage.getItem("access_token");
+        const profileId = this.profile.user.id;
+        const url = `http://127.0.0.1:8000/api/profiles/${profileId}/`;
+
+        const updatedData = {
+          user_type: this.profile.user_type,
+          denomination: this.profile.denomination,
+          phone_number: this.profile.phone_number,
+          street_address: this.profile.street_address,
+          city: this.profile.city,
+          state: this.profile.state,
+          country: this.profile.country,
+          years_of_experience: this.profile.years_of_experience,
+          description: this.profile.description,
+        };
+
+        await axios.patch(url, updatedData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        alert("Profile updated successfully!");
+        this.editing = false;
+      } catch (err) {
+        this.error = "Failed to update profile.";
+      }
+    },
   },
   created() {
     this.fetchProfile();
@@ -111,7 +155,6 @@ export default {
 </script>
 
 <style scoped>
-/* General Container Styling */
 .profile-container {
   max-width: 600px;
   margin: auto;
@@ -121,15 +164,13 @@ export default {
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
-  /* Centering the container vertically */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 50vh; /* Make it take at least full viewport height */
+  min-height: 50vh;
 }
 
-/* Profile Card */
 .profile-card {
   background: white;
   padding: 20px;
@@ -141,7 +182,6 @@ export default {
   text-align: left;
 }
 
-/* Username & Email */
 .username {
   font-size: 16px;
   font-weight: bold;
@@ -155,7 +195,6 @@ export default {
   margin-bottom: 15px;
 }
 
-/* Tags */
 .tags {
   background: #4caf50;
   color: white;
@@ -166,7 +205,6 @@ export default {
   margin-top: 5px;
 }
 
-/* Description */
 .description {
   margin-top: 15px;
   font-style: italic;
