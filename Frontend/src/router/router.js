@@ -3,6 +3,7 @@ import AppLogin from "@/pages/AppLogin.vue";
 import UserProfile from "@/pages/UserProfile.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import AccountCreation from "@/pages/AccountCreation.vue";
+import MissionaryForm from "@/components/accountcreation/MissionaryForm.vue";
 
 const routes = [
   { path: "/", component: LandingPage },
@@ -10,6 +11,7 @@ const routes = [
   { path: "/UserProfile", component: UserProfile },
   { path: "/LandingPage", component: LandingPage }, // duplicate. remove when sure it won't break anything
   { path: "/AccountCreation", component: AccountCreation },
+  { path: "/MissionaryForm", component: MissionaryForm },
 ];
 
 const router = createRouter({
