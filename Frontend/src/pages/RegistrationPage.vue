@@ -5,7 +5,10 @@
       <form @submit.prevent="registerUser">
         <div class="form-group">
           <!-- User fields for registration form  -->
-          <label for="username">Username:</label>
+          <label for="username"
+            ><span class="required">*</span> Username:
+            <span class="required-text">required</span></label
+          >
           <input
             type="text"
             id="username"
@@ -13,10 +16,16 @@
             required
           />
 
-          <label for="email">Email:</label>
+          <label for="email"
+            ><span class="required">*</span> Email:
+            <span class="required-text">required</span></label
+          >
           <input type="email" id="email" v-model="form.user.email" required />
 
-          <label for="password">Password:</label>
+          <label for="password"
+            ><span class="required">*</span> Password:
+            <span class="required-text">required</span></label
+          >
           <input
             type="password"
             id="password"
@@ -26,7 +35,10 @@
           />
 
           <!-- Password Confirmation -->
-          <label for="confirmPassword">Confirm Password:</label>
+          <label for="confirmPassword"
+            ><span class="required">*</span> Confirm Password:
+            <span class="required-text">required</span></label
+          >
           <input
             type="password"
             id="confirmPassword"
@@ -91,7 +103,7 @@
             v-model="form.profile_picture"
           />
         </div>
-        <button type="submit">Sign Up</button>
+        <button type="submit" :disabled="!isFormValid">Sign Up</button>
       </form>
       <p v-if="message">{{ message }}</p>
     </div>
@@ -130,6 +142,18 @@ export default {
       message: "",
       availableTags: [],
     };
+  },
+  computed: {
+    // Ensures that only required fields must be filled
+    isFormValid() {
+      return (
+        this.form.user.username.trim() !== "" &&
+        this.form.user.email.trim() !== "" &&
+        this.form.user.password.trim() !== "" &&
+        this.confirmPassword.trim() !== "" &&
+        !this.passwordsDoNotMatch
+      );
+    },
   },
   methods: {
     // Fetches predefined tags from the backend
@@ -269,5 +293,23 @@ button:active {
 .error-message {
   color: red;
   font-size: 0.9rem;
+}
+
+.required {
+  color: red;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.required-text {
+  color: #b0b0b0;
+  font-style: italic;
+  font-weight: normal;
+  margin-left: 5px;
 }
 </style>
