@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import generics, filters
+from rest_framework import generics, filters, views, response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
 from .models import Tag, SearchHistory,\
@@ -66,3 +66,20 @@ class ExternalMediaViewSet(ModelViewSet):
    queryset = ExternalMedia.objects.all()
    serializer_class = ExternalMediaSerializer
    permission_classes = [AllowAny]
+
+# View for retrieving the currently logged in user
+class CurrentUserView(views.APIView):
+   authentication_classes = [JWTAuthentication]
+   permission_classes = [IsAuthenticated]
+
+   def get(self, request):
+      # Fetch the user's profile in the same way as MatchmakingResultsView
+      user_profile = Profile.objects.filter(
+         user=request.user
+      ).select_related('user').prefetch_related('tags').first()
+
+      if user_profile:
+         serializer = ProfileSerializer(user_profile)
+         return response.Response(serializer.data)
+
+      return response.Response({"error": "Profile not found"}, status=404)
