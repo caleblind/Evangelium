@@ -20,7 +20,7 @@ class TagSerializer(serializers.ModelSerializer):
    class Meta:
       model  = Tag
       fields = '__all__'
-      
+
 
 class ProfileSerializer(serializers.ModelSerializer):
    user = UserSerializer()  # Nested User serializer
@@ -42,7 +42,7 @@ class ProfileSerializer(serializers.ModelSerializer):
    def update(self, instance, validated_data):
       user_data = validated_data.pop('user', None)
       tag_data = validated_data.pop('tags', None)
-      
+
       # Update user fields if provided
       if user_data:
          user_instance = instance.user
@@ -60,7 +60,7 @@ class ProfileSerializer(serializers.ModelSerializer):
       # Update tags if provided
       if tag_data is not None:
          instance.tags.set(tag_data)
-      
+
       return instance
 
 # Serializer class for Search History
