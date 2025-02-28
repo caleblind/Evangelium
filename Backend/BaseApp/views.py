@@ -46,7 +46,7 @@ class MatchmakingResultsView(generics.ListAPIView):
          Q(tags__in=user_tags)).exclude(
             user=self.request.user).distinct()
 
-      return matching_profiles
+      return matching_profiles.exclude(user_type=user_profile.user_type)
 
 # Tag viewset that performs CRUD operations
 class TagViewSet(ModelViewSet):
