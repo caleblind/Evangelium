@@ -60,7 +60,11 @@
           </select>
 
           <label for="userType">User Type:</label>
-          <input type="text" id="userType" v-model="form.user_type" />
+          <select id="userType" v-model="form.user_type">
+            <option value="" disabled>Select User Type (optional)</option>
+            <option value="Missionary">Missionary</option>
+            <option value="Supporter">Supporter</option>
+          </select>
 
           <label for="firstName">First Name:</label>
           <input type="text" id="firstName" v-model="form.first_name" />
