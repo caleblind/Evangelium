@@ -23,7 +23,10 @@
           <strong>Years Of Experience:</strong>
           {{ profile.years_of_experience }}
         </p>
-        <p><strong>Tags:</strong> {{ profile.tags.join(", ") }}</p>
+        <p>
+          <strong>Tags:</strong>
+          {{ profile.tags.map((tag) => tag.name).join(", ") }}
+        </p>
         <p><strong>Description:</strong> {{ profile.description }}</p>
         <!-- Edit Button -->
         <button @click="editing = !editing" class="edit-btn">
@@ -70,6 +73,18 @@
             Description:
             <textarea v-model="profile.description"></textarea>
           </label>
+          <label>
+            Tags:
+            <select v-model="selectedTags" multiple>
+              <option
+                v-for="tag in availableTags"
+                :key="tag.id"
+                :value="tag.id"
+              >
+                {{ tag.name }}
+              </option>
+            </select>
+          </label>
 
           <button type="submit" class="save-btn">Save Changes</button>
         </form>
@@ -88,6 +103,8 @@ export default {
       loading: true,
       error: null,
       editing: false,
+      selectedTags: [],
+      availableTags: [],
     };
   },
   methods: {
@@ -104,15 +121,25 @@ export default {
         );
         this.profile = response.data;
 
-        // Fetch tags separately
-        const tagResponses = await Promise.all(
-          this.profile.tags.map((tagId) =>
-            axios.get(`http://127.0.0.1:8000/tag/${tagId}/`)
-          )
-        );
+        // Makes sure selectedTags contains only IDs for updating
+        this.selectedTags = response.data.tags.map((tag) => tag.id);
 
-        // Extract tag names
-        this.profile.tags = tagResponses.map((res) => res.data.tag_name);
+        // Fetch all available tags from backend
+        const tagResponse = await axios.get("http://127.0.0.1:8000/tag/");
+        this.availableTags = tagResponse.data.map((tag) => ({
+          id: tag.id,
+          name: tag.tag_name,
+        }));
+
+        // Makes sure profile.tags is an array of tag objects for display
+        this.profile.tags = response.data.tags.map((tagId) => {
+          return (
+            this.availableTags.find((tag) => tag.id === tagId) || {
+              id: tagId,
+              name: "Unknown Tag",
+            }
+          );
+        });
       } catch (err) {
         this.error = "Failed to load profile data.";
       } finally {
@@ -135,6 +162,7 @@ export default {
           country: this.profile.country,
           years_of_experience: this.profile.years_of_experience,
           description: this.profile.description,
+          tags: this.selectedTags,
         };
 
         await axios.patch(url, updatedData, {
@@ -143,6 +171,7 @@ export default {
 
         alert("Profile updated successfully!");
         this.editing = false;
+        this.fetchProfile();
       } catch (err) {
         this.error = "Failed to update profile.";
       }
@@ -153,64 +182,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.profile-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-  text-align: center;
-  background: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
-}
-
-.profile-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  text-align: left;
-}
-
-.username {
-  font-size: 16px;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 5px;
-}
-
-.email {
-  font-size: 14px;
-  color: #777;
-  margin-bottom: 15px;
-}
-
-.tags {
-  background: #4caf50;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 12px;
-  display: inline-block;
-  margin-top: 5px;
-}
-
-.description {
-  margin-top: 15px;
-  font-style: italic;
-  color: #444;
-  padding: 10px;
-  background: #f5f5f5;
-  border-radius: 6px;
-}
-</style>
