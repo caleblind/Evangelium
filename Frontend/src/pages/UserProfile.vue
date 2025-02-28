@@ -146,6 +146,8 @@ export default {
         this.loading = false;
       }
     },
+
+    // Update the currently logged in user's profile
     async updateProfile() {
       try {
         const token = localStorage.getItem("access_token");
