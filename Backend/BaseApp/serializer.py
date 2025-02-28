@@ -8,16 +8,19 @@ class UserSerializer(serializers.ModelSerializer):
       model = User
       fields = ['id', 'username', 'email', 'password']
       extra_kwargs = {
-         'username': {'read_only': True},
-         'email': {'read_only': True},
-         'password': {'write_only': True}
+         'password': {'write_only': True},
+         'id': {'read_only': True}
       }
+
+   def create(self, validated_data):
+      return User.objects.create_user(**validated_data)
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
    class Meta:
       model  = Tag
       fields = '__all__'
+      
 
 class ProfileSerializer(serializers.ModelSerializer):
    user = UserSerializer()  # Nested User serializer
@@ -36,22 +39,28 @@ class ProfileSerializer(serializers.ModelSerializer):
       profile.tags.set(tag_data)
       return profile
 
-
    def update(self, instance, validated_data):
       user_data = validated_data.pop('user', None)
       tag_data = validated_data.pop('tags', None)
+      
+      # Update user fields if provided
       if user_data:
          user_instance = instance.user
          for key, value in user_data.items():
-            setattr(instance.user, key, value)
+            if key != 'password':  # Don't update password through this method
+               setattr(user_instance, key, value)
          user_instance.save()
 
+      # Update all profile fields
       for key, value in validated_data.items():
-         setattr(instance, key, value)
+         if hasattr(instance, key):  # Only set if the field exists
+            setattr(instance, key, value)
       instance.save()
 
+      # Update tags if provided
       if tag_data is not None:
-         instance.tags.set(tag_data)  # Add the new tags to the profile
+         instance.tags.set(tag_data)
+      
       return instance
 
 # Serializer class for Search History

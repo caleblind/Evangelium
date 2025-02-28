@@ -155,6 +155,8 @@ export default {
         const url = `http://127.0.0.1:8000/api/profiles/${profileId}/`;
 
         const updatedData = {
+          first_name: this.profile.first_name,
+          last_name: this.profile.last_name,
           user_type: this.profile.user_type,
           denomination: this.profile.denomination,
           phone_number: this.profile.phone_number,
