@@ -200,6 +200,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 1rem;
+  font-family: inherit;
   transition: border-color 0.2s;
 }
 
