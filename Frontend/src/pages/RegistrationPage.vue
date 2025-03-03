@@ -253,6 +253,7 @@ textarea {
   border: 2.3px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
+  font-family: inherit;
   transition: border 0.3s ease-in-out;
 }
 
