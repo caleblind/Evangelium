@@ -96,6 +96,8 @@ import axios from "axios";
 import ProfileView from "@/components/profile/ProfileView.vue";
 import ProfileEdit from "@/components/profile/ProfileEdit.vue";
 
+const API_BASE_URL = "http://127.0.0.1:8000";
+
 export default {
   name: "UserProfile",
   components: {
@@ -114,37 +116,44 @@ export default {
     };
   },
   methods: {
-    async fetchProfile() {
+    getAuthHeader() {
+      const token = localStorage.getItem("access_token");
+      return { Authorization: `Bearer ${token}` };
+    },
+
+    async fetchProfile(retry = true) {
       try {
-        const token = localStorage.getItem("access_token");
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/profiles/me/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        this.profile = response.data;
-        this.originalProfile = JSON.parse(JSON.stringify(response.data));
+        const [profileResponse, tagResponse] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/profiles/me/`, {
+            headers: this.getAuthHeader(),
+          }),
+          axios.get(`${API_BASE_URL}/tag/`),
+        ]);
 
-        this.selectedTags = response.data.tags.map((tag) => tag.id);
+        this.profile = profileResponse.data;
+        this.originalProfile = JSON.parse(JSON.stringify(profileResponse.data));
+        this.selectedTags = profileResponse.data.tags.map((tag) => tag.id);
 
-        const tagResponse = await axios.get("http://127.0.0.1:8000/tag/");
         this.availableTags = tagResponse.data.map((tag) => ({
           id: tag.id,
           name: tag.tag_name,
         }));
 
-        this.profile.tags = response.data.tags.map((tagId) => {
-          return (
+        this.profile.tags = profileResponse.data.tags.map(
+          (tagId) =>
             this.availableTags.find((tag) => tag.id === tagId) || {
               id: tagId,
               name: "Unknown Tag",
             }
-          );
-        });
+        );
       } catch (err) {
+        if (
+          err.response?.status === 401 &&
+          retry &&
+          (await this.refreshToken())
+        ) {
+          return this.fetchProfile(false);
+        }
         this.error = "Failed to load profile data.";
       } finally {
         this.loading = false;
@@ -153,53 +162,103 @@ export default {
 
     async updateProfile(formData) {
       try {
-        const token = localStorage.getItem("access_token");
         const profileId = this.profile.user.id;
-        const url = `http://127.0.0.1:8000/api/profiles/${profileId}/`;
+        const changedFields = this.getChangedFields(formData);
 
-        const changedFields = {};
-        const fieldsToCheck = [
-          "first_name",
-          "last_name",
-          "user_type",
-          "denomination",
-          "phone_number",
-          "street_address",
-          "city",
-          "state",
-          "country",
-          "years_of_experience",
-          "description",
-        ];
-
-        fieldsToCheck.forEach((field) => {
-          if (formData[field] !== this.originalProfile[field]) {
-            changedFields[field] = formData[field];
-          }
-        });
-
-        const originalTagIds = this.originalProfile.tags.map((tag) => tag.id);
-        if (
-          JSON.stringify(formData.tags.sort()) !==
-          JSON.stringify(originalTagIds.sort())
-        ) {
-          changedFields.tags = formData.tags;
+        if (Object.keys(changedFields).length === 0) {
+          this.editing = false;
+          return;
         }
 
-        if (Object.keys(changedFields).length > 0) {
-          await axios.patch(url, changedFields, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
+        try {
+          await this.sendProfileUpdate(profileId, changedFields);
           alert("Profile updated successfully!");
           this.editing = false;
           this.fetchProfile();
-        } else {
-          this.editing = false;
+        } catch (err) {
+          if (err.response?.status === 401 && (await this.refreshToken())) {
+            await this.sendProfileUpdate(profileId, changedFields);
+            alert("Profile updated successfully!");
+            this.editing = false;
+            this.fetchProfile();
+          } else {
+            this.error =
+              err.response?.status === 401
+                ? "Session expired. Please log in again."
+                : "Failed to update profile.";
+          }
         }
       } catch (err) {
         this.error = "Failed to update profile.";
       }
+    },
+
+    async sendProfileUpdate(profileId, data) {
+      return axios.patch(`${API_BASE_URL}/api/profiles/${profileId}/`, data, {
+        headers: this.getAuthHeader(),
+      });
+    },
+
+    getChangedFields(formData) {
+      const changedFields = {};
+      const fieldsToCheck = [
+        "first_name",
+        "last_name",
+        "user_type",
+        "denomination",
+        "phone_number",
+        "street_address",
+        "city",
+        "state",
+        "country",
+        "years_of_experience",
+        "description",
+      ];
+
+      fieldsToCheck.forEach((field) => {
+        if (formData[field] !== this.originalProfile[field]) {
+          changedFields[field] = formData[field];
+        }
+      });
+
+      const originalTagIds = this.originalProfile.tags.map((tag) => tag.id);
+      if (
+        JSON.stringify([...formData.tags].sort()) !==
+        JSON.stringify([...originalTagIds].sort())
+      ) {
+        changedFields.tags = formData.tags;
+      }
+
+      return changedFields;
+    },
+
+    async refreshToken() {
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (!refreshToken) {
+        this.logout();
+        return false;
+      }
+
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/api/token/refresh/`,
+          {
+            refresh: refreshToken,
+          }
+        );
+        localStorage.setItem("access_token", response.data.access);
+        return true;
+      } catch (err) {
+        console.error("Token refresh failed", err);
+        this.logout();
+        return false;
+      }
+    },
+
+    logout() {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      this.$router.push("/");
     },
   },
   created() {
