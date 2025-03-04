@@ -14,13 +14,20 @@
             id="username"
             v-model="form.user.username"
             required
+            placeholder="Choose a unique username"
           />
 
           <label for="email"
             ><span class="required">*</span> Email:
             <span class="required-text">required</span></label
           >
-          <input type="email" id="email" v-model="form.user.email" required />
+          <input
+            type="email"
+            id="email"
+            v-model="form.user.email"
+            required
+            placeholder="Enter your email address"
+          />
 
           <label for="password"
             ><span class="required">*</span> Password:
@@ -32,6 +39,7 @@
             v-model="form.user.password"
             required
             @blur="validatePassword"
+            placeholder="Create a secure password"
           />
 
           <!-- Password Confirmation -->
@@ -46,6 +54,7 @@
             required
             :class="{ 'error-border': passwordsDoNotMatch }"
             @blur="validatePassword"
+            placeholder="Confirm your password"
           />
           <p v-if="passwordsDoNotMatch" class="error-message">
             Passwords do not match.
@@ -67,13 +76,28 @@
           </select>
 
           <label for="firstName">First Name:</label>
-          <input type="text" id="firstName" v-model="form.first_name" />
+          <input
+            type="text"
+            id="firstName"
+            v-model="form.first_name"
+            placeholder="Enter your first name"
+          />
 
           <label for="lastName">Last Name:</label>
-          <input type="text" id="lastName" v-model="form.last_name" />
+          <input
+            type="text"
+            id="lastName"
+            v-model="form.last_name"
+            placeholder="Enter your last name"
+          />
 
           <label for="denomination">Denomination:</label>
-          <input type="text" id="denomination" v-model="form.denomination" />
+          <input
+            type="text"
+            id="denomination"
+            v-model="form.denomination"
+            placeholder="Enter your religious denomination"
+          />
 
           <!-- Address Fields with Google Places Autocomplete -->
           <div class="address-section">
@@ -167,23 +191,34 @@
           </div>
 
           <label for="phoneNumber">Phone Number:</label>
-          <input type="text" id="phoneNumber" v-model="form.phone_number" />
+          <input
+            type="text"
+            id="phoneNumber"
+            v-model="form.phone_number"
+            placeholder="Enter your phone number"
+          />
 
           <label for="yearsOfExperience">Years of Experience:</label>
           <input
             type="number"
             id="yearsOfExperience"
             v-model="form.years_of_experience"
+            placeholder="Enter your years of experience"
           />
 
           <label for="description">Description:</label>
-          <textarea id="description" v-model="form.description"></textarea>
+          <textarea
+            id="description"
+            v-model="form.description"
+            placeholder="Tell us about yourself and your mission"
+          ></textarea>
 
           <label for="profilePicture">Profile Picture URL:</label>
           <input
             type="text"
             id="profilePicture"
             v-model="form.profile_picture"
+            placeholder="Enter URL for your profile picture"
           />
         </div>
         <button type="submit" :disabled="!isFormValid">Sign Up</button>
@@ -279,7 +314,9 @@ export default {
             password: this.form.user.password,
           },
           tags: this.form.tags,
-          user_type: this.form.user_type,
+          user_type: this.form.user_type
+            ? this.form.user_type.toLowerCase()
+            : null,
           first_name: this.form.first_name,
           last_name: this.form.last_name,
           denomination: this.form.denomination,
@@ -309,8 +346,12 @@ export default {
         setTimeout(() => this.$router.push("/AppLogin"), 1000);
       } catch (error) {
         console.error("Registration failed:", error.response?.data);
+        console.error("Error status:", error.response?.status);
+        console.error("Error details:", error);
         this.message =
           error.response?.data?.detail ||
+          error.response?.data?.user?.username?.[0] ||
+          error.response?.data?.user?.email?.[0] ||
           "Registration failed. Please try again.";
       }
     },
