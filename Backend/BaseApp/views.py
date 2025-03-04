@@ -8,6 +8,8 @@ from .models import Tag, SearchHistory,\
 from .serializer import TagSerializer, SeachHistorySerializer,\
                         ExternalMediaSerializer,\
                         ProfileSerializer
+from rest_framework.response import Response
+from rest_framework import status
 
 class ProfileListCreateView(generics.ListCreateAPIView):
    queryset = Profile.objects.select_related(
@@ -53,7 +55,41 @@ class TagViewSet(ModelViewSet):
    filterset_fields = ['tag_name','tag_description','tag_is_predefined']
    queryset = Tag.objects.all()
    serializer_class = TagSerializer
-   permission_classes = [AllowAny]
+   permission_classes = [IsAuthenticated]
+
+   def create(self, request, *args, **kwargs):
+      profile_id = request.data.get('profile_id')
+      tag_name = request.data.get('tag_name')
+      
+      if profile_id:
+         try:
+            # First check if profile exists
+            profile = Profile.objects.get(user_id=profile_id)
+            
+            # If profile exists, then create/get tag
+            tag, created = Tag.objects.get_or_create(
+               tag_name=tag_name,
+               defaults={
+                  'tag_description': request.data.get('tag_description', ''),
+                  'tag_is_predefined': False
+               }
+            )
+            
+            profile.tags.add(tag)
+            
+            return Response({
+               'message': f'Tag "{tag_name}" added to profile successfully',
+               'tag_id': tag.id,
+               'profile_id': profile_id
+            }, status=status.HTTP_200_OK)
+            
+         except Profile.DoesNotExist:
+            return Response(
+               {'error': 'Profile not found'}, 
+               status=status.HTTP_404_NOT_FOUND
+            )
+      
+      return super().create(request, *args, **kwargs)
 
 # Search history viewset that performs CRUD operations
 class SearchHistoryViewSet(ModelViewSet):
