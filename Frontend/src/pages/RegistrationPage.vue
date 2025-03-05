@@ -36,6 +36,18 @@
           v-model:additionalData="form"
         />
 
+        <!-- Error Message -->
+        <div
+          v-if="message"
+          :class="[
+            'message-container',
+            { 'error-message': !isSuccess, 'success-message': isSuccess },
+          ]"
+        >
+          <span class="message-icon">{{ !isSuccess ? "⚠️" : "✅" }}</span>
+          {{ message }}
+        </div>
+
         <!-- Navigation Buttons -->
         <NavigationButtons
           :currentStep="currentStep"
@@ -47,13 +59,6 @@
           @submit="registerUser"
         />
       </form>
-
-      <p
-        v-if="message"
-        :class="{ 'success-message': isSuccess, 'error-message': !isSuccess }"
-      >
-        {{ message }}
-      </p>
     </div>
   </div>
 </template>
@@ -141,16 +146,54 @@ export default {
   },
   methods: {
     // Navigation methods
-    nextStep() {
-      if (this.currentStep === 0 && !this.isStepOneValid()) {
-        return;
-      }
-      if (this.currentStep < this.steps.length - 1) {
+    async nextStep() {
+      if (this.currentStep === 0) {
+        // Check uniqueness before proceeding from step 1
+        if (!this.isStepOneValid()) {
+          return;
+        }
+
+        try {
+          // Clear any existing messages
+          this.message = "";
+          this.isSuccess = false;
+
+          // Fetch all profiles
+          const response = await axios.get(
+            "http://127.0.0.1:8000/api/profiles/"
+          );
+          const existingUsernames = response.data.map((profile) =>
+            profile.user.username.toLowerCase()
+          );
+
+          // Check if username exists (case-insensitive comparison)
+          if (
+            existingUsernames.includes(this.form.user.username.toLowerCase())
+          ) {
+            this.message =
+              "This username is already taken. Please choose another one.";
+            this.isSuccess = false;
+            return;
+          }
+
+          // Username is available, proceed to next step
+          this.message = "";
+          this.currentStep++;
+        } catch (error) {
+          console.error("Username check error:", error);
+          this.message =
+            "Error checking username availability. Please try again.";
+          this.isSuccess = false;
+          return;
+        }
+      } else if (this.currentStep < this.steps.length - 1) {
+        this.message = ""; // Clear message when moving to next step
         this.currentStep++;
       }
     },
     prevStep() {
       if (this.currentStep > 0) {
+        this.message = ""; // Clear message when moving to previous step
         this.currentStep--;
       }
     },
@@ -171,8 +214,6 @@ export default {
       if (!isValid) {
         this.message = "Please complete all required fields before proceeding.";
         this.isSuccess = false;
-      } else {
-        this.message = "";
       }
 
       return isValid;
@@ -392,5 +433,45 @@ h1 {
   .registration-card {
     padding: 25px;
   }
+}
+
+.message-container {
+  margin: 15px 0;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-icon {
+  font-size: 1.2rem;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  border-left: 4px solid #f44336;
+}
+
+.success-message {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #4caf50;
 }
 </style>
