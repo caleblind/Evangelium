@@ -49,23 +49,34 @@ async function refreshAccessToken() {
 }
 
 const routes = [
-  { path: "/", component: LandingPage },
-  { path: "/AppLogin", component: AppLogin },
-  { path: "/Matchmaking", component: MatchmakingPage },
-  { path: "/LandingPage", component: LandingPage },
-  { path: "/RegistrationPage", component: RegistrationPage },
-  { path: "/UserProfile", component: UserProfile },
+  { path: "/", component: LandingPage, name: "home" },
+  { path: "/AppLogin", component: AppLogin, name: "AppLogin" },
+  { path: "/Matchmaking", component: MatchmakingPage, name: "Matchmaking" },
+  { path: "/LandingPage", component: LandingPage, name: "LandingPage" },
+  {
+    path: "/RegistrationPage",
+    component: RegistrationPage,
+    name: "RegistrationPage",
+  },
+  { path: "/UserProfile", component: UserProfile, name: "UserProfile" },
 
   // Protected routes (require authentication)
   {
     path: "/LandingPage",
     component: LandingPage,
+    name: "LandingPageAuth",
     meta: { requiresAuth: true },
   },
-  { path: "/SearchPage", component: SearchPage, meta: { requiresAuth: true } },
+  {
+    path: "/search",
+    component: SearchPage,
+    name: "SearchPage",
+    meta: { requiresAuth: true },
+  },
   {
     path: "/UserProfile",
     component: UserProfile,
+    name: "UserProfileAuth",
     meta: { requiresAuth: true },
   },
 ];
