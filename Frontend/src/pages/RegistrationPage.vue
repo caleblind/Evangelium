@@ -84,6 +84,13 @@
             <p v-if="passwordsDoNotMatch" class="error-message">
               Passwords do not match.
             </p>
+
+            <!-- Add note about required fields -->
+            <div class="info-message">
+              <span class="info-icon">ℹ️</span>
+              These account details are required. The following steps are
+              optional but help complete your profile.
+            </div>
           </div>
         </div>
 
@@ -302,6 +309,21 @@
           >
             Previous
           </button>
+
+          <!-- Skip to Final Step button - only visible in steps 0-2 when account info is valid -->
+          <button
+            v-if="
+              currentStep < steps.length - 1 &&
+              currentStep !== steps.length - 2 &&
+              isStepOneValid()
+            "
+            type="button"
+            class="btn-skip"
+            @click="skipToFinal"
+          >
+            Skip to Final Step
+          </button>
+
           <button
             v-if="currentStep < steps.length - 1"
             type="button"
@@ -588,6 +610,10 @@ export default {
       this.suggestions.state = [];
       this.form.state = suggestion.description;
     },
+
+    skipToFinal() {
+      this.currentStep = this.steps.length - 1;
+    },
   },
   // Fetches all the predefined tags on page load
   mounted() {
@@ -864,6 +890,7 @@ textarea {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
+  gap: 10px;
 }
 
 button {
@@ -907,12 +934,43 @@ button {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.btn-skip {
+  background-color: #ff9800;
+  color: white;
+  margin-right: auto;
+  margin-left: 10px;
+}
+
+.btn-skip:hover {
+  background-color: #f57c00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 button:disabled {
   background-color: #e0e0e0;
   color: #9e9e9e;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+/* Info Message */
+.info-message {
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  padding: 12px 15px;
+  margin-top: 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #0d47a1;
+  display: flex;
+  align-items: center;
+}
+
+.info-icon {
+  margin-right: 8px;
+  font-size: 1.1rem;
 }
 
 /* Responsive Design */
