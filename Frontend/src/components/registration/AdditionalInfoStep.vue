@@ -11,15 +11,6 @@
         @input="updateData"
       ></textarea>
 
-      <label for="profilePicture">Profile Picture URL:</label>
-      <input
-        type="text"
-        id="profilePicture"
-        v-model="localData.profile_picture"
-        placeholder="Enter URL for your profile picture"
-        @input="updateData"
-      />
-
       <label for="tags">Select Tags:</label>
       <div class="tags-container">
         <select
@@ -56,7 +47,7 @@ export default {
     return {
       localData: {
         description: this.additionalData.description || "",
-        profile_picture: this.additionalData.profile_picture || "",
+        profile_picture: null,
         tags: this.additionalData.tags || [],
       },
       availableTags: [],
@@ -71,6 +62,7 @@ export default {
       this.$emit("update:additionalData", {
         ...this.additionalData,
         ...this.localData,
+        profile_picture: null,
       });
     },
 
@@ -92,7 +84,7 @@ export default {
       handler(newValue) {
         this.localData = {
           description: newValue.description || "",
-          profile_picture: newValue.profile_picture || "",
+          profile_picture: null,
           tags: newValue.tags || [],
         };
       },

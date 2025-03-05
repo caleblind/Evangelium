@@ -91,14 +91,14 @@ export default {
     };
   },
   methods: {
-    /** Validates password match and emits validation result */
+    /* Validates password match and emits validation result */
     validatePassword() {
       this.passwordsDoNotMatch =
         this.localUserData.password !== this.confirmPassword;
       this.$emit("password-validation", !this.passwordsDoNotMatch);
     },
 
-    /** Updates parent with current user data values */
+    /* Updates parent with current user data values */
     updateUserData() {
       console.log(
         "AccountInfoStep - updateUserData called",
@@ -108,7 +108,7 @@ export default {
     },
   },
   watch: {
-    /** Syncs local data when parent data changes */
+    /* Syncs local data when parent data changes */
     userData: {
       handler(newValue) {
         this.localUserData = { ...newValue };
@@ -116,12 +116,12 @@ export default {
       deep: true,
     },
 
-    /** Triggers validation when password changes */
+    /* Triggers validation when password changes */
     "localUserData.password"() {
       this.validatePassword();
     },
 
-    /** Triggers validation when confirm password changes */
+    /* Triggers validation when confirm password changes */
     confirmPassword() {
       this.validatePassword();
     },

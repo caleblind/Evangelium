@@ -99,7 +99,6 @@ export default {
         phone_number: "",
         years_of_experience: null,
         description: "",
-        profile_picture: "",
       },
       passwordsDoNotMatch: false,
       message: "",
@@ -226,7 +225,7 @@ export default {
           phone_number: this.form.phone_number,
           years_of_experience: this.form.years_of_experience,
           description: this.form.description,
-          profile_picture: this.form.profile_picture,
+          profile_picture: null, // Always send null for profile picture
         };
 
         // Log the data being sent
