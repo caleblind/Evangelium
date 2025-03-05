@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Tag, SearchHistory,\
-                    ExternalMedia, Profile
+                    ExternalMedia, Profile, ProfileTagging
 
 class UserSerializer(serializers.ModelSerializer):
    class Meta:
@@ -14,27 +14,52 @@ class TagSerializer(serializers.ModelSerializer):
       model  = Tag
       fields = '__all__'
 
+class ProfileTaggingSerializer(serializers.ModelSerializer):
+   tag = TagSerializer()
+   
+   class Meta:
+      model = ProfileTagging
+      fields = ['tag', 'is_self_added', 'added_by', 'added_at']
+
 class ProfileSerializer(serializers.ModelSerializer):
-   user = UserSerializer()  # Nested User serializer
-   tags = serializers.PrimaryKeyRelatedField(
-       queryset=Tag.objects.all(), many=True, required=False)
+   user = UserSerializer()
+   taggings = ProfileTaggingSerializer(source='profiletagging_set', many=True, read_only=True)
+   self_tags = serializers.SerializerMethodField()
+   other_tags = serializers.SerializerMethodField()
 
    class Meta:
       model = Profile
-      fields = '__all__'
+      fields = ['user', 'user_type', 'first_name', 'last_name', 'denomination',
+               'street_address', 'city', 'state', 'country', 'phone_number',
+               'years_of_experience', 'description', 'profile_picture',
+               'taggings', 'self_tags', 'other_tags']
+
+   def get_self_tags(self, obj):
+      return TagSerializer(
+         Tag.objects.filter(
+            profiletagging__profile=obj,
+            profiletagging__is_self_added=True
+         ),
+         many=True
+      ).data
+
+   def get_other_tags(self, obj):
+      return TagSerializer(
+         Tag.objects.filter(
+            profiletagging__profile=obj,
+            profiletagging__is_self_added=False
+         ),
+         many=True
+      ).data
 
    def create(self, validated_data):
       user_data = validated_data.pop('user')
-      tag_data = validated_data.pop('tags', [])
       user = User.objects.create_user(**user_data)
       profile = Profile.objects.create(user=user, **validated_data)
-      profile.tags.set(tag_data)
       return profile
-
 
    def update(self, instance, validated_data):
       user_data = validated_data.pop('user', None)
-      tag_data = validated_data.pop('tags', None)
       if user_data:
          for key, value in user_data.items():
             setattr(instance.user, key, value)
@@ -43,9 +68,6 @@ class ProfileSerializer(serializers.ModelSerializer):
       for key, value in validated_data.items():
          setattr(instance, key, value)
       instance.save()
-
-      if tag_data is not None:
-         instance.tags.add(tag_data)  # Add the new tags to the profile
       return instance
 
 # Serializer class for Search History

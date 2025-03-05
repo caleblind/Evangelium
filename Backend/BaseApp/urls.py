@@ -3,7 +3,7 @@ from rest_framework import routers
 from .views import TagViewSet, SearchHistoryViewSet,\
                    ExternalMediaViewSet,\
                    ProfileListCreateView, ProfileDetailView,\
-                   MatchmakingResultsView
+                   MatchmakingResultsView, AddTagToProfileView
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
@@ -17,5 +17,7 @@ urlpatterns = [
         name='profile-list-create'),
    path('api/profiles/<int:pk>/', ProfileDetailView.as_view(),
         name='profile-detail'),
-   path('api/profiles/match', MatchmakingResultsView.as_view())
+   path('api/profiles/match', MatchmakingResultsView.as_view()),
+   path('api/tag/add-to-profile/', AddTagToProfileView.as_view(),
+        name='add-tag-to-profile')
 ]
