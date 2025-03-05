@@ -52,6 +52,7 @@ export default {
   },
   emits: ["prev-step", "next-step", "skip-to-final", "submit"],
   methods: {
+    /* Logs validation status and emits submit event to parent */
     handleSubmit() {
       console.log(
         "NavigationButtons - Submit button clicked, isFormValid:",

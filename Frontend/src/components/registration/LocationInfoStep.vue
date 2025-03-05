@@ -146,6 +146,7 @@ export default {
     });
   },
   methods: {
+    /* Updates parent with current location data values */
     updateData() {
       this.$emit("update:locationData", {
         ...this.locationData,
@@ -153,7 +154,7 @@ export default {
       });
     },
 
-    // Google Places API for Address Autocomplete
+    /* Initializes Google Places API for address autocomplete */
     initGooglePlaces() {
       if (window.google && window.google.maps && window.google.maps.places) {
         this.setupGooglePlacesServices();
@@ -169,6 +170,7 @@ export default {
       }
     },
 
+    /* Sets up Google Places services and input event listeners */
     setupGooglePlacesServices() {
       this.autocompleteService = new google.maps.places.AutocompleteService();
       this.placesService = new google.maps.places.PlacesService(
@@ -183,6 +185,7 @@ export default {
       });
     },
 
+    /* Fetches and displays autocomplete suggestions based on user input */
     async handleInput(event, field) {
       const input = event.target.value;
       if (input.length < 2) {
@@ -208,6 +211,7 @@ export default {
       }
     },
 
+    /* Updates address field and extracts city and state from selection */
     selectAddress(place) {
       this.suggestions.address = [];
       this.localData.street_address = place.description;
@@ -235,12 +239,14 @@ export default {
       );
     },
 
+    /* Updates city field with selected suggestion */
     selectCity(suggestion) {
       this.suggestions.city = [];
       this.localData.city = suggestion.description;
       this.updateData();
     },
 
+    /* Updates state field with selected suggestion */
     selectState(suggestion) {
       this.suggestions.state = [];
       this.localData.state = suggestion.description;

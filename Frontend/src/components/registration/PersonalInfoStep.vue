@@ -85,6 +85,7 @@ export default {
     };
   },
   methods: {
+    /* Updates parent with current personal information values */
     updateData() {
       this.$emit("update:personalData", {
         ...this.personalData,
@@ -93,6 +94,7 @@ export default {
     },
   },
   watch: {
+    /* Syncs local data when parent data changes */
     personalData: {
       handler(newValue) {
         this.localData = {

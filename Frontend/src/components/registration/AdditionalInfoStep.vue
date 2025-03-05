@@ -66,13 +66,15 @@ export default {
     this.fetchTags();
   },
   methods: {
+    /* Updates parent with current additional information values */
     updateData() {
       this.$emit("update:additionalData", {
         ...this.additionalData,
         ...this.localData,
       });
     },
-    // Fetches predefined tags from the backend
+
+    /* Fetches and filters predefined tags from the backend API */
     async fetchTags() {
       try {
         const response = await axios.get("http://127.0.0.1:8000/tag/");
@@ -85,6 +87,7 @@ export default {
     },
   },
   watch: {
+    /* Syncs local data when parent data changes */
     additionalData: {
       handler(newValue) {
         this.localData = {

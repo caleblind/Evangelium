@@ -37,6 +37,7 @@ export default {
   },
   emits: ["go-to-step"],
   computed: {
+    /* Calculates progress percentage (0-100) based on current step */
     progressPercentage() {
       return (this.currentStep / (this.steps.length - 1)) * 100;
     },
