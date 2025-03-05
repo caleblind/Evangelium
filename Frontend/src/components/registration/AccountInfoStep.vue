@@ -12,8 +12,11 @@
         v-model="localUserData.username"
         required
         placeholder="Choose a unique username"
-        @input="updateUserData"
+        @input="validateUsername"
       />
+      <p v-if="usernameError" class="error-message">
+        {{ usernameError }}
+      </p>
 
       <label for="email">
         <span class="required">*</span> Email:
@@ -25,8 +28,11 @@
         v-model="localUserData.email"
         required
         placeholder="Enter your email address"
-        @input="updateUserData"
+        @input="validateEmail"
       />
+      <p v-if="emailError" class="error-message">
+        {{ emailError }}
+      </p>
 
       <label for="password">
         <span class="required">*</span> Password:
@@ -88,17 +94,52 @@ export default {
       },
       confirmPassword: "",
       passwordsDoNotMatch: false,
+      usernameError: "",
+      emailError: "",
     };
   },
   methods: {
-    /* Validates password match and emits validation result */
+    validateUsername() {
+      const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+      if (!alphanumericRegex.test(this.localUserData.username)) {
+        this.usernameError = "Username can only contain letters and numbers";
+        this.$emit("password-validation", false);
+      } else {
+        this.usernameError = "";
+        this.validateAll();
+      }
+      this.updateUserData();
+    },
+
+    validateEmail() {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.localUserData.email)) {
+        this.emailError = "Please enter a valid email address";
+        this.$emit("password-validation", false);
+      } else {
+        this.emailError = "";
+        this.validateAll();
+      }
+      this.updateUserData();
+    },
+
+    validateAll() {
+      const isValid =
+        !this.usernameError &&
+        !this.emailError &&
+        !this.passwordsDoNotMatch &&
+        this.localUserData.username &&
+        this.localUserData.email &&
+        this.localUserData.password;
+      this.$emit("password-validation", isValid);
+    },
+
     validatePassword() {
       this.passwordsDoNotMatch =
         this.localUserData.password !== this.confirmPassword;
-      this.$emit("password-validation", !this.passwordsDoNotMatch);
+      this.validateAll();
     },
 
-    /* Updates parent with current user data values */
     updateUserData() {
       console.log(
         "AccountInfoStep - updateUserData called",
@@ -108,22 +149,21 @@ export default {
     },
   },
   watch: {
-    /* Syncs local data when parent data changes */
     userData: {
       handler(newValue) {
         this.localUserData = { ...newValue };
       },
       deep: true,
     },
-
-    /* Triggers validation when password changes */
-    "localUserData.password"() {
-      this.validatePassword();
+    "localUserData.password": {
+      handler() {
+        this.validatePassword();
+      },
     },
-
-    /* Triggers validation when confirm password changes */
-    confirmPassword() {
-      this.validatePassword();
+    confirmPassword: {
+      handler() {
+        this.validatePassword();
+      },
     },
   },
   mounted() {
