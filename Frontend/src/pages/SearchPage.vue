@@ -16,167 +16,118 @@
       </button>
     </div>
 
-    <!-- Advanced Search Form -->
-    <div class="search-form">
-      <h2>Advanced Search</h2>
-
-      <div class="form-group">
-        <label>Contains</label>
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search for names, places, or interests"
-          class="search-input"
-          @input="handleSearch"
-        />
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Denomination</label>
-          <select
-            v-model="filters.denomination"
-            class="select-input"
-            @change="handleSearch"
-          >
-            <option value="">-Select a denomination-</option>
-            <option value="Baptist">Baptist</option>
-            <option value="Catholic">Catholic</option>
-            <option value="Protestant">Protestant</option>
-            <option value="Non-Denominational">Non-Denominational</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Mission Field</label>
-          <select
-            v-model="filters.missionField"
-            class="select-input"
-            @change="handleSearch"
-          >
-            <option value="">-Select a field-</option>
-            <option value="Youth Ministry">Youth Ministry</option>
-            <option value="Education & Literacy">Education & Literacy</option>
-            <option value="Community Outreach">Community Outreach</option>
-            <option value="Church Planting">Church Planting</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div v-if="isLoading" class="loading-state">Searching...</div>
-
-    <!-- Results Section -->
-    <div v-else-if="results.length > 0" class="results-grid">
-      <div v-for="result in results" :key="result.id" class="result-card">
-        <img
-          :src="result.profile_picture || '/default-profile.jpg'"
-          :alt="result.name"
-          class="result-image"
-        />
-        <div class="result-content">
-          <h3>{{ result.first_name }} {{ result.last_name }}</h3>
-          <p class="location">{{ formatLocation(result) }}</p>
-          <p class="description">{{ result.description }}</p>
-          <div class="tags">
-            <span v-for="tag in result.tags" :key="tag.id" class="tag">
-              {{ tag.tag_name }}
-            </span>
+    <!-- Search Component -->
+    <UserSearch
+      :filters="['location', 'tags']"
+      :initial-filters="{
+        userType: activeTab === 'churches' ? 'other' : 'missionary',
+      }"
+      @search-results="handleSearchResults"
+      @search-error="handleError"
+    >
+      <template #results="{ results, isLoading, hasSearched }">
+        <div v-if="isLoading" class="loading-state">Searching...</div>
+        <div v-else-if="results.length > 0" class="results-grid">
+          <div v-for="result in results" :key="result.id" class="result-card">
+            <img
+              :src="result.profile_picture || '/default-profile.jpg'"
+              :alt="result.name"
+              class="result-image"
+            />
+            <div class="result-content">
+              <h3>{{ result.first_name }} {{ result.last_name }}</h3>
+              <p class="location">{{ formatLocation(result) }}</p>
+              <p class="description">{{ result.description }}</p>
+              <div class="tags">
+                <span v-for="tag in result.tags" :key="tag.id" class="tag">
+                  {{ tag.tag_name }}
+                </span>
+              </div>
+            </div>
+            <button class="bookmark-button">
+              <i class="fas fa-bookmark"></i>
+            </button>
           </div>
         </div>
-        <button class="bookmark-button">
-          <i class="fas fa-bookmark"></i>
-        </button>
-      </div>
-    </div>
+        <div v-else-if="hasSearched" class="no-results">
+          No results found matching your criteria
+        </div>
+      </template>
+    </UserSearch>
 
-    <div v-else-if="hasSearched" class="no-results">
-      No results found matching your criteria
+    <!-- Test Section - Show All Profiles -->
+    <div class="test-section">
+      <h2>Test Section - All Profiles</h2>
+      <div v-if="testLoading" class="loading-state">Loading test data...</div>
+      <div v-else-if="testResults.length > 0" class="results-grid">
+        <div v-for="result in testResults" :key="result.id" class="result-card">
+          <img
+            :src="result.profile_picture || '/default-profile.jpg'"
+            :alt="result.name"
+            class="result-image"
+          />
+          <div class="result-content">
+            <h3>{{ result.first_name }} {{ result.last_name }}</h3>
+            <p class="location">{{ formatLocation(result) }}</p>
+            <p class="description">{{ result.description }}</p>
+            <p class="user-type">Type: {{ result.user_type }}</p>
+            <div class="tags">
+              <span v-for="tag in result.tags" :key="tag.id" class="tag">
+                {{ tag.tag_name }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-else class="no-results">No test data available</div>
     </div>
   </div>
 </template>
 
 <script>
+import UserSearch from "@/components/search/UserSearch.vue";
 import axios from "axios";
-import { debounce } from "lodash";
 
 export default {
   name: "SearchPage",
+  components: {
+    UserSearch,
+  },
   data() {
     return {
       activeTab: "churches",
-      searchQuery: "",
-      filters: {
-        denomination: "",
-        missionField: "",
-      },
-      results: [],
-      hasSearched: false,
-      isLoading: false,
+      testResults: [],
+      testLoading: false,
     };
   },
   created() {
-    // Initial search when component is created
-    this.handleSearch();
+    // Load test data when component is created
+    this.loadTestData();
   },
   methods: {
-    handleSearch: debounce(async function () {
-      this.isLoading = true;
-      this.hasSearched = true;
-
-      try {
-        // Start with basic search parameters
-        const params = new URLSearchParams({
-          q: this.searchQuery || "", // Empty string if no query
-          type: this.activeTab,
-        });
-
-        // Only add filters if they are selected
-        if (this.filters.denomination) {
-          params.append("denomination", this.filters.denomination);
-        }
-        if (this.filters.missionField) {
-          params.append("missionField", this.filters.missionField);
-        }
-
-        const url = `http://127.0.0.1:8000/api/profiles/search?${params.toString()}`;
-        console.log("Making request to:", url);
-
-        const response = await axios.get(url);
-        console.log("Response received:", response.data);
-
-        if (response.data && response.data.results) {
-          this.results = response.data.results.map((result) => ({
-            ...result,
-            // Use username if first_name is not available
-            first_name: result.first_name || result.user?.username || "Unknown",
-            last_name: result.last_name || "",
-            // Ensure tags is always an array
-            tags: Array.isArray(result.tags) ? result.tags : [],
-          }));
-        } else {
-          console.log("No results found in response:", response.data);
-          this.results = [];
-        }
-      } catch (error) {
-        console.error("Search failed:", error.response || error);
-        this.results = [];
-      } finally {
-        this.isLoading = false;
-      }
-    }, 300),
-
+    handleSearchResults(results) {
+      console.log("Search results:", results);
+    },
+    handleError(error) {
+      console.error("Search error:", error);
+    },
     formatLocation(result) {
       const parts = [result.city, result.state, result.country]
         .filter(Boolean)
         .join(", ");
       return parts || "Location not specified";
     },
-  },
-  watch: {
-    activeTab() {
-      this.handleSearch();
+    async loadTestData() {
+      this.testLoading = true;
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/profiles/");
+        console.log("Test data response:", response.data);
+        this.testResults = response.data;
+      } catch (error) {
+        console.error("Failed to load test data:", error.response || error);
+      } finally {
+        this.testLoading = false;
+      }
     },
   },
 };
@@ -221,53 +172,13 @@ export default {
   background-color: #4285f4;
 }
 
-.search-form {
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
   background: white;
-  padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #333;
-}
-
-.search-input,
-.select-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.search-button {
-  background-color: #4285f4;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.search-button:hover {
-  background-color: #3367d6;
 }
 
 .results-grid {
@@ -352,12 +263,22 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.loading-state {
-  text-align: center;
-  padding: 40px;
-  color: #666;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.test-section {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.test-section h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.user-type {
+  color: #4285f4;
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-weight: 500;
 }
 </style>

@@ -10,14 +10,29 @@ from .serializer import TagSerializer, SeachHistorySerializer,\
                         ProfileSerializer
 
 class ProfileListCreateView(generics.ListCreateAPIView):
-   queryset = Profile.objects.select_related(
-      'user').prefetch_related('tags').all()
+   queryset = Profile.objects.select_related('user').prefetch_related('tags').all()
    serializer_class = ProfileSerializer
    permission_classes = [AllowAny]  # Public access for testing
    filter_backends = [filters.SearchFilter]
-   search_fields = ['user_type', 'city', 'state', 'country', 'denomination']
-   filterset_fields = ['user_type', 'city', 'state', 'country',
-                       'denomination', 'tags']
+   search_fields = [
+       'user_type', 'city', 'state', 'country', 'denomination',
+       'first_name', 'last_name', 'description',
+       'user__username'  # Add username search
+   ]
+   filterset_fields = ['user_type', 'city', 'state', 'country', 'denomination']
+
+   def get_queryset(self):
+       queryset = super().get_queryset()
+       
+       # Handle tag filtering separately to ensure AND condition
+       tags = self.request.query_params.getlist('tags', [])
+       if tags:
+           for tag in tags:
+               queryset = queryset.filter(tags__tag_name=tag)
+           # Ensure distinct results after multiple tag filters
+           queryset = queryset.distinct()
+       
+       return queryset
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
    queryset = Profile.objects.select_related('user').all()
