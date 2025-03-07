@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <HeaderBar />
+    <HeaderComponent />
     <main class="main-content">
       <router-view></router-view>
     </main>
@@ -8,12 +8,12 @@
 </template>
 
 <script>
-import HeaderBar from "@/components/HeaderBar.vue";
+import HeaderComponent from "@/components/common/HeaderComponent.vue";
 
 export default {
   name: "App",
   components: {
-    HeaderBar,
+    HeaderComponent,
   },
 };
 </script>

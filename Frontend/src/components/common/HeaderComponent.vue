@@ -2,25 +2,23 @@
   <header class="header-banner">
     <!-- Site Icon -->
     <div class="site-icon">
-      <a href="/LandingPage" title="SaltnLife">
+      <router-link to="/LandingPage" title="SaltnLife">
         <img
           src="@\assets\pictures\saltnlightlogo1.webp"
           alt="SaltnLight Logo"
           class="icon"
         />
-      </a>
+      </router-link>
     </div>
 
     <!-- Navigation Links -->
     <nav class="nav-links">
-      <a href="/SearchPage" class="nav-link">Explore</a>
-      <a href="/RegistrationPage" class="nav-link">Sign Up</a>
+      <router-link to="/search" class="nav-link">Explore</router-link>
+      <router-link to="/RegistrationPage" class="nav-link">Sign Up</router-link>
       <a @click="navigateToProfile" class="nav-link" style="cursor: pointer"
         >Profile</a
       >
-      <div>
-        <button @click="logout">Logout</button>
-      </div>
+      <button @click="logout" class="logout-btn">Logout</button>
     </nav>
   </header>
 </template>
@@ -87,18 +85,18 @@ export default {
 }
 
 /* Logout Button Styling */
-.header-banner button {
-  background-color: #333;
-  color: #fff;
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
   padding: 8px 16px;
   border: none;
-  border-radius: 40px;
+  border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.header-banner button:hover {
-  background-color: #0056b3;
+.logout-btn:hover {
+  background-color: #c82333;
 }
 </style>
