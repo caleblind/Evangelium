@@ -91,7 +91,7 @@
               :key="tag"
               class="selected-tag"
             >
-              {{ tag }}
+              {{ getTagName(tag) }}
               <button class="remove-tag" @click="removeTag(tag)" type="button">
                 ×
               </button>
@@ -155,8 +155,8 @@
             <p class="location">{{ formatLocation(result) }}</p>
             <p class="description">{{ result.description }}</p>
             <div class="tags">
-              <span v-for="tag in result.tags" :key="tag.id" class="tag">
-                {{ tag.tag_name || tag.name }}
+              <span v-for="tag in result.tags" :key="tag" class="tag">
+                {{ getTagName(tag) }}
               </span>
             </div>
           </div>
@@ -198,15 +198,14 @@ export default {
       availableTags: [],
       hasSearched: false,
       isLoading: false,
-      // New data properties for tag search
       tagSearchQuery: "",
       filteredTags: [],
       showTagSuggestions: false,
       selectedTagIndex: -1,
+      tagMap: {}, // Map to store tag details
     };
   },
   created() {
-    // Fetch available tags
     this.fetchTags();
   },
   methods: {
@@ -296,9 +295,18 @@ export default {
       try {
         const response = await axios.get("http://127.0.0.1:8000/tag/");
         this.availableTags = response.data;
+        // Create a map of tag IDs to tag names
+        this.tagMap = response.data.reduce((acc, tag) => {
+          acc[tag.id] = tag.tag_name;
+          return acc;
+        }, {});
       } catch (error) {
         console.error("Failed to fetch tags:", error);
       }
+    },
+
+    getTagName(tagId) {
+      return this.tagMap[tagId] || "Unknown Tag";
     },
 
     formatLocation(result) {
@@ -318,7 +326,7 @@ export default {
 
     showAllTags() {
       this.filteredTags = this.availableTags.filter(
-        (tag) => !this.detailedFilters.tags.includes(tag.tag_name)
+        (tag) => !this.detailedFilters.tags.includes(tag.id)
       );
       this.showTagSuggestions = true;
       this.selectedTagIndex = -1;
@@ -341,7 +349,7 @@ export default {
       this.filteredTags = this.availableTags.filter(
         (tag) =>
           tag.tag_name.toLowerCase().includes(query) &&
-          !this.detailedFilters.tags.includes(tag.tag_name)
+          !this.detailedFilters.tags.includes(tag.id)
       );
       this.showTagSuggestions = true;
       this.selectedTagIndex = -1;
@@ -356,11 +364,8 @@ export default {
         (tag) => tag.tag_name.toLowerCase() === tagToAdd.toLowerCase()
       );
 
-      if (
-        existingTag &&
-        !this.detailedFilters.tags.includes(existingTag.tag_name)
-      ) {
-        this.detailedFilters.tags.push(existingTag.tag_name);
+      if (existingTag && !this.detailedFilters.tags.includes(existingTag.id)) {
+        this.detailedFilters.tags.push(existingTag.id);
         this.tagSearchQuery = "";
         this.filteredTags = [];
         this.showTagSuggestions = false;
@@ -369,8 +374,8 @@ export default {
     },
 
     selectTag(tag) {
-      if (!this.detailedFilters.tags.includes(tag.tag_name)) {
-        this.detailedFilters.tags.push(tag.tag_name);
+      if (!this.detailedFilters.tags.includes(tag.id)) {
+        this.detailedFilters.tags.push(tag.id);
         this.tagSearchQuery = "";
         this.filteredTags = [];
         this.showTagSuggestions = false;

@@ -39,8 +39,8 @@
               <p class="location">{{ formatLocation(result) }}</p>
               <p class="description">{{ result.description }}</p>
               <div class="tags">
-                <span v-for="tag in result.tags" :key="tag.id" class="tag">
-                  {{ tag.tag_name }}
+                <span v-for="tag in result.tags" :key="tag" class="tag">
+                  {{ getTagName(tag) }}
                 </span>
               </div>
             </div>
@@ -72,8 +72,8 @@
             <p class="description">{{ result.description }}</p>
             <p class="user-type">Type: {{ result.user_type }}</p>
             <div class="tags">
-              <span v-for="tag in result.tags" :key="tag.id" class="tag">
-                {{ tag.tag_name }}
+              <span v-for="tag in result.tags" :key="tag" class="tag">
+                {{ getTagName(tag) }}
               </span>
             </div>
           </div>
@@ -98,11 +98,13 @@ export default {
       activeTab: "churches",
       testResults: [],
       testLoading: false,
+      tagMap: {}, // Map to store tag details
     };
   },
   created() {
-    // Load test data when component is created
+    // Load test data and fetch tags when component is created
     this.loadTestData();
+    this.fetchTags();
   },
   methods: {
     handleSearchResults(results) {
@@ -116,6 +118,21 @@ export default {
         .filter(Boolean)
         .join(", ");
       return parts || "Location not specified";
+    },
+    async fetchTags() {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/tag/");
+        // Create a map of tag IDs to tag names
+        this.tagMap = response.data.reduce((acc, tag) => {
+          acc[tag.id] = tag.tag_name;
+          return acc;
+        }, {});
+      } catch (error) {
+        console.error("Failed to fetch tags:", error);
+      }
+    },
+    getTagName(tagId) {
+      return this.tagMap[tagId] || "Unknown Tag";
     },
     async loadTestData() {
       this.testLoading = true;
