@@ -24,7 +24,8 @@ class TagSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
    user = UserSerializer()  # Nested User serializer
-   tags = TagSerializer(many=True)  # Use TagSerializer for tags
+   tags = serializers.PrimaryKeyRelatedField(
+       queryset=Tag.objects.all(), many=True, required=False)
 
    class Meta:
       model = Profile
@@ -32,20 +33,15 @@ class ProfileSerializer(serializers.ModelSerializer):
 
    def create(self, validated_data):
       user_data = validated_data.pop('user')
-      tags_data = validated_data.pop('tags', [])
+      tag_data = validated_data.pop('tags', [])
       user = User.objects.create_user(**user_data)
       profile = Profile.objects.create(user=user, **validated_data)
-      
-      # Handle tags
-      for tag_data in tags_data:
-         tag, _ = Tag.objects.get_or_create(tag_name=tag_data['tag_name'])
-         profile.tags.add(tag)
-      
+      profile.tags.set(tag_data)
       return profile
 
    def update(self, instance, validated_data):
       user_data = validated_data.pop('user', None)
-      tags_data = validated_data.pop('tags', None)
+      tag_data = validated_data.pop('tags', None)
 
       # Update user fields if provided
       if user_data:
@@ -62,11 +58,8 @@ class ProfileSerializer(serializers.ModelSerializer):
       instance.save()
 
       # Update tags if provided
-      if tags_data is not None:
-         instance.tags.clear()  # Remove all existing tags
-         for tag_data in tags_data:
-            tag, _ = Tag.objects.get_or_create(tag_name=tag_data['tag_name'])
-            instance.tags.add(tag)
+      if tag_data is not None:
+         instance.tags.set(tag_data)
 
       return instance
 
