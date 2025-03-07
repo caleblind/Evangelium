@@ -10,7 +10,8 @@ from .serializer import TagSerializer, SeachHistorySerializer,\
                         ProfileSerializer
 
 class ProfileListCreateView(generics.ListCreateAPIView):
-   queryset = Profile.objects.select_related('user').prefetch_related('tags').all()
+   queryset = Profile.objects.select_related(
+      'user').prefetch_related('tags').all()
    serializer_class = ProfileSerializer
    permission_classes = [AllowAny]  # Public access for testing
    filter_backends = [filters.SearchFilter]
