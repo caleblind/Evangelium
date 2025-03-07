@@ -2,9 +2,6 @@
   <div class="profile-card">
     <div class="profile-header">
       <h1>{{ profile.first_name }} {{ profile.last_name }}</h1>
-      <button @click="$emit('edit')" class="edit-btn">
-        <i class="fas fa-edit"></i> Edit Profile
-      </button>
     </div>
 
     <div class="profile-content">
@@ -66,14 +63,13 @@
 
 <script>
 export default {
-  name: "ProfileView",
+  name: "PublicProfileView",
   props: {
     profile: {
       type: Object,
       required: true,
     },
   },
-  emits: ["edit"],
 };
 </script>
 
@@ -152,24 +148,6 @@ export default {
 .description {
   line-height: 1.6;
   color: #2c3e50;
-}
-
-.edit-btn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  border: none;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s;
-  background: #3498db;
-  color: white;
-}
-
-.edit-btn:hover {
-  background: #2980b9;
 }
 
 @media (max-width: 1024px) {
