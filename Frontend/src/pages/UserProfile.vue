@@ -60,163 +60,24 @@ export default {
   methods: {
     async fetchProfile() {
       try {
-        // Check for token before making the request
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          this.error = "Please log in to view your profile.";
-          this.$router.push("/AppLogin");
-          return;
-        }
-
-        const [profileResponse, tagResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/profiles/me/`, {
-            headers: this.getAuthHeader(),
-          }),
-          axios.get(`${API_BASE_URL}/tag/`),
-        ]);
-
-        if (!profileResponse.data || !profileResponse.data.user) {
-          throw new Error("Invalid profile data received");
-        }
-
-        this.profile = profileResponse.data;
-        this.originalProfile = JSON.parse(JSON.stringify(profileResponse.data));
-        this.selectedTags = profileResponse.data.tags.map((tag) => tag.id);
-
-        this.availableTags = tagResponse.data.map((tag) => ({
-          id: tag.id,
-          name: tag.tag_name,
-        }));
-
-        this.profile.tags = profileResponse.data.tags.map(
-          (tagId) =>
-            this.availableTags.find((tag) => tag.id === tagId) || {
-              id: tagId,
-              name: "Unknown Tag",
-            }
-        );
+        const response = await axios.get("http://127.0.0.1:8000/api/profiles");
+        this.profile = response.data;
       } catch (err) {
-        console.error("Profile fetch error:", err);
-        if (err.response?.status === 401 && retry) {
-          try {
-            const refreshed = await this.refreshToken();
-            if (refreshed) {
-              return this.fetchProfile(false);
-            } else {
-              this.error = "Session expired. Please log in again.";
-              this.$router.push("/AppLogin");
-            }
-          } catch (refreshError) {
-            console.error("Token refresh error:", refreshError);
-            this.error = "Session expired. Please log in again.";
-            this.$router.push("/AppLogin");
-          }
-        } else {
-          this.error = "Failed to load profile data.";
-        }
+        this.error = "Failed to load profile data.";
       } finally {
         this.loading = false;
       }
     },
     async updateProfile() {
       try {
-        const profileId = this.profile.user.id;
-        const changedFields = this.getChangedFields(formData);
-
-        if (Object.keys(changedFields).length === 0) {
-          this.editing = false;
-          return;
-        }
-
-        try {
-          await this.sendProfileUpdate(profileId, changedFields);
-          alert("Profile updated successfully!");
-          this.editing = false;
-          this.fetchProfile();
-        } catch (err) {
-          if (err.response?.status === 401 && (await this.refreshToken())) {
-            await this.sendProfileUpdate(profileId, changedFields);
-            alert("Profile updated successfully!");
-            this.editing = false;
-            this.fetchProfile();
-          } else {
-            this.error =
-              err.response?.status === 401
-                ? "Session expired. Please log in again."
-                : "Failed to update profile.";
-          }
-        }
-      } catch (err) {
-        this.error = "Failed to update profile.";
-      }
-    },
-
-    async sendProfileUpdate(profileId, data) {
-      return axios.patch(`${API_BASE_URL}/api/profiles/${profileId}/`, data, {
-        headers: this.getAuthHeader(),
-      });
-    },
-
-    getChangedFields(formData) {
-      const changedFields = {};
-      const fieldsToCheck = [
-        "first_name",
-        "last_name",
-        "user_type",
-        "denomination",
-        "phone_number",
-        "street_address",
-        "city",
-        "state",
-        "country",
-        "years_of_experience",
-        "description",
-      ];
-
-      fieldsToCheck.forEach((field) => {
-        if (formData[field] !== this.originalProfile[field]) {
-          changedFields[field] = formData[field];
-        }
-      });
-
-      const originalTagIds = this.originalProfile.tags.map((tag) => tag.id);
-      if (
-        JSON.stringify([...formData.tags].sort()) !==
-        JSON.stringify([...originalTagIds].sort())
-      ) {
-        changedFields.tags = formData.tags;
-      }
-
-      return changedFields;
-    },
-
-    async refreshToken() {
-      const refreshToken = localStorage.getItem("refresh_token");
-      if (!refreshToken) {
-        return false;
-      }
-
-      try {
-        const response = await axios.post(
-          `${API_BASE_URL}/api/token/refresh/`,
-          {
-            refresh: refreshToken,
-          }
+        await axios.put(
+          `http://127.0.0.1:8000/api/profiles/${this.profile.id}/`,
+          this.profile
         );
-        localStorage.setItem("access_token", response.data.access);
-        return true;
+        this.editing = false;
       } catch (err) {
-        console.error("Token refresh failed:", err);
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        return false;
+        this.error = "Failed to update profile data.";
       }
-    },
-
-    logout() {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      this.$router.push("/");
     },
   },
   created() {

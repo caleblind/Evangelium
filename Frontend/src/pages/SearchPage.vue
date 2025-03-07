@@ -83,7 +83,6 @@
       <UserCard
         v-for="user in users"
         :key="user.id"
-        :id="user.user.id"
         :first_name="user.first_name"
         :last_name="user.last_name"
         :city="user.city"
@@ -126,9 +125,7 @@ export default {
     async fetchUsers() {
       try {
         const response = await axios.get("http://127.0.0.1:8000/api/profiles");
-        console.log("API Response:", response.data);
         this.users = response.data;
-        console.log("First user data:", this.users[0]);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
