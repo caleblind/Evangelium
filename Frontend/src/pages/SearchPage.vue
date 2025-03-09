@@ -36,6 +36,14 @@
             />
             <div class="result-content">
               <h3>{{ result.first_name }} {{ result.last_name }}</h3>
+              <div class="meta-info">
+                <span class="user-type">{{
+                  formatUserType(result.user_type)
+                }}</span>
+                <span v-if="result.denomination" class="denomination">{{
+                  result.denomination
+                }}</span>
+              </div>
               <p class="location">{{ formatLocation(result) }}</p>
               <p class="description">{{ result.description }}</p>
               <div class="tags">
@@ -54,33 +62,6 @@
         </div>
       </template>
     </UserSearch>
-
-    <!-- Test Section - Show All Profiles -->
-    <div class="test-section">
-      <h2>Test Section - All Profiles</h2>
-      <div v-if="testLoading" class="loading-state">Loading test data...</div>
-      <div v-else-if="testResults.length > 0" class="results-grid">
-        <div v-for="result in testResults" :key="result.id" class="result-card">
-          <img
-            :src="result.profile_picture || '/default-profile.jpg'"
-            :alt="result.name"
-            class="result-image"
-          />
-          <div class="result-content">
-            <h3>{{ result.first_name }} {{ result.last_name }}</h3>
-            <p class="location">{{ formatLocation(result) }}</p>
-            <p class="description">{{ result.description }}</p>
-            <p class="user-type">Type: {{ result.user_type }}</p>
-            <div class="tags">
-              <span v-for="tag in result.tags" :key="tag" class="tag">
-                {{ getTagName(tag) }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-else class="no-results">No test data available</div>
-    </div>
   </div>
 </template>
 
@@ -96,14 +77,10 @@ export default {
   data() {
     return {
       activeTab: "churches",
-      testResults: [],
-      testLoading: false,
       tagMap: {}, // Map to store tag details
     };
   },
   created() {
-    // Load test data and fetch tags when component is created
-    this.loadTestData();
     this.fetchTags();
   },
   methods: {
@@ -134,17 +111,12 @@ export default {
     getTagName(tagId) {
       return this.tagMap[tagId] || "Unknown Tag";
     },
-    async loadTestData() {
-      this.testLoading = true;
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/api/profiles/");
-        console.log("Test data response:", response.data);
-        this.testResults = response.data;
-      } catch (error) {
-        console.error("Failed to load test data:", error.response || error);
-      } finally {
-        this.testLoading = false;
-      }
+    formatUserType(userType) {
+      if (!userType) return "Unknown Type";
+      // Capitalize first letter and handle 'other' type
+      return userType === "other"
+        ? "Church"
+        : userType.charAt(0).toUpperCase() + userType.slice(1);
     },
   },
 };
@@ -280,22 +252,20 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.test-section {
-  margin-top: 40px;
-  padding-top: 40px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.test-section h2 {
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 1.5rem;
+.meta-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .user-type {
   color: #4285f4;
-  font-size: 14px;
-  margin-bottom: 12px;
   font-weight: 500;
+}
+
+.denomination {
+  color: var(--secondary-color);
+  font-style: italic;
 }
 </style>

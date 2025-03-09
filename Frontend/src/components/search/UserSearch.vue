@@ -52,6 +52,18 @@
           </select>
         </div>
 
+        <!-- Denomination Filter -->
+        <div class="form-group">
+          <label>Denomination</label>
+          <select v-model="detailedFilters.denomination" class="select-input">
+            <option value="">All Denominations</option>
+            <option value="Baptist">Baptist</option>
+            <option value="Catholic">Catholic</option>
+            <option value="Protestant">Protestant</option>
+            <option value="Non-Denominational">Non-Denominational</option>
+          </select>
+        </div>
+
         <!-- Location Filters -->
         <div class="form-group">
           <label>City</label>
@@ -152,6 +164,14 @@
           />
           <div class="result-content">
             <h3>{{ result.first_name }} {{ result.last_name }}</h3>
+            <div class="meta-info">
+              <span v-if="result.user_type" class="user-type">{{
+                result.user_type
+              }}</span>
+              <span v-if="result.denomination" class="denomination">{{
+                result.denomination
+              }}</span>
+            </div>
             <p class="location">{{ formatLocation(result) }}</p>
             <p class="description">{{ result.description }}</p>
             <div class="tags">
@@ -189,6 +209,7 @@ export default {
       detailedFilters: {
         name: "",
         userType: "",
+        denomination: "",
         city: "",
         state: "",
         country: "",
@@ -242,12 +263,17 @@ export default {
 
         // Add name search
         if (this.detailedFilters.name) {
-          params.append("search", this.detailedFilters.name);
+          params.append("name", this.detailedFilters.name);
         }
 
         // Add user type filter
         if (this.detailedFilters.userType) {
           params.append("user_type", this.detailedFilters.userType);
+        }
+
+        // Add denomination filter
+        if (this.detailedFilters.denomination) {
+          params.append("denomination", this.detailedFilters.denomination);
         }
 
         // Add location filters
@@ -261,17 +287,18 @@ export default {
           params.append("country", this.detailedFilters.country);
         }
 
-        // Add tags filter - now handles multiple tags
+        // Add tags filter - handles multiple tags with AND logic
         if (this.detailedFilters.tags && this.detailedFilters.tags.length > 0) {
           this.detailedFilters.tags.forEach((tag) => {
             params.append("tags", tag);
           });
         }
 
+        // Use the new detailed search endpoint
         const response = await axios.get(
-          `${this.apiEndpoint}?${params.toString()}`
+          `${this.apiEndpoint}detailed-search/?${params.toString()}`
         );
-        this.results = this.processResults(response.data);
+        this.results = this.processResults(response.data.results);
         this.$emit("search-results", this.results);
       } catch (error) {
         console.error("Detailed search failed:", error);
@@ -395,6 +422,50 @@ export default {
       );
     },
   },
+  watch: {
+    "detailedFilters.name": {
+      handler() {
+        if (this.isDetailedSearch) {
+          this.handleDetailedSearch();
+        }
+      },
+    },
+    "detailedFilters.userType": {
+      handler() {
+        if (this.isDetailedSearch) {
+          this.handleDetailedSearch();
+        }
+      },
+    },
+    "detailedFilters.denomination": {
+      handler() {
+        if (this.isDetailedSearch) {
+          this.handleDetailedSearch();
+        }
+      },
+    },
+    "detailedFilters.city": {
+      handler() {
+        if (this.isDetailedSearch) {
+          this.handleDetailedSearch();
+        }
+      },
+    },
+    "detailedFilters.state": {
+      handler() {
+        if (this.isDetailedSearch) {
+          this.handleDetailedSearch();
+        }
+      },
+    },
+    "detailedFilters.country": {
+      handler() {
+        if (this.isDetailedSearch) {
+          this.handleDetailedSearch();
+        }
+      },
+    },
+  },
 };
 </script>
 
@@ -506,6 +577,25 @@ export default {
   margin: 0 0 8px 0;
   font-size: 18px;
   color: #333;
+}
+
+.meta-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.user-type {
+  background: #e3f2fd;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.denomination {
+  background: #f5f5f5;
+  color: #666;
+  font-style: italic;
 }
 
 .location {

@@ -168,4 +168,64 @@ def search_profiles(request):
         return Response({
             'error': 'An error occurred while searching profiles',
             'detail': str(e)
+        }, status=500)
+
+@api_view(['GET'])
+def detailed_search(request):
+    """
+    Advanced search endpoint that combines all criteria with AND logic
+    """
+    try:
+        # Get all query parameters
+        name = request.GET.get('name', '').strip()
+        user_type = request.GET.get('user_type', '').strip()
+        denomination = request.GET.get('denomination', '').strip()
+        city = request.GET.get('city', '').strip()
+        state = request.GET.get('state', '').strip()
+        country = request.GET.get('country', '').strip()
+        tags = request.GET.getlist('tags', [])
+
+        # Start with all profiles
+        queryset = Profile.objects.select_related('user').prefetch_related('tags').all()
+
+        # Apply filters using AND logic
+        if name:
+            queryset = queryset.filter(
+                Q(first_name__icontains=name) |
+                Q(last_name__icontains=name) |
+                Q(user__username__icontains=name)
+            )
+
+        if user_type:
+            queryset = queryset.filter(user_type__iexact=user_type)
+
+        if denomination:
+            queryset = queryset.filter(denomination__iexact=denomination)
+
+        if city:
+            queryset = queryset.filter(city__icontains=city)
+
+        if state:
+            queryset = queryset.filter(state__icontains=state)
+
+        if country:
+            queryset = queryset.filter(country__icontains=country)
+
+        # Apply tag filters with AND logic
+        for tag in tags:
+            queryset = queryset.filter(tags__id=tag)
+
+        # Ensure distinct results
+        queryset = queryset.distinct()
+
+        # Serialize the results
+        serializer = ProfileSerializer(queryset, many=True)
+        return Response({
+            'results': serializer.data,
+            'count': queryset.count()
+        })
+
+    except Exception as e:
+        return Response({
+            'error': str(e)
         }, status=500) 
