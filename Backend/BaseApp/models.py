@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 # Defines the Tag table
 class Tag(models.Model):
@@ -13,10 +14,10 @@ class Profile(models.Model):
       User,
       on_delete=models.CASCADE, primary_key=True)
    user_type = models.CharField(
-        max_length=15,
-        choices=[('missionary', 'Missionary'), ('supporter', 'Supporter'),
-                 ('other', 'Other')],
-        default='other',  blank=True, null=True
+       max_length=15,
+       choices=[('missionary', 'Missionary'), ('supporter', 'Supporter'),
+                ('other', 'Other')],
+       default='other', blank=True, null=True
     )
    first_name = models.CharField(max_length=100, blank=True, null=True)
    last_name = models.CharField(max_length=100, blank=True, null=True)
@@ -34,7 +35,7 @@ class Profile(models.Model):
    tags = models.ManyToManyField(Tag, related_name='profiles', blank=True)
 
    def __str__(self):
-      return f"{self.user.username} - {self.user_type}" # pylint: disable=no-member
+      return f"{self.user.username} - {self.user_type}"  # pylint: disable=no-member
 
 # Defines Search History table
 class SearchHistory(models.Model):
@@ -57,3 +58,42 @@ class ExternalMedia(models.Model):
    # Overwrites the automatic plural form of words in admin
    class Meta:
       verbose_name_plural = "External Media"
+
+class ProfileVote(models.Model):
+   voter = models.ForeignKey(
+      User, on_delete=models.CASCADE, related_name='votes_cast')
+   profile = models.ForeignKey(
+      Profile, on_delete=models.CASCADE, related_name='votes_received')
+   is_upvote = models.BooleanField()
+   created_at = models.DateTimeField(auto_now_add=True)
+   updated_at = models.DateTimeField(auto_now=True)
+
+   class Meta:
+      # Ensures one vote per user per profile
+      unique_together = ('voter', 'profile')
+
+   def clean(self):
+      if self.voter == self.profile.user:  # pylint: disable=no-member
+         raise ValidationError("Users cannot vote on their own profile")
+
+
+class ProfileComment(models.Model):
+   commenter = models.ForeignKey(
+      User, on_delete=models.CASCADE, related_name='comments_made')
+   profile = models.ForeignKey(
+      Profile, on_delete=models.CASCADE, related_name='comments_received')
+   comment = models.TextField()
+   created_at = models.DateTimeField(auto_now_add=True)
+   updated_at = models.DateTimeField(auto_now=True)
+
+   class Meta:
+      # Ensures one comment per user per profile
+      unique_together = ('commenter', 'profile')
+
+   def clean(self):
+      if self.commenter == self.profile.user:  # pylint: disable=no-member
+         raise ValidationError("Users cannot comment on their own profile")
+      # Check if the user has voted before commenting
+      if not ProfileVote.objects.filter(
+         voter=self.commenter, profile=self.profile).exists():
+         raise ValidationError("Must vote before commenting")
