@@ -7,6 +7,13 @@ class UserSerializer(serializers.ModelSerializer):
    class Meta:
       model = User
       fields = ['id', 'username', 'email', 'password']
+      extra_kwargs = {
+         'password': {'write_only': True},
+         'id': {'read_only': True}
+      }
+
+   def create(self, validated_data):
+      return User.objects.create_user(**validated_data)
 
 # Serializer class for Tags
 class TagSerializer(serializers.ModelSerializer):
@@ -61,12 +68,16 @@ class ProfileSerializer(serializers.ModelSerializer):
    def update(self, instance, validated_data):
       user_data = validated_data.pop('user', None)
       if user_data:
+         user_instance = instance.user
          for key, value in user_data.items():
-            setattr(instance.user, key, value)
-         instance.user.save()
+            if key != 'password':  # Don't update password through this method
+               setattr(user_instance, key, value)
+         user_instance.save()
 
+      # Update all profile fields
       for key, value in validated_data.items():
-         setattr(instance, key, value)
+         if hasattr(instance, key):  # Only set if the field exists
+            setattr(instance, key, value)
       instance.save()
       return instance
 
