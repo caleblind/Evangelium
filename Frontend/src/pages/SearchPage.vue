@@ -28,34 +28,18 @@
       <template #results="{ results, isLoading, hasSearched }">
         <div v-if="isLoading" class="loading-state">Searching...</div>
         <div v-else-if="results.length > 0" class="results-grid">
-          <div v-for="result in results" :key="result.id" class="result-card">
-            <img
-              :src="result.profile_picture || '/default-profile.jpg'"
-              :alt="result.name"
-              class="result-image"
-            />
-            <div class="result-content">
-              <h3>{{ result.first_name }} {{ result.last_name }}</h3>
-              <div class="meta-info">
-                <span class="user-type">{{
-                  formatUserType(result.user_type)
-                }}</span>
-                <span v-if="result.denomination" class="denomination">{{
-                  result.denomination
-                }}</span>
-              </div>
-              <p class="location">{{ formatLocation(result) }}</p>
-              <p class="description">{{ result.description }}</p>
-              <div class="tags">
-                <span v-for="tag in result.tags" :key="tag" class="tag">
-                  {{ getTagName(tag) }}
-                </span>
-              </div>
-            </div>
-            <button class="bookmark-button">
-              <i class="fas fa-bookmark"></i>
-            </button>
-          </div>
+          <ProfileCard
+            v-for="result in results"
+            :key="result.id"
+            :result="result"
+            :tag-map="tagMap"
+          >
+            <template #actions>
+              <button class="bookmark-button">
+                <i class="fas fa-bookmark"></i>
+              </button>
+            </template>
+          </ProfileCard>
         </div>
         <div v-else-if="hasSearched" class="no-results">
           No results found matching your criteria
@@ -67,12 +51,14 @@
 
 <script>
 import UserSearch from "@/components/search/UserSearch.vue";
-import axios from "axios";
+import ProfileCard from "@/components/shared/ProfileCard.vue";
+import { searchService } from "@/services/searchService";
 
 export default {
   name: "SearchPage",
   components: {
     UserSearch,
+    ProfileCard,
   },
   data() {
     return {
@@ -90,33 +76,16 @@ export default {
     handleError(error) {
       console.error("Search error:", error);
     },
-    formatLocation(result) {
-      const parts = [result.city, result.state, result.country]
-        .filter(Boolean)
-        .join(", ");
-      return parts || "Location not specified";
-    },
     async fetchTags() {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/tag/");
-        // Create a map of tag IDs to tag names
-        this.tagMap = response.data.reduce((acc, tag) => {
+        const tags = await searchService.fetchTags();
+        this.tagMap = tags.reduce((acc, tag) => {
           acc[tag.id] = tag.tag_name;
           return acc;
         }, {});
       } catch (error) {
         console.error("Failed to fetch tags:", error);
       }
-    },
-    getTagName(tagId) {
-      return this.tagMap[tagId] || "Unknown Tag";
-    },
-    formatUserType(userType) {
-      if (!userType) return "Unknown Type";
-      // Capitalize first letter and handle 'other' type
-      return userType === "other"
-        ? "Church"
-        : userType.charAt(0).toUpperCase() + userType.slice(1);
     },
   },
 };

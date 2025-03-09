@@ -156,31 +156,12 @@
       :hasSearched="hasSearched"
     >
       <div v-if="!isLoading && results.length > 0" class="results-grid">
-        <div v-for="result in results" :key="result.id" class="result-card">
-          <img
-            :src="result.profile_picture || '/default-profile.jpg'"
-            :alt="result.name"
-            class="result-image"
-          />
-          <div class="result-content">
-            <h3>{{ result.first_name }} {{ result.last_name }}</h3>
-            <div class="meta-info">
-              <span v-if="result.user_type" class="user-type">{{
-                result.user_type
-              }}</span>
-              <span v-if="result.denomination" class="denomination">{{
-                result.denomination
-              }}</span>
-            </div>
-            <p class="location">{{ formatLocation(result) }}</p>
-            <p class="description">{{ result.description }}</p>
-            <div class="tags">
-              <span v-for="tag in result.tags" :key="tag" class="tag">
-                {{ getTagName(tag) }}
-              </span>
-            </div>
-          </div>
-        </div>
+        <ProfileCard
+          v-for="result in results"
+          :key="result.id"
+          :result="result"
+          :tag-map="tagMap"
+        />
       </div>
 
       <div v-else-if="hasSearched" class="no-results">
@@ -191,11 +172,15 @@
 </template>
 
 <script>
-import axios from "axios";
 import { debounce } from "lodash";
+import { searchService } from "@/services/searchService";
+import ProfileCard from "@/components/shared/ProfileCard.vue";
 
 export default {
   name: "UserSearch",
+  components: {
+    ProfileCard,
+  },
   props: {
     apiEndpoint: {
       type: String,
@@ -235,15 +220,8 @@ export default {
       this.hasSearched = true;
 
       try {
-        const params = new URLSearchParams();
-        if (this.searchQuery) {
-          params.append("search", this.searchQuery);
-        }
-
-        const response = await axios.get(
-          `${this.apiEndpoint}?${params.toString()}`
-        );
-        this.results = this.processResults(response.data);
+        const data = await searchService.quickSearch(this.searchQuery);
+        this.results = searchService.processResults(data);
         this.$emit("search-results", this.results);
       } catch (error) {
         console.error("Quick search failed:", error);
@@ -259,46 +237,8 @@ export default {
       this.hasSearched = true;
 
       try {
-        const params = new URLSearchParams();
-
-        // Add name search
-        if (this.detailedFilters.name) {
-          params.append("name", this.detailedFilters.name);
-        }
-
-        // Add user type filter
-        if (this.detailedFilters.userType) {
-          params.append("user_type", this.detailedFilters.userType);
-        }
-
-        // Add denomination filter
-        if (this.detailedFilters.denomination) {
-          params.append("denomination", this.detailedFilters.denomination);
-        }
-
-        // Add location filters
-        if (this.detailedFilters.city) {
-          params.append("city", this.detailedFilters.city);
-        }
-        if (this.detailedFilters.state) {
-          params.append("state", this.detailedFilters.state);
-        }
-        if (this.detailedFilters.country) {
-          params.append("country", this.detailedFilters.country);
-        }
-
-        // Add tags filter - handles multiple tags with AND logic
-        if (this.detailedFilters.tags && this.detailedFilters.tags.length > 0) {
-          this.detailedFilters.tags.forEach((tag) => {
-            params.append("tags", tag);
-          });
-        }
-
-        // Use the new detailed search endpoint
-        const response = await axios.get(
-          `${this.apiEndpoint}detailed-search/?${params.toString()}`
-        );
-        this.results = this.processResults(response.data.results);
+        const data = await searchService.detailedSearch(this.detailedFilters);
+        this.results = searchService.processResults(data);
         this.$emit("search-results", this.results);
       } catch (error) {
         console.error("Detailed search failed:", error);
@@ -309,21 +249,11 @@ export default {
       }
     },
 
-    processResults(data) {
-      return data.map((result) => ({
-        ...result,
-        first_name: result.first_name || result.user?.username || "Unknown",
-        last_name: result.last_name || "",
-        tags: result.tags || [],
-      }));
-    },
-
     async fetchTags() {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/tag/");
-        this.availableTags = response.data;
-        // Create a map of tag IDs to tag names
-        this.tagMap = response.data.reduce((acc, tag) => {
+        const tags = await searchService.fetchTags();
+        this.availableTags = tags;
+        this.tagMap = tags.reduce((acc, tag) => {
           acc[tag.id] = tag.tag_name;
           return acc;
         }, {});
