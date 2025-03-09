@@ -312,6 +312,9 @@ def search_profiles(request):
 def detailed_search(request):
    """Advanced search endpoint with AND logic for all criteria."""
    try:
+      # Log all request parameters for debugging
+      logger.info("Detailed search request parameters: %s", request.GET)
+
       name = request.GET.get('name', '').strip()
       user_type = request.GET.get('user_type', '').strip()
       denomination = request.GET.get('denomination', '').strip()
@@ -321,11 +324,24 @@ def detailed_search(request):
       description = request.GET.get('description', '').strip()
       tags = request.GET.getlist('tags', [])
 
+      # Log processed parameters
+      logger.info(
+         "Processed parameters - Name: %s, Type: %s, Denomination: %s, City: %s, State: %s, Country: %s, Tags: %s",
+         name,
+         user_type,
+         denomination,
+         city,
+         state,
+         country,
+         tags
+      )
+
       queryset = (
          Profile.objects.select_related('user')
          .prefetch_related('tags')
          .all()
       )
+      logger.debug("Initial profile count: %d", queryset.count())
 
       if name:
          queryset = queryset.filter(
@@ -333,34 +349,64 @@ def detailed_search(request):
             Q(last_name__icontains=name) |
             Q(user__username__icontains=name)
          )
+         logger.debug("After name filter count: %d", queryset.count())
 
       if user_type:
+         logger.debug("Applying user_type filter with value: %s", user_type)
          queryset = queryset.filter(user_type__iexact=user_type)
+         logger.debug("After user_type filter count: %d", queryset.count())
 
       if denomination:
          queryset = queryset.filter(denomination__iexact=denomination)
+         logger.debug("After denomination filter count: %d", queryset.count())
 
       if description:
          queryset = queryset.filter(description__icontains=description)
+         logger.debug("After description filter count: %d", queryset.count())
 
       if city:
          queryset = queryset.filter(city__icontains=city)
+         logger.debug("After city filter count: %d", queryset.count())
 
       if state:
          queryset = queryset.filter(state__icontains=state)
+         logger.debug("After state filter count: %d", queryset.count())
 
       if country:
          queryset = queryset.filter(country__icontains=country)
+         logger.debug("After country filter count: %d", queryset.count())
 
-      for tag in tags:
-         queryset = queryset.filter(tags__id=tag)
+      try:
+         for tag in tags:
+            logger.debug("Processing tag: %s (type: %s)", tag, type(tag))
+            queryset = queryset.filter(tags__id=tag)
+            logger.debug("After tag %s filter count: %d", tag, queryset.count())
+      except ValueError as e:
+         logger.error("Invalid tag value: %s", str(e))
+         return Response(
+            {
+               'error': 'Invalid tag value',
+               'detail': str(e)
+            },
+            status=400
+         )
+      except Exception as e:
+         logger.error("Error processing tags: %s", str(e))
+         return Response(
+            {
+               'error': 'Error processing tags',
+               'detail': str(e)
+            },
+            status=400
+         )
 
       queryset = queryset.distinct()
+      logger.debug("Final profile count: %d", queryset.count())
 
       serializer = ProfileSerializer(queryset, many=True)
       return Response({
          'results': serializer.data,
-         'count': queryset.count()
+         'total': queryset.count()
       })
 
    except ValidationError as e:
@@ -381,12 +427,12 @@ def detailed_search(request):
          },
          status=400
       )
-   except DatabaseError as e:
-      logger.error("Database error in detailed_search: %s", str(e))
+   except Exception as e:
+      logger.error("Unexpected error in detailed_search: %s", str(e), exc_info=True)
       return Response(
          {
-            'error': 'Database error occurred',
-            'detail': 'An error occurred while accessing the database'
+            'error': 'An unexpected error occurred',
+            'detail': str(e)
          },
          status=500
       )

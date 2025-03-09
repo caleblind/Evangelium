@@ -6,8 +6,8 @@ from .views import TagViewSet, SearchHistoryViewSet, \
     ProfileListCreateView, ProfileDetailView, \
     MatchmakingResultsView, CurrentUserView, \
     ProfileVoteView, ProfileCommentView, \
-    ProfileVoteStatusView\
-    search_profiles, detailed_search, get_unique_denominations
+    ProfileVoteStatusView, search_profiles, \
+    detailed_search, get_unique_denominations
 
 # Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
