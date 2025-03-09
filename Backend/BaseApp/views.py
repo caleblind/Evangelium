@@ -1,13 +1,14 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import generics, filters, views, response
+from rest_framework import generics, filters, views, response, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
 from .models import Tag, SearchHistory,\
-                    ExternalMedia, Profile, ProfileTagging
-from .serializer import TagSerializer, SeachHistorySerializer,\
+                    ExternalMedia, Profile, ProfileVote, ProfileComment
+from .serializer import TagSerializer, SearchHistorySerializer,\
                         ExternalMediaSerializer,\
-                        ProfileSerializer
+                        ProfileSerializer, ProfileVoteSerializer, ProfileCommentSerializer
+
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.utils import IntegrityError
@@ -58,87 +59,46 @@ class TagViewSet(ModelViewSet):
    filterset_fields = ['tag_name','tag_description','tag_is_predefined']
    queryset = Tag.objects.all()
    serializer_class = TagSerializer
-   permission_classes = [IsAuthenticated]
-
-   def create(self, request, *args, **kwargs):
-      tag_name = request.data.get('tag_name')
-      
-      # Handle predefined tag creation (admin only)
-      if request.data.get('tag_is_predefined', False):
-         if not request.user.is_staff:
-            return Response({
-               'error': 'Only administrators can create predefined tags'
-            }, status=status.HTTP_403_FORBIDDEN)
-         return super().create(request, *args, **kwargs)
-      
-      # Create a new tag
-      serializer = self.get_serializer(data={
-         'tag_name': tag_name,
-         'tag_description': request.data.get('tag_description', ''),
-         'tag_is_predefined': False
-      })
-      serializer.is_valid(raise_exception=True)
-      self.perform_create(serializer)
-      
-      return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-# View for adding tags to other profiles
-class AddTagToProfileView(generics.CreateAPIView):
-   permission_classes = [IsAuthenticated]
-   authentication_classes = [JWTAuthentication]
+   permission_classes = [AllowAny]
 
    def create(self, request, *args, **kwargs):
       profile_id = request.data.get('profile_id')
       tag_name = request.data.get('tag_name')
-      
-      if not profile_id:
-         return Response({
-            'error': 'profile_id is required'
-         }, status=status.HTTP_400_BAD_REQUEST)
-      
-      try:
-         with transaction.atomic():
+
+      if profile_id:
+         try:
+            # First check if profile exists
             profile = Profile.objects.get(user_id=profile_id)
-            
-            # Try to get existing tag first
-            tag = Tag.objects.filter(tag_name=tag_name).first()
-            
-            if not tag:
-               # Create new tag
-               tag = Tag.objects.create(
-                  tag_name=tag_name,
-                  tag_description=request.data.get('tag_description', ''),
-                  tag_is_predefined=False
-               )
-            
-            # Create the profile-tag relationship with metadata
-            ProfileTagging.objects.create(
-               profile=profile,
-               tag=tag,
-               added_by=request.user
+
+            # If profile exists, then create/get tag
+            tag, created = Tag.objects.get_or_create(
+               tag_name=tag_name,
+               defaults={
+                  'tag_description': request.data.get('tag_description', ''),
+                  'tag_is_predefined': False
+               }
             )
-            
+
+            profile.tags.add(tag)
+
             return Response({
                'message': f'Tag "{tag_name}" added to profile successfully',
                'tag_id': tag.id,
-               'profile_id': profile_id,
-               'added_by': request.user.id
+               'profile_id': profile_id
             }, status=status.HTTP_200_OK)
-         
-      except Profile.DoesNotExist:
-         return Response(
-            {'error': 'Profile not found'}, 
-            status=status.HTTP_404_NOT_FOUND
-         )
-      except IntegrityError:
-         return Response({
-            'error': 'You have already added this tag to this profile'
-         }, status=status.HTTP_400_BAD_REQUEST)
+
+         except Profile.DoesNotExist:
+            return Response(
+               {'error': 'Profile not found'}, 
+               status=status.HTTP_404_NOT_FOUND
+            )
+
+      return super().create(request, *args, **kwargs)
 
 # Search history viewset that performs CRUD operations
 class SearchHistoryViewSet(ModelViewSet):
    queryset = SearchHistory.objects.all()
-   serializer_class = SeachHistorySerializer
+   serializer_class = SearchHistorySerializer
    permission_classes = [AllowAny]
 
 # External media viewset that performs CRUD operations
@@ -163,3 +123,101 @@ class CurrentUserView(views.APIView):
          return response.Response(serializer.data)
 
       return response.Response({"error": "Profile not found"}, status=404)
+
+class ProfileVoteView(generics.CreateAPIView, generics.UpdateAPIView):
+   serializer_class = ProfileVoteSerializer
+   authentication_classes = [JWTAuthentication]
+   permission_classes = [IsAuthenticated]
+
+   def create(self, request, *args, **kwargs):
+      profile_id = request.data.get('profile')
+      is_upvote = request.data.get('is_upvote')
+
+      # Check if vote already exists
+      existing_vote = ProfileVote.objects.filter(
+          voter=request.user,
+          profile_id=profile_id
+      ).first()
+
+      if existing_vote:
+         # Update existing vote
+         existing_vote.is_upvote = is_upvote
+         existing_vote.save()
+         serializer = self.get_serializer(existing_vote)
+         return response.Response(serializer.data)
+
+      # Create new vote
+      serializer = self.get_serializer(data=request.data)
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProfileCommentView(generics.CreateAPIView, generics.UpdateAPIView):
+   serializer_class = ProfileCommentSerializer
+   authentication_classes = [JWTAuthentication]
+   permission_classes = [IsAuthenticated]
+   queryset = ProfileComment.objects.all()
+
+   def create(self, request, *args, **kwargs):
+      # Check if user has already commented
+      profile_id = request.data.get('profile')
+      existing_comment = ProfileComment.objects.filter(
+          commenter=request.user,
+          profile_id=profile_id
+      ).exists()
+
+      if existing_comment:
+         return response.Response(
+             {"error": "You have already commented on this profile"},
+             status=status.HTTP_400_BAD_REQUEST
+         )
+
+      # Check if user has voted
+      has_voted = ProfileVote.objects.filter(
+          voter=request.user,
+          profile_id=profile_id
+      ).exists()
+
+      if not has_voted:
+         return response.Response(
+             {"error": "You must vote before commenting"},
+             status=status.HTTP_400_BAD_REQUEST
+         )
+
+      serializer = self.get_serializer(data=request.data)
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+
+   def update(self, request, *args, **kwargs):
+      comment = self.get_object()
+
+      # Check if the user is the owner of the comment
+      if comment.commenter != request.user:
+         return response.Response(
+             {"error": "You can only edit your own comments"},
+             status=status.HTTP_403_FORBIDDEN
+         )
+
+      serializer = self.get_serializer(
+         comment, data=request.data, partial=True)
+      serializer.is_valid(raise_exception=True)
+      self.perform_update(serializer)
+
+      return response.Response(serializer.data)
+
+class ProfileVoteStatusView(views.APIView):
+   authentication_classes = [JWTAuthentication]
+   permission_classes = [IsAuthenticated]
+
+   def get(self, request, profile_id):
+      vote = ProfileVote.objects.filter(
+          voter=request.user,
+          profile_id=profile_id
+      ).first()
+
+      return response.Response({
+          'has_voted': vote is not None,
+          'is_upvote': vote.is_upvote if vote else None
+      }) 
