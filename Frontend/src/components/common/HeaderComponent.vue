@@ -2,25 +2,26 @@
   <header class="header-banner">
     <!-- Site Icon -->
     <div class="site-icon">
-      <a href="/LandingPage" title="SaltnLife">
+      <router-link to="/LandingPage" title="SaltnLife">
         <img
           src="@\assets\pictures\saltnlightlogo1.webp"
           alt="SaltnLight Logo"
           class="icon"
         />
-      </a>
+      </router-link>
     </div>
 
     <!-- Navigation Links -->
     <nav class="nav-links">
-      <a href="/SearchPage" class="nav-link">Explore</a>
-      <a href="/RegistrationPage" class="nav-link">Sign Up</a>
+      <router-link to="/search" class="nav-link">Explore</router-link>
+      <router-link to="/RegistrationPage" class="nav-link">Sign Up</router-link>
       <a @click="navigateToProfile" class="nav-link" style="cursor: pointer"
         >Profile</a
       >
-      <div>
-        <button @click="logout">Logout</button>
-      </div>
+      <button @click="logout" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
     </nav>
   </header>
 </template>
@@ -87,18 +88,30 @@ export default {
 }
 
 /* Logout Button Styling */
-.header-banner button {
-  background-color: #333;
-  color: #fff;
+.logout-btn {
+  background-color: transparent;
+  color: #333;
   padding: 8px 16px;
-  border: none;
-  border-radius: 40px;
+  border: 2px solid #dc3545;
+  border-radius: 4px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.header-banner button:hover {
-  background-color: #0056b3;
+.logout-btn:hover {
+  background-color: #dc3545;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 </style>

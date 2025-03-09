@@ -1,11 +1,13 @@
 from django.urls import path, include
 from rest_framework import routers
+
 from .views import TagViewSet, SearchHistoryViewSet, \
     ExternalMediaViewSet, \
     ProfileListCreateView, ProfileDetailView, \
     MatchmakingResultsView, CurrentUserView, \
     ProfileVoteView, ProfileCommentView, \
-    ProfileVoteStatusView
+    ProfileVoteStatusView\
+    search_profiles, detailed_search, get_unique_denominations
 
 # Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
@@ -31,4 +33,10 @@ urlpatterns = [
    path('api/profiles/<int:profile_id>/vote-status/',
         ProfileVoteStatusView.as_view(),
         name='profile-vote-status'),
+   path('api/profiles/search/', search_profiles,
+        name='search-profiles'),
+   path('api/profiles/detailed-search/', detailed_search,
+        name='detailed-search'),
+   path('api/denominations/', get_unique_denominations,
+        name='get-denominations'),
 ]
