@@ -18,7 +18,10 @@
       <a @click="navigateToProfile" class="nav-link" style="cursor: pointer"
         >Profile</a
       >
-      <button @click="logout" class="logout-btn">Logout</button>
+      <button @click="logout" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
     </nav>
   </header>
 </template>
@@ -86,17 +89,29 @@ export default {
 
 /* Logout Button Styling */
 .logout-btn {
-  background-color: #dc3545;
-  color: white;
+  background-color: transparent;
+  color: #333;
   padding: 8px 16px;
-  border: none;
+  border: 2px solid #dc3545;
   border-radius: 4px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .logout-btn:hover {
-  background-color: #c82333;
+  background-color: #dc3545;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 </style>

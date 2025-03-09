@@ -1,7 +1,10 @@
 <template>
-  <div class="result-card">
+  <div class="result-card" @click="handleCardClick">
     <img
-      :src="result.profile_picture || '/default-profile.jpg'"
+      :src="
+        result.profile_picture ||
+        require('@/assets/pictures/defaultProfilePicture.png')
+      "
       :alt="result.name"
       class="result-image"
     />
@@ -23,7 +26,6 @@
         </span>
       </div>
     </div>
-    <slot name="actions"></slot>
   </div>
 </template>
 
@@ -41,6 +43,9 @@ export default {
     },
   },
   methods: {
+    handleCardClick() {
+      this.$emit("card-click", this.result);
+    },
     formatLocation(result) {
       const parts = [result.city, result.state, result.country]
         .filter(Boolean)
@@ -67,6 +72,13 @@ export default {
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .result-image {

@@ -4,7 +4,7 @@ from .views import TagViewSet, SearchHistoryViewSet,\
                    ExternalMediaViewSet,\
                    ProfileListCreateView, ProfileDetailView,\
                    MatchmakingResultsView, CurrentUserView,\
-                   search_profiles, detailed_search
+                   search_profiles, detailed_search, get_unique_denominations
 
 #Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
@@ -21,8 +21,10 @@ urlpatterns = [
    path('api/profiles/match', MatchmakingResultsView.as_view()),
    path('api/profiles/me/', CurrentUserView.as_view(),
         name='current-user'),
-   path('profiles/search/', search_profiles,
+   path('api/profiles/search/', search_profiles,
         name='search-profiles'),
    path('api/profiles/detailed-search/', detailed_search,
         name='detailed-search'),
+   path('api/denominations/', get_unique_denominations,
+        name='get-denominations'),
 ]

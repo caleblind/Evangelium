@@ -6,12 +6,17 @@ export const searchService = {
   async quickSearch(query) {
     const params = new URLSearchParams();
     if (query) {
-      params.append("search", query);
+      params.append("q", query);
     }
-    const response = await axios.get(
-      `${API_BASE_URL}/api/profiles/?${params.toString()}`
-    );
-    return response.data;
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/profiles/search/?${params.toString()}`
+      );
+      return response.data.results || [];
+    } catch (error) {
+      console.error("Quick search failed:", error);
+      throw error;
+    }
   },
 
   async detailedSearch(filters) {
@@ -25,6 +30,9 @@ export const searchService = {
     }
     if (filters.denomination) {
       params.append("denomination", filters.denomination);
+    }
+    if (filters.description) {
+      params.append("description", filters.description);
     }
     if (filters.city) {
       params.append("city", filters.city);
@@ -41,23 +49,54 @@ export const searchService = {
       });
     }
 
-    const response = await axios.get(
-      `${API_BASE_URL}/api/profiles/detailed-search/?${params.toString()}`
-    );
-    return response.data.results;
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/profiles/detailed-search/?${params.toString()}`
+      );
+      return response.data.results || [];
+    } catch (error) {
+      console.error("Detailed search failed:", error);
+      throw error;
+    }
   },
 
   async fetchTags() {
-    const response = await axios.get(`${API_BASE_URL}/tag/`);
-    return response.data;
+    try {
+      const response = await axios.get(`${API_BASE_URL}/tag/`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch tags:", error);
+      throw error;
+    }
+  },
+
+  async fetchDenominations() {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/denominations/`);
+      return response.data.denominations || [];
+    } catch (error) {
+      console.error("Failed to fetch denominations:", error);
+      throw error;
+    }
   },
 
   processResults(data) {
+    if (!Array.isArray(data)) {
+      console.warn("Received non-array data:", data);
+      data = data.results || [];
+    }
     return data.map((result) => ({
+      id: result.id,
       ...result,
       first_name: result.first_name || result.user?.username || "Unknown",
       last_name: result.last_name || "",
-      tags: result.tags || [],
+      denomination: result.denomination || "Not Specified",
+      tags: Array.isArray(result.tags) ? result.tags : [],
+      formattedTags: Array.isArray(result.tags)
+        ? result.tags.map((tag) =>
+            typeof tag === "object" ? tag : { id: tag, name: `Tag ${tag}` }
+          )
+        : [],
     }));
   },
 };

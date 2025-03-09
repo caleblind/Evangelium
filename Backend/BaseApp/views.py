@@ -125,7 +125,7 @@ logger = logging.getLogger(__name__)
 def search_profiles(request):
    """Search profiles with filtering capabilities."""
    query = request.GET.get('q', '')
-   profile_type = request.GET.get('type', 'missionaries')
+   profile_type = request.GET.get('type', '')
    denomination = request.GET.get('denomination', '')
    mission_field = request.GET.get('missionField', '')
 
@@ -145,10 +145,11 @@ def search_profiles(request):
       )
       logger.debug("Initial profile count: %d", profiles.count())
 
-      if profile_type == 'churches':
-         profiles = profiles.filter(user_type='other')
-      elif profile_type == 'missionaries':
-         profiles = profiles.filter(user_type='missionary')
+      if profile_type:
+         if profile_type == 'supporter':
+            profiles = profiles.filter(user_type='supporter')
+         elif profile_type == 'missionary':
+            profiles = profiles.filter(user_type='missionary')
       logger.debug("After type filter count: %d", profiles.count())
 
       if query:
@@ -159,8 +160,10 @@ def search_profiles(request):
             Q(description__icontains=query) |
             Q(city__icontains=query) |
             Q(state__icontains=query) |
-            Q(country__icontains=query)
-         )
+            Q(country__icontains=query) |
+            Q(tags__tag_name__icontains=query) |  # Search in tag names
+            Q(denomination__icontains=query)  # Search in denomination
+         ).distinct()  # Add distinct to avoid duplicates
          logger.debug("After text search count: %d", profiles.count())
 
       if denomination:
@@ -222,6 +225,7 @@ def detailed_search(request):
       city = request.GET.get('city', '').strip()
       state = request.GET.get('state', '').strip()
       country = request.GET.get('country', '').strip()
+      description = request.GET.get('description', '').strip()
       tags = request.GET.getlist('tags', [])
 
       queryset = (
@@ -242,6 +246,9 @@ def detailed_search(request):
 
       if denomination:
          queryset = queryset.filter(denomination__iexact=denomination)
+
+      if description:
+         queryset = queryset.filter(description__icontains=description)
 
       if city:
          queryset = queryset.filter(city__icontains=city)
@@ -283,6 +290,31 @@ def detailed_search(request):
       )
    except DatabaseError as e:
       logger.error("Database error in detailed_search: %s", str(e))
+      return Response(
+         {
+            'error': 'Database error occurred',
+            'detail': 'An error occurred while accessing the database'
+         },
+         status=500
+      )
+
+
+@api_view(['GET'])
+def get_unique_denominations(_):
+   """Get all unique denominations from profiles."""
+   try:
+      denominations = (
+         Profile.objects.exclude(denomination__isnull=True)
+         .exclude(denomination__exact='')
+         .values_list('denomination', flat=True)
+         .distinct()
+         .order_by('denomination')
+      )
+      return Response({
+         'denominations': list(denominations)
+      })
+   except DatabaseError as e:
+      logger.error("Database error in get_unique_denominations: %s", str(e))
       return Response(
          {
             'error': 'Database error occurred',

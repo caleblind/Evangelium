@@ -1,26 +1,33 @@
 <template>
   <div class="search-page">
-    <!-- Tabs -->
-    <div class="tabs">
+    <!-- User Type Filters -->
+    <div class="filter-buttons">
       <button
-        :class="['tab-button', { active: activeTab === 'churches' }]"
-        @click="activeTab = 'churches'"
+        :class="['filter-button', { active: !userTypeFilter }]"
+        @click="setUserTypeFilter('')"
       >
-        Churches
+        All
       </button>
       <button
-        :class="['tab-button', { active: activeTab === 'missionaries' }]"
-        @click="activeTab = 'missionaries'"
+        :class="['filter-button', { active: userTypeFilter === 'missionary' }]"
+        @click="setUserTypeFilter('missionary')"
       >
         Missionaries
+      </button>
+      <button
+        :class="['filter-button', { active: userTypeFilter === 'supporter' }]"
+        @click="setUserTypeFilter('supporter')"
+      >
+        Supporters
       </button>
     </div>
 
     <!-- Search Component -->
     <UserSearch
+      ref="userSearch"
       :filters="['location', 'tags']"
       :initial-filters="{
-        userType: activeTab === 'churches' ? 'other' : 'missionary',
+        userType: userTypeFilter,
       }"
       @search-results="handleSearchResults"
       @search-error="handleError"
@@ -33,12 +40,8 @@
             :key="result.id"
             :result="result"
             :tag-map="tagMap"
+            @card-click="navigateToProfile"
           >
-            <template #actions>
-              <button class="bookmark-button">
-                <i class="fas fa-bookmark"></i>
-              </button>
-            </template>
           </ProfileCard>
         </div>
         <div v-else-if="hasSearched" class="no-results">
@@ -62,7 +65,7 @@ export default {
   },
   data() {
     return {
-      activeTab: "churches",
+      userTypeFilter: "",
       tagMap: {}, // Map to store tag details
     };
   },
@@ -70,8 +73,30 @@ export default {
     this.fetchTags();
   },
   methods: {
+    navigateToProfile(profile) {
+      this.$router.push(`/profile/${profile.id}`);
+    },
+    setUserTypeFilter(userType) {
+      this.userTypeFilter = userType;
+      if (this.$refs.userSearch) {
+        this.$refs.userSearch.detailedFilters.userType = userType;
+        this.$refs.userSearch.handleDetailedSearch();
+      }
+    },
     handleSearchResults(results) {
-      console.log("Search results:", results);
+      console.log(
+        "Search results (detailed):",
+        JSON.stringify(results, null, 2)
+      );
+      results.forEach((result) => {
+        console.log(
+          "Profile ID:",
+          result.id,
+          "Name:",
+          result.first_name,
+          result.last_name
+        );
+      });
     },
     handleError(error) {
       console.error("Search error:", error);
@@ -98,36 +123,33 @@ export default {
   padding: 20px;
 }
 
-.tabs {
+.filter-buttons {
   display: flex;
-  gap: 20px;
+  justify-content: center;
+  gap: 15px;
   margin-bottom: 30px;
-  border-bottom: 1px solid #e0e0e0;
 }
 
-.tab-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  background: none;
-  cursor: pointer;
+.filter-button {
+  padding: 8px 20px;
+  font-size: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  background: white;
   color: #666;
-  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.tab-button.active {
+.filter-button:hover {
+  border-color: #4285f4;
   color: #4285f4;
-  font-weight: 600;
 }
 
-.tab-button.active::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: #4285f4;
+.filter-button.active {
+  background: #4285f4;
+  color: white;
+  border-color: #4285f4;
 }
 
 .loading-state {
@@ -194,22 +216,6 @@ export default {
   border-radius: 16px;
   font-size: 12px;
   color: #666;
-}
-
-.bookmark-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: white;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .no-results {

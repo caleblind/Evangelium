@@ -52,16 +52,43 @@
           </select>
         </div>
 
+        <!-- Description Filter -->
+        <div class="form-group">
+          <label>Description</label>
+          <input
+            type="text"
+            v-model="detailedFilters.description"
+            placeholder="Search in profile descriptions"
+            class="search-input"
+          />
+        </div>
+
         <!-- Denomination Filter -->
         <div class="form-group">
           <label>Denomination</label>
-          <select v-model="detailedFilters.denomination" class="select-input">
-            <option value="">All Denominations</option>
-            <option value="Baptist">Baptist</option>
-            <option value="Catholic">Catholic</option>
-            <option value="Protestant">Protestant</option>
-            <option value="Non-Denominational">Non-Denominational</option>
-          </select>
+          <div class="denomination-input-container">
+            <input
+              type="text"
+              v-model="detailedFilters.denomination"
+              @input="filterDenominations"
+              @focus="showAllDenominations"
+              @blur="handleDenominationBlur"
+              placeholder="Type to search denominations"
+              class="search-input"
+            />
+            <!-- Denomination Suggestions Dropdown -->
+            <div v-if="showDenominationSuggestions" class="suggestions-list">
+              <div
+                v-for="denomination in filteredDenominations"
+                :key="denomination"
+                class="suggestion-item"
+                @click="selectDenomination(denomination)"
+                @mouseover="selectedDenomination = denomination"
+              >
+                {{ denomination }}
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Location Filters -->
@@ -195,6 +222,7 @@ export default {
         name: "",
         userType: "",
         denomination: "",
+        description: "",
         city: "",
         state: "",
         country: "",
@@ -202,50 +230,57 @@ export default {
       },
       results: [],
       availableTags: [],
+      availableDenominations: [],
+      filteredDenominations: [],
+      showDenominationSuggestions: false,
+      selectedDenomination: "",
       hasSearched: false,
       isLoading: false,
       tagSearchQuery: "",
       filteredTags: [],
       showTagSuggestions: false,
       selectedTagIndex: -1,
-      tagMap: {}, // Map to store tag details
+      tagMap: {},
     };
   },
   created() {
     this.fetchTags();
+    this.fetchDenominations();
   },
   methods: {
     handleQuickSearch: debounce(async function () {
-      this.isLoading = true;
-      this.hasSearched = true;
+      if (!this.searchQuery.trim()) {
+        this.results = [];
+        this.hasSearched = false;
+        return;
+      }
 
+      this.isLoading = true;
       try {
         const data = await searchService.quickSearch(this.searchQuery);
         this.results = searchService.processResults(data);
         this.$emit("search-results", this.results);
       } catch (error) {
         console.error("Quick search failed:", error);
-        this.results = [];
         this.$emit("search-error", error);
       } finally {
         this.isLoading = false;
+        this.hasSearched = true;
       }
     }, 300),
 
     async handleDetailedSearch() {
       this.isLoading = true;
-      this.hasSearched = true;
-
       try {
         const data = await searchService.detailedSearch(this.detailedFilters);
         this.results = searchService.processResults(data);
         this.$emit("search-results", this.results);
       } catch (error) {
         console.error("Detailed search failed:", error);
-        this.results = [];
         this.$emit("search-error", error);
       } finally {
         this.isLoading = false;
+        this.hasSearched = true;
       }
     },
 
@@ -259,6 +294,14 @@ export default {
         }, {});
       } catch (error) {
         console.error("Failed to fetch tags:", error);
+      }
+    },
+
+    async fetchDenominations() {
+      try {
+        this.availableDenominations = await searchService.fetchDenominations();
+      } catch (error) {
+        console.error("Failed to fetch denominations:", error);
       }
     },
 
@@ -351,6 +394,36 @@ export default {
         )
       );
     },
+
+    filterDenominations() {
+      if (!this.detailedFilters.denomination.trim()) {
+        this.showAllDenominations();
+        return;
+      }
+
+      const query = this.detailedFilters.denomination.toLowerCase();
+      this.filteredDenominations = this.availableDenominations.filter(
+        (denomination) => denomination.toLowerCase().includes(query)
+      );
+      this.showDenominationSuggestions = true;
+    },
+
+    showAllDenominations() {
+      this.filteredDenominations = this.availableDenominations;
+      this.showDenominationSuggestions = true;
+    },
+
+    handleDenominationBlur() {
+      setTimeout(() => {
+        this.showDenominationSuggestions = false;
+      }, 200);
+    },
+
+    selectDenomination(denomination) {
+      this.detailedFilters.denomination = denomination;
+      this.showDenominationSuggestions = false;
+      this.handleDetailedSearch();
+    },
   },
   watch: {
     "detailedFilters.name": {
@@ -389,6 +462,13 @@ export default {
       },
     },
     "detailedFilters.country": {
+      handler() {
+        if (this.isDetailedSearch) {
+          this.handleDetailedSearch();
+        }
+      },
+    },
+    "detailedFilters.description": {
       handler() {
         if (this.isDetailedSearch) {
           this.handleDetailedSearch();
@@ -674,6 +754,36 @@ export default {
 
 .tag-suggestion:hover,
 .tag-suggestion.active {
+  background-color: #f0f0f0;
+}
+
+.denomination-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
   background-color: #f0f0f0;
 }
 </style>

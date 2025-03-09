@@ -123,12 +123,24 @@ export default {
 
     async fetchProfile(retry = true) {
       try {
+        // Check for token before making the request
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          this.error = "Please log in to view your profile.";
+          this.$router.push("/AppLogin");
+          return;
+        }
+
         const [profileResponse, tagResponse] = await Promise.all([
           axios.get(`${API_BASE_URL}/api/profiles/me/`, {
             headers: this.getAuthHeader(),
           }),
           axios.get(`${API_BASE_URL}/tag/`),
         ]);
+
+        if (!profileResponse.data || !profileResponse.data.user) {
+          throw new Error("Invalid profile data received");
+        }
 
         this.profile = profileResponse.data;
         this.originalProfile = JSON.parse(JSON.stringify(profileResponse.data));
@@ -147,14 +159,24 @@ export default {
             }
         );
       } catch (err) {
-        if (
-          err.response?.status === 401 &&
-          retry &&
-          (await this.refreshToken())
-        ) {
-          return this.fetchProfile(false);
+        console.error("Profile fetch error:", err);
+        if (err.response?.status === 401 && retry) {
+          try {
+            const refreshed = await this.refreshToken();
+            if (refreshed) {
+              return this.fetchProfile(false);
+            } else {
+              this.error = "Session expired. Please log in again.";
+              this.$router.push("/AppLogin");
+            }
+          } catch (refreshError) {
+            console.error("Token refresh error:", refreshError);
+            this.error = "Session expired. Please log in again.";
+            this.$router.push("/AppLogin");
+          }
+        } else {
+          this.error = "Failed to load profile data.";
         }
-        this.error = "Failed to load profile data.";
       } finally {
         this.loading = false;
       }
@@ -235,7 +257,6 @@ export default {
     async refreshToken() {
       const refreshToken = localStorage.getItem("refresh_token");
       if (!refreshToken) {
-        this.logout();
         return false;
       }
 
@@ -249,8 +270,9 @@ export default {
         localStorage.setItem("access_token", response.data.access);
         return true;
       } catch (err) {
-        console.error("Token refresh failed", err);
-        this.logout();
+        console.error("Token refresh failed:", err);
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         return false;
       }
     },
