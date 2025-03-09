@@ -6,6 +6,7 @@ import LandingPage from "@/pages/LandingPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
 import MatchmakingPage from "@/pages/MatchmakingPage.vue";
 import RegistrationPage from "@/pages/RegistrationPage.vue";
+import PublicProfile from "@/pages/PublicProfile.vue";
 import axios from "axios"; // Needed for refreshing tokens
 
 async function isAuthenticated() {
@@ -78,6 +79,11 @@ const routes = [
     component: UserProfile,
     name: "UserProfileAuth",
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/profile/:id",
+    name: "PublicProfile",
+    component: PublicProfile,
   },
 ];
 

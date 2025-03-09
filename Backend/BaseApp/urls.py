@@ -1,12 +1,15 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import TagViewSet, SearchHistoryViewSet,\
-                   ExternalMediaViewSet,\
-                   ProfileListCreateView, ProfileDetailView,\
-                   MatchmakingResultsView, CurrentUserView,\
-                   search_profiles, detailed_search, get_unique_denominations
 
-#Automatically generates URLs for all ViewSet classes
+from .views import TagViewSet, SearchHistoryViewSet, \
+    ExternalMediaViewSet, \
+    ProfileListCreateView, ProfileDetailView, \
+    MatchmakingResultsView, CurrentUserView, \
+    ProfileVoteView, ProfileCommentView, \
+    ProfileVoteStatusView\
+    search_profiles, detailed_search, get_unique_denominations
+
+# Automatically generates URLs for all ViewSet classes
 router = routers.DefaultRouter()
 router.register('tag', TagViewSet)
 router.register('searchhistory', SearchHistoryViewSet)
@@ -21,6 +24,15 @@ urlpatterns = [
    path('api/profiles/match', MatchmakingResultsView.as_view()),
    path('api/profiles/me/', CurrentUserView.as_view(),
         name='current-user'),
+   path('api/profiles/vote/', ProfileVoteView.as_view(),
+        name='profile-vote'),
+   path('api/profiles/comment/', ProfileCommentView.as_view(),
+        name='profile-comment'),
+   path('api/profiles/comment/<int:pk>/',
+        ProfileCommentView.as_view(), name='profile-comment-detail'),
+   path('api/profiles/<int:profile_id>/vote-status/',
+        ProfileVoteStatusView.as_view(),
+        name='profile-vote-status'),
    path('api/profiles/search/', search_profiles,
         name='search-profiles'),
    path('api/profiles/detailed-search/', detailed_search,
