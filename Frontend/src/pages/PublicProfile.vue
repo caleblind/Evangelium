@@ -5,8 +5,15 @@
       <p>Loading...</p>
     </div>
     <div v-else-if="error" class="error">{{ error }}</div>
-    <div v-else>
-      <PublicProfileView :profile="profile" />
+    <div v-else-if="!redirecting" class="profile-layout">
+      <div class="content-wrapper">
+        <PublicProfileView :profile="profile" />
+        <ProfileVotingSection
+          :profile="profile"
+          @vote-updated="fetchProfile"
+          @comment-added="fetchProfile"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -14,6 +21,7 @@
 <script>
 import axios from "axios";
 import PublicProfileView from "@/components/profile/PublicProfileView.vue";
+import ProfileVotingSection from "@/components/profile/ProfileVotingSection.vue";
 import { jwtDecode } from "jwt-decode";
 
 const API_BASE_URL = "http://127.0.0.1:8000";
@@ -22,12 +30,14 @@ export default {
   name: "PublicProfile",
   components: {
     PublicProfileView,
+    ProfileVotingSection,
   },
   data() {
     return {
       profile: {},
       loading: true,
       error: null,
+      redirecting: false,
     };
   },
   methods: {
@@ -46,7 +56,9 @@ export default {
 
         // If the profile being viewed belongs to the current user, redirect to UserProfile
         if (currentUserId && parseInt(profileId) === currentUserId) {
-          this.$router.push("/UserProfile");
+          this.redirecting = true; // Set redirecting flag
+          this.loading = false; // Stop loading
+          await this.$router.push("/UserProfile");
           return;
         }
 
@@ -78,12 +90,40 @@ export default {
         console.error("Failed to load profile:", err);
         this.error = "Failed to load profile data.";
       } finally {
-        this.loading = false;
+        if (!this.redirecting) {
+          this.loading = false;
+        }
       }
     },
   },
-  created() {
-    this.fetchProfile();
+  beforeRouteEnter(to, from, next) {
+    // Always call next() once and handle the redirect in the component
+    next();
+  },
+  async created() {
+    try {
+      // Try to get the current user's profile first
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        const response = await axios.get(`${API_BASE_URL}/api/profiles/me/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // If the profile ID matches the route param, redirect
+        if (response.data.user.id === parseInt(this.$route.params.id)) {
+          this.redirecting = true;
+          this.loading = false;
+          this.$router.push("/UserProfile");
+          return;
+        }
+      }
+
+      // If we get here, either there's no token or it's not the user's profile
+      await this.fetchProfile();
+    } catch (error) {
+      // If the /me/ endpoint fails, just try to fetch the profile
+      await this.fetchProfile();
+    }
   },
 };
 </script>
@@ -92,11 +132,39 @@ export default {
 .profile-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 2rem 1rem;
   min-height: 100vh;
+}
+
+.profile-layout {
+  position: relative;
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.back-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+  background: #3498db;
+  color: white;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #2980b9;
 }
 
 .loading-spinner {
@@ -131,5 +199,11 @@ export default {
   padding: 1rem;
   border-radius: 6px;
   margin-bottom: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
 }
 </style>
