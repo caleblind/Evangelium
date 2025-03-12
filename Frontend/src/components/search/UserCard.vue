@@ -1,25 +1,43 @@
 <template>
-  <v-row align="center" justify="center" dense>
-    <v-col cols="auto" md="6">
-      <div class="card_container">
-        <v-card class="mx-auto">
-          <v-card-title class="d-flex align-center">
-            <v-avatar size="5">
+  <div class="user-card-row">
+    <div class="user-card-col">
+      <div class="card">
+        <div class="card-header">
+          <div class="profile-section">
+            <div class="avatar">
               <img :src="userImage" alt="profile_image" class="profile_image" />
-            </v-avatar>
-          </v-card-title>
-          <v-card-text>
-            <h2>
-              <span>{{ first_name }} {{ last_name }}</span>
-            </h2>
-            <p>{{ city }}, {{ state }}</p>
-            <p>{{ description }}</p>
-          </v-card-text>
-        </v-card>
-        <button class="button" @click="viewProfile">View Profile</button>
+            </div>
+            <div class="header-content">
+              <h2 class="church-name">{{ first_name }} {{ last_name }}</h2>
+              <p class="location">{{ city }}, {{ country }}</p>
+            </div>
+          </div>
+          <button class="bookmark-btn" @click="toggleBookmark">
+            <font-awesome-icon
+              :icon="['far', 'bookmark']"
+              v-if="!isBookmarked"
+            />
+            <font-awesome-icon :icon="['fas', 'bookmark']" v-else />
+          </button>
+        </div>
+
+        <div class="card-content">
+          <p class="description">{{ description }}</p>
+
+          <div class="tags-container">
+            <span class="tag active">Baptist</span>
+            <span class="tag">Community Outreach</span>
+            <span class="tag">Church Planting</span>
+            <div class="more-tags">2 more</div>
+          </div>
+
+          <button class="view-profile-btn" @click="viewProfile">
+            View Profile
+          </button>
+        </div>
       </div>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 
   <div id="ProfileWindow">
     <transition name="fade" appear>
@@ -31,9 +49,9 @@
     </transition>
     <transition name="slide" appear>
       <div class="modal" v-if="showModal">
-        <v-avatar size="50">
+        <div class="avatar">
           <img :src="userImage" alt="profile_image" class="profile_image" />
-        </v-avatar>
+        </div>
         <h1>
           <span>{{ first_name }} {{ last_name }}</span>
         </h1>
@@ -52,7 +70,6 @@
 <script>
 import userImage from "@/assets/pictures/missionaryprof.jpeg";
 export default {
-  el: "#UserProfile",
   name: "UserCard",
   props: {
     first_name: {
@@ -88,11 +105,16 @@ export default {
     return {
       userImage: userImage,
       showModal: false,
+      isBookmarked: false,
     };
   },
   methods: {
     viewProfile() {
       this.$router.push(`/profile/${this.id}`);
+    },
+    toggleBookmark() {
+      this.isBookmarked = !this.isBookmarked;
+      // TODO: Implement bookmark functionality with backend
     },
   },
 };
@@ -109,13 +131,153 @@ body {
   font-family: "montserrat", sans-serif;
 }
 
+.user-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-card-col {
+  flex: 0 0 auto;
+  padding: 8px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  width: 100%;
+  max-width: 600px;
+  margin: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.profile-section {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.profile_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.church-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.location {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.bookmark-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #666;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.bookmark-btn:hover {
+  color: #333;
+}
+
+.description {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tag {
+  padding: 8px 16px;
+  border-radius: 100px;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tag.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.more-tags {
+  padding: 8px 16px;
+  border-radius: 100px;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.more-tags:hover {
+  background-color: #e0e0e0;
+}
+
+.view-profile-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.view-profile-btn:hover {
+  background-color: #e0e0e0;
+}
+
 #UserProfile {
   position: relative;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   width: 60vw;
   min-height: 60vh;
   overflow-x: hidden;
@@ -127,22 +289,19 @@ body {
   border: none;
   background: none;
   cursor: pointer;
-
   display: inline-block;
   padding: 10px 15px;
   background-image: linear-gradient(to right, #0a0a0a, #0e0e0e);
   border-radius: 10px;
-
   color: #fff;
   font-size: 18px;
   font-weight: 700;
-
   box-shadow: 3px 3px rgba(0, 0, 0, 0.4);
   transition: 0.4s ease-out;
+}
 
-  &:hover {
-    box-shadow: 6px 6px rgba(0, 0, 0, 0.6);
-  }
+.button:hover {
+  box-shadow: 6px 6px rgba(0, 0, 0, 0.6);
 }
 
 .modal-overlay {
@@ -161,27 +320,25 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 99;
-
   width: 100%;
   max-width: 400px;
   background-color: #fff;
   border-radius: 16px;
-
   padding: 25px;
+}
 
-  h1 {
-    color: #222;
-    font-size: 25px;
-    font-weight: 900;
-    margin-bottom: 15px;
-  }
+.modal h1 {
+  color: #222;
+  font-size: 25px;
+  font-weight: 900;
+  margin-bottom: 15px;
+}
 
-  p {
-    color: #666;
-    font-size: 18px;
-    font-weight: 400;
-    margin-bottom: 15px;
-  }
+.modal p {
+  color: #666;
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 15px;
 }
 
 .fade-enter-active,
@@ -202,87 +359,5 @@ body {
 .slide-enter,
 .slide-leave-to {
   transform: translateY(-50%) translateX(100vw);
-}
-h2 {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-h2 span {
-  display: inline-block;
-  margin-right: 5px;
-  white-space: nowrap;
-}
-
-.card_container {
-  display: flex;
-  width: 283px;
-  height: fit-content;
-  padding: 12px;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-  border-radius: 0;
-  background: #ffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card_info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  align-self: stretch;
-}
-
-.card_picture {
-  display: flex;
-  width: 77px;
-  height: 70px;
-  align-items: left;
-}
-
-.card_tags-container {
-  display: flex;
-  align-items: center;
-  align-content: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.card_pills {
-  display: flex;
-  padding: 4px 4px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 100px;
-}
-
-.card-flag {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  fill: #d9d9d9;
-  stroke-width: 1px;
-  stroke: #fff;
-  font-size: 18px;
-}
-
-.profile_image {
-  max-width: 15%;
-  max-height: 15%;
-  border-radius: 15%;
-  object-fit: cover;
-}
-
-.v-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 16px;
-}
-
-.v-col {
-  width: 100%;
 }
 </style>
