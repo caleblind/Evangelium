@@ -1,7 +1,7 @@
 <template>
   <div class="search-page">
     <div class="search-container">
-  <!-- Search Form -->
+      <!-- Search Form -->
       <div class="search-form">
         <div class="search-input">
           <input
@@ -10,7 +10,7 @@
             placeholder="Search by name or description..."
             @input="handleSearch"
           />
-      </div>
+        </div>
 
         <div class="filters">
           <select v-model="searchParams.user_type" @change="handleSearch">
@@ -19,8 +19,8 @@
             <option value="supporter">Supporter</option>
           </select>
 
-        <input
-          type="text"
+          <input
+            type="text"
             v-model="searchParams.location"
             placeholder="Location..."
             @input="handleSearch"
@@ -56,18 +56,18 @@
                 </small>
               </template>
             </multiselect>
-      </div>
-      </div>
+          </div>
+        </div>
       </div>
 
-  <!-- Results Section -->
+      <!-- Results Section -->
       <div class="results-container">
         <div v-if="isLoading" class="loading">Loading...</div>
         <div v-else-if="error" class="error">
           {{ error }}
         </div>
         <div v-else class="card-container">
-      <UserCard
+          <UserCard
             v-for="profile in searchResults"
             :key="profile.id"
             :id="profile.user.id"
@@ -77,6 +77,7 @@
             :state="profile.state"
             :country="profile.country"
             :description="profile.description"
+            :tags="profile.tags"
           />
         </div>
       </div>
@@ -112,6 +113,7 @@ export default {
   },
   created() {
     this.loadTags();
+    this.performSearch(); // Load all profiles initially
   },
   methods: {
     debounce(func, wait) {

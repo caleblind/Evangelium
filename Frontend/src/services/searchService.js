@@ -17,6 +17,7 @@ export default {
       const response = await axios.get(
         `${API_URL}/api/profiles/search/?${queryParams.toString()}`
       );
+      console.log("Search response data:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error searching profiles:", error);

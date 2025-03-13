@@ -25,10 +25,24 @@
           <p class="description">{{ description }}</p>
 
           <div class="tags-container">
-            <span class="tag active">Baptist</span>
-            <span class="tag">Community Outreach</span>
-            <span class="tag">Church Planting</span>
-            <div class="more-tags">2 more</div>
+            <template v-if="tags && tags.length">
+              <span
+                v-for="(tag, index) in displayedTags"
+                :key="index"
+                class="tag"
+                :title="tag.tag_description"
+              >
+                {{ tag.tag_name }}
+              </span>
+              <div
+                v-if="hasMoreTags"
+                class="more-tags"
+                @click="showAllTags = !showAllTags"
+              >
+                {{ showAllTags ? "Show less" : `${hiddenTagsCount} more` }}
+              </div>
+            </template>
+            <span v-else class="no-tags">No tags</span>
           </div>
 
           <button class="view-profile-btn" @click="viewProfile">
@@ -69,6 +83,7 @@
 
 <script>
 import userImage from "@/assets/pictures/missionaryprof.jpeg";
+
 export default {
   name: "UserCard",
   props: {
@@ -100,13 +115,33 @@ export default {
       type: Number,
       required: true,
     },
+    tags: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       userImage: userImage,
       showModal: false,
       isBookmarked: false,
+      showAllTags: false,
+      maxVisibleTags: 3,
     };
+  },
+  computed: {
+    displayedTags() {
+      if (!this.tags) return [];
+      return this.showAllTags
+        ? this.tags
+        : this.tags.slice(0, this.maxVisibleTags);
+    },
+    hasMoreTags() {
+      return this.tags && this.tags.length > this.maxVisibleTags;
+    },
+    hiddenTagsCount() {
+      return this.tags ? this.tags.length - this.maxVisibleTags : 0;
+    },
   },
   methods: {
     viewProfile() {
@@ -224,21 +259,22 @@ body {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 24px;
+  min-height: 40px;
 }
 
 .tag {
   padding: 8px 16px;
   border-radius: 100px;
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: #e3f2fd;
+  color: #1976d2;
   font-size: 14px;
   font-weight: 500;
   transition: all 0.2s;
+  cursor: default;
 }
 
-.tag.active {
-  background-color: #e3f2fd;
-  color: #1976d2;
+.tag:hover {
+  background-color: #bbdefb;
 }
 
 .more-tags {
@@ -254,6 +290,12 @@ body {
 
 .more-tags:hover {
   background-color: #e0e0e0;
+}
+
+.no-tags {
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
 }
 
 .view-profile-btn {

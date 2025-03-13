@@ -203,34 +203,38 @@ class ProfileVoteStatusView(views.APIView):
 class ProfileSearchView(generics.ListAPIView):
    serializer_class = ProfileSerializer
    permission_classes = [AllowAny]
-   
+
    def get_queryset(self):
-      queryset = Profile.objects.select_related('user').prefetch_related('tags').all()
-      
+      queryset = Profile.objects.select_related('user').prefetch_related(
+         'tags'
+      ).all()
+
       # Get search parameters from query string
       search_query = self.request.query_params.get('q', '')
       user_type = self.request.query_params.get('user_type', '')
       tags = self.request.query_params.getlist('tags', [])
       location = self.request.query_params.get('location', '')
-      
-      if search_query:
-         queryset = queryset.filter(
-            Q(first_name__icontains=search_query) |
-            Q(last_name__icontains=search_query) |
-            Q(description__icontains=search_query)
-         )
-      
-      if user_type:
-         queryset = queryset.filter(user_type=user_type)
-      
-      if tags:
-         queryset = queryset.filter(tags__tag_name__in=tags).distinct()
-      
-      if location:
-         queryset = queryset.filter(
-            Q(city__icontains=location) |
-            Q(state__icontains=location) |
-            Q(country__icontains=location)
-         )
-      
+
+      # Only apply filters if search parameters are provided
+      if any([search_query, user_type, tags, location]):
+         if search_query:
+            queryset = queryset.filter(
+               Q(first_name__icontains=search_query) |
+               Q(last_name__icontains=search_query) |
+               Q(description__icontains=search_query)
+            )
+
+         if user_type:
+            queryset = queryset.filter(user_type=user_type)
+
+         if tags:
+            queryset = queryset.filter(tags__tag_name__in=tags).distinct()
+
+         if location:
+            queryset = queryset.filter(
+               Q(city__icontains=location) |
+               Q(state__icontains=location) |
+               Q(country__icontains=location)
+            )
+
       return queryset
