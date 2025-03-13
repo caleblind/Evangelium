@@ -19,7 +19,6 @@ mccabe==0.7.0
 packaging==24.2
 platformdirs==4.3.6
 pluggy==1.5.0
-psycopg2==2.9.10
 psycopg2-binary==2.9.10
 pyenchant==3.2.2
 PyJWT==2.10.1
