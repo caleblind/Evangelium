@@ -4,7 +4,7 @@
   "description": "Steps 3-5 should only be necessary the first time you do it.\r 1. Access the repository on VS Code\r 2. Right click the `app/` folder within our repository and select \"open in integrated terminal\"\r 3. Type `pip` to see if it is installed\r 4. If not follow the install instructions\r 5. Run the command `pip install -r ./requirements.txt`\r 6. Run the command `python3 manage.py runserver`",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "vue-cli-service build"
   },
   "keywords": [],
   "author": "",
